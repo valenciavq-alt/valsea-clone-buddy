@@ -606,20 +606,20 @@ export default function Home() {
     <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] font-sans">
       {/* ── Top Navigation Bar ─────────────────────────────────────────── */}
       <header className="sticky top-0 z-50 border-b border-[var(--border-subtle)] bg-[var(--header-bg)] backdrop-blur-xl">
-        <div className="max-w-[1400px] mx-auto px-6 h-14 flex items-center justify-between">
+        <div className="max-w-[1400px] mx-auto px-3 sm:px-6 h-12 sm:h-14 flex items-center justify-between">
           {/* Logo & Stats */}
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2 sm:gap-6">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "var(--brand-gradient)" }}>
                 <Globe className="w-4 h-4 text-white" />
               </div>
               <div>
-                <span className="text-sm font-bold tracking-tight text-[var(--foreground)]">VALSEA</span>
-                <span className="text-[10px] block -mt-0.5 tracking-[0.2em] uppercase text-[var(--muted)]">Speech Intelligence</span>
+                <span className="text-xs sm:text-sm font-bold tracking-tight text-[var(--foreground)]">VALSEA</span>
+                <span className="hidden sm:block text-[10px] -mt-0.5 tracking-[0.2em] uppercase text-[var(--muted)]">Speech Intelligence</span>
               </div>
             </div>
 
-            <div className="hidden md:flex items-center gap-5 text-xs text-[var(--muted)] font-mono">
+            <div className="hidden lg:flex items-center gap-5 text-xs text-[var(--muted)] font-mono">
               <span><Zap className="w-3 h-3 inline mr-1 text-[var(--success)]" />{streamStats.streams.toLocaleString()} <span className="text-[var(--muted-light)]">streams</span></span>
               <span>⏱ {streamStats.p50}ms <span className="text-[var(--muted-light)]">P50</span></span>
               <span>🌐 {streamStats.regions} <span className="text-[var(--muted-light)]">regions</span></span>
@@ -632,7 +632,7 @@ export default function Home() {
           </div>
 
           {/* Scenario Tabs + Run */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3">
             <div className="hidden md:flex items-center bg-[var(--bar-track)] rounded-lg p-0.5">
               {(Object.keys(SCENARIOS) as Scenario[]).map((key) => (
                 <button
@@ -648,6 +648,17 @@ export default function Home() {
                 </button>
               ))}
             </div>
+
+            {/* Mobile scenario selector */}
+            <select
+              value={activeScenario}
+              onChange={(e) => setActiveScenario(e.target.value as Scenario)}
+              className="md:hidden text-[10px] font-medium bg-[var(--bar-track)] border border-[var(--border-subtle)] rounded-md px-2 py-1.5 text-[var(--foreground)]"
+            >
+              {(Object.keys(SCENARIOS) as Scenario[]).map((key) => (
+                <option key={key} value={key}>{SCENARIOS[key].label}</option>
+              ))}
+            </select>
 
             {/* Theme Toggle */}
             <button
@@ -680,13 +691,13 @@ export default function Home() {
       </header>
 
       {/* ── Dashboard Grid ─────────────────────────────────────────────── */}
-      <div className="max-w-[1400px] mx-auto px-6 py-6">
+      <div className="max-w-[1400px] mx-auto px-3 sm:px-6 py-4 sm:py-6">
         {/* Row 1: Event Context | Prosody | Security */}
-        <div className="grid grid-cols-12 gap-4 mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 sm:gap-4 mb-3 sm:mb-4">
           {/* Event Context */}
-          <div className="col-span-12 md:col-span-3 panel p-5">
+          <div className="col-span-1 sm:col-span-1 lg:col-span-3 panel p-4 sm:p-5">
             <PanelHeader icon={Globe} title="Event Context" badge="LIVE" badgeColor="#22c55e" />
-            <div className="grid grid-cols-2 gap-4 text-sm">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 text-sm">
               <div>
                 <span className="text-[10px] tracking-wider uppercase text-[var(--muted)] flex items-center gap-1">
                   <Radio className="w-3 h-3" /> Source
@@ -741,7 +752,7 @@ export default function Home() {
           </div>
 
           {/* Prosody Analysis */}
-          <div className="col-span-12 md:col-span-5 panel p-5">
+          <div className="col-span-1 sm:col-span-2 lg:col-span-5 panel p-4 sm:p-5">
             <PanelHeader icon={Activity} title="Prosody Analysis" badge="HUME AI" badgeColor="#f59e0b" />
             <div className="space-y-3">
               <ProsodyBar label="Frustration" value={emotions.frustration} color="var(--danger)" />
@@ -753,7 +764,7 @@ export default function Home() {
           </div>
 
           {/* Security Layer */}
-          <div className="col-span-12 md:col-span-4 panel p-5">
+          <div className="col-span-1 sm:col-span-1 lg:col-span-4 panel p-4 sm:p-5">
             <PanelHeader icon={Shield} title="Security Layer" badge="MODULATE" badgeColor="#a855f7" />
             <div className="space-y-4">
               <div className="flex items-center justify-between py-2 border-b border-[var(--border-subtle)]">
@@ -794,9 +805,9 @@ export default function Home() {
         </div>
 
         {/* Row 2: Acoustic | Transcription | Intent */}
-        <div className="grid grid-cols-12 gap-4 mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 sm:gap-4 mb-3 sm:mb-4">
           {/* Acoustic Layer */}
-          <div className="col-span-12 md:col-span-3 panel p-5">
+          <div className="col-span-1 sm:col-span-1 lg:col-span-3 panel p-4 sm:p-5">
             <PanelHeader
               icon={Mic}
               title="Acoustic Layer"
@@ -890,7 +901,7 @@ export default function Home() {
           </div>
 
           {/* Transcription */}
-          <div className="col-span-12 md:col-span-5 panel p-5">
+          <div className="col-span-1 sm:col-span-1 lg:col-span-5 panel p-4 sm:p-5">
             <PanelHeader
               icon={FileText}
               title="Transcription"
@@ -983,7 +994,7 @@ export default function Home() {
           </div>
 
           {/* Intent Engine */}
-          <div className="col-span-12 md:col-span-4 panel p-5">
+          <div className="col-span-1 sm:col-span-2 lg:col-span-4 panel p-4 sm:p-5">
             <PanelHeader icon={Brain} title="Intent Engine" badge="GEMINI 2.5 PRO" badgeColor="#818cf8" />
             <div className="space-y-3">
               <div className="p-3 rounded-lg bg-[var(--bar-track)] border border-[var(--border-subtle)]">
@@ -1015,7 +1026,7 @@ export default function Home() {
         </div>
 
         {/* Row 3: Enterprise Action */}
-        <div className="panel p-5">
+        <div className="panel p-4 sm:p-5">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Zap className="w-4 h-4 text-[var(--accent-light)]" />
