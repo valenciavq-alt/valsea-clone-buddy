@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback, createContext, useContext, ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { AlertTriangle, X } from "lucide-react";
+import { AlertTriangle, CheckCircle, X } from "lucide-react";
 
 interface Toast {
   id: number;
   message: string;
-  type: "error" | "warning" | "info";
+  type: "error" | "warning" | "info" | "success";
 }
 
 interface ToastContextType {
