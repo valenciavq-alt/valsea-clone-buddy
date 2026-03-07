@@ -22,8 +22,6 @@ import {
 } from "lucide-react";
 import { analyzeDialog } from "@/lib/analyze";
 
-import { analyzeDialog } from "@/lib/analyze";
-
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 interface EmotionScores {
