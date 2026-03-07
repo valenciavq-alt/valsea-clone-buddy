@@ -619,7 +619,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="hidden md:flex items-center gap-5 text-xs text-[var(--muted)] font-mono">
+            <div className="hidden lg:flex items-center gap-5 text-xs text-[var(--muted)] font-mono">
               <span><Zap className="w-3 h-3 inline mr-1 text-[var(--success)]" />{streamStats.streams.toLocaleString()} <span className="text-[var(--muted-light)]">streams</span></span>
               <span>⏱ {streamStats.p50}ms <span className="text-[var(--muted-light)]">P50</span></span>
               <span>🌐 {streamStats.regions} <span className="text-[var(--muted-light)]">regions</span></span>
