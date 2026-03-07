@@ -1,4 +1,7 @@
 # Environments
+next-env.d.ts
+.next/
+
 .env
 .env.production
 .env.*
