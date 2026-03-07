@@ -182,7 +182,7 @@ function ProsodyBar({ label, value, color }: { label: string; value: number; col
   return (
     <div className="flex items-center gap-3">
       <span className="w-24 text-xs font-medium text-[var(--muted-light)] tracking-wide">{label}</span>
-      <div className="flex-1 h-2 rounded-full bg-white/[0.04] overflow-hidden">
+      <div className="flex-1 h-2 rounded-full bg-[var(--bar-track)] overflow-hidden">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${pct}%` }}
