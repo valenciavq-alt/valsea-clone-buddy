@@ -430,6 +430,7 @@ export default function Dashboard() {
       console.error("[Vapi Error]", error);
       setVapiStatus("idle");
       setDemoPhase("idle");
+      showToast(classifyError(error));
     });
 
     try {
