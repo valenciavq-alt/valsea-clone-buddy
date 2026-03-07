@@ -363,7 +363,14 @@ const DEMO_PAYLOADS: Record<Scenario, EnterprisePayload> = {
 
 // ─── Prosody Bar ─────────────────────────────────────────────────────────────
 
-function ProsodyBar({ label, value, color }: { label: string; value: number; color: string }) {
+function getSeverity(scenario: Scenario): { label: string; color: string; bg: string } {
+  if (scenario === "fraud_security") return { label: "CRITICAL", color: "var(--danger)", bg: "rgba(239,68,68,0.1)" };
+  if (scenario === "healthcare") return { label: "CRITICAL", color: "var(--danger)", bg: "rgba(239,68,68,0.1)" };
+  if (scenario === "cx_escalation" || scenario === "fintech" || scenario === "legal") return { label: "HIGH", color: "var(--warning)", bg: "rgba(245,158,11,0.1)" };
+  return { label: "MEDIUM", color: "var(--success)", bg: "rgba(34,197,94,0.1)" };
+}
+
+
   const pct = Math.round(value * 100);
   return (
     <div className="flex items-center gap-3">
