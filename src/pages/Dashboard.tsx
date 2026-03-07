@@ -20,7 +20,6 @@ import {
   PhoneCall,
   PhoneOff,
 } from "lucide-react";
-import Vapi from "@vapi-ai/web";
 import { analyzeDialog } from "@/lib/analyze";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -279,7 +278,7 @@ export default function Dashboard() {
   const [vapiStatus, setVapiStatus] = useState<"idle" | "connecting" | "active">("idle");
   const [liveTranscript, setLiveTranscript] = useState<{ role: "user" | "assistant"; text: string }[]>([]);
   const [latencyMs, setLatencyMs] = useState(0);
-  const vapiRef = useRef<Vapi | null>(null);
+  const vapiRef = useRef<any>(null);
   const analysisTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastAnalysisRef = useRef<string>("");
 
@@ -287,7 +286,11 @@ export default function Dashboard() {
   useEffect(() => {
     const key = import.meta.env.VITE_VAPI_PUBLIC_KEY;
     if (key) {
-      vapiRef.current = new Vapi(key);
+      import("@vapi-ai/web").then((mod) => {
+        vapiRef.current = new mod.default(key);
+      }).catch(() => {
+        console.warn("Vapi SDK not available");
+      });
     }
     return () => {
       vapiRef.current?.removeAllListeners();
