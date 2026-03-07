@@ -624,6 +624,13 @@ export default function Dashboard() {
           </div>
 
           <div className="flex items-center gap-1.5 sm:gap-3">
+            <button
+              onClick={() => setEventSidebarOpen(true)}
+              className="lg:hidden w-8 h-8 rounded-lg flex items-center justify-center bg-[var(--bar-track)] hover:bg-[var(--accent-glow)] transition-colors"
+              title="Event Context"
+            >
+              <PanelLeftOpen className="w-4 h-4 text-[var(--muted-light)]" />
+            </button>
             <div className="hidden md:flex items-center bg-[var(--bar-track)] rounded-lg p-0.5">
               {(Object.keys(SCENARIOS) as Scenario[]).map((key) => (
                 <button
