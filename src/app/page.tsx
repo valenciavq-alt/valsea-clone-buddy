@@ -649,6 +649,17 @@ export default function Home() {
               ))}
             </div>
 
+            {/* Mobile scenario selector */}
+            <select
+              value={activeScenario}
+              onChange={(e) => setActiveScenario(e.target.value as Scenario)}
+              className="md:hidden text-[10px] font-medium bg-[var(--bar-track)] border border-[var(--border-subtle)] rounded-md px-2 py-1.5 text-[var(--foreground)]"
+            >
+              {(Object.keys(SCENARIOS) as Scenario[]).map((key) => (
+                <option key={key} value={key}>{SCENARIOS[key].label}</option>
+              ))}
+            </select>
+
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
