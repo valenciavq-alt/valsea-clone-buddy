@@ -20,12 +20,7 @@ import {
   PhoneCall,
   PhoneOff,
 } from "lucide-react";
-// Vapi will be dynamically imported when needed
-let VapiClass: any = null;
-try {
-  // @ts-ignore - optional dependency
-  VapiClass = (await import("@vapi-ai/web")).default;
-} catch {}
+import { analyzeDialog } from "@/lib/analyze";
 
 import { analyzeDialog } from "@/lib/analyze";
 
