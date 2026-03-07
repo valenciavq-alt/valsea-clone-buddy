@@ -691,7 +691,7 @@ export default function Home() {
       </header>
 
       {/* ── Dashboard Grid ─────────────────────────────────────────────── */}
-      <div className="max-w-[1400px] mx-auto px-6 py-6">
+      <div className="max-w-[1400px] mx-auto px-3 sm:px-6 py-4 sm:py-6">
         {/* Row 1: Event Context | Prosody | Security */}
         <div className="grid grid-cols-12 gap-4 mb-4">
           {/* Event Context */}
