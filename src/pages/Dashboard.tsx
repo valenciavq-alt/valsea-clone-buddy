@@ -20,7 +20,9 @@ import {
   PhoneCall,
   PhoneOff,
 } from "lucide-react";
-import Vapi from "@vapi-ai/web";
+// Vapi import - uncomment when @vapi-ai/web is installed
+// import Vapi from "@vapi-ai/web";
+type Vapi = any;
 import { analyzeDialog } from "@/lib/analyze";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
