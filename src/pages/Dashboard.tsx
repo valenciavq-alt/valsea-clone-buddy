@@ -19,6 +19,8 @@ import {
   Moon,
   PhoneCall,
   PhoneOff,
+  PanelLeftOpen,
+  X,
 } from "lucide-react";
 import { analyzeDialog } from "@/lib/analyze";
 
@@ -265,6 +267,7 @@ function PanelHeader({
 export default function Dashboard() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [activeScenario, setActiveScenario] = useState<Scenario>("logistics");
+  const [eventSidebarOpen, setEventSidebarOpen] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
   const [demoPhase, setDemoPhase] = useState<"idle" | "streaming" | "complete">("idle");
   const [visibleLines, setVisibleLines] = useState<number>(0);
@@ -621,6 +624,13 @@ export default function Dashboard() {
           </div>
 
           <div className="flex items-center gap-1.5 sm:gap-3">
+            <button
+              onClick={() => setEventSidebarOpen(true)}
+              className="lg:hidden w-8 h-8 rounded-lg flex items-center justify-center bg-[var(--bar-track)] hover:bg-[var(--accent-glow)] transition-colors"
+              title="Event Context"
+            >
+              <PanelLeftOpen className="w-4 h-4 text-[var(--muted-light)]" />
+            </button>
             <div className="hidden md:flex items-center bg-[var(--bar-track)] rounded-lg p-0.5">
               {(Object.keys(SCENARIOS) as Scenario[]).map((key) => (
                 <button
@@ -676,12 +686,91 @@ export default function Dashboard() {
         </div>
       </header>
 
+      {/* ── Mobile Event Context Sidebar ──────────────────────────────── */}
+      <AnimatePresence>
+        {eventSidebarOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm lg:hidden"
+              onClick={() => setEventSidebarOpen(false)}
+            />
+            <motion.div
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", damping: 28, stiffness: 300 }}
+              className="fixed top-0 left-0 z-50 h-full w-[300px] max-w-[85vw] bg-[var(--surface)] border-r border-[var(--card-border)] shadow-2xl lg:hidden overflow-y-auto"
+            >
+              <div className="flex items-center justify-between p-4 border-b border-[var(--border-subtle)]">
+                <div className="flex items-center gap-2">
+                  <Globe className="w-4 h-4 text-[var(--accent-light)]" />
+                  <span className="text-xs font-semibold tracking-[0.15em] uppercase">Event Context</span>
+                </div>
+                <button
+                  onClick={() => setEventSidebarOpen(false)}
+                  className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-[var(--bar-track)] transition-colors"
+                >
+                  <X className="w-4 h-4 text-[var(--muted-light)]" />
+                </button>
+              </div>
+              <div className="p-4">
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <span className="text-[10px] tracking-wider uppercase text-[var(--muted)] flex items-center gap-1"><Radio className="w-3 h-3" /> Source</span>
+                    <p className="font-semibold mt-1">{config.source}</p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] tracking-wider uppercase text-[var(--muted)] flex items-center gap-1"><Globe className="w-3 h-3" /> Target</span>
+                    <p className="font-semibold mt-1">{config.target}</p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] tracking-wider uppercase text-[var(--muted)] flex items-center gap-1"><FileText className="w-3 h-3" /> Scenario</span>
+                    <p className="font-semibold mt-1">{config.scenario}</p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] tracking-wider uppercase text-[var(--muted)] flex items-center gap-1">⏱ Time</span>
+                    <p className="font-semibold mt-1">Now</p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] tracking-wider uppercase text-[var(--muted)] flex items-center gap-1"><Eye className="w-3 h-3" /> Confidence</span>
+                    <p className="font-semibold mt-1 font-mono">{demoPhase === "complete" ? "94%" : "—"}</p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] tracking-wider uppercase text-[var(--muted)] flex items-center gap-1"><AlertTriangle className="w-3 h-3" /> Severity</span>
+                    <p className="font-semibold mt-1">
+                      {demoPhase === "complete" ? (
+                        <span className="text-xs font-mono px-2 py-0.5 rounded" style={{
+                          color: activeScenario === "fraud_security" ? "var(--danger)" : activeScenario === "cx_escalation" ? "var(--warning)" : "var(--success)",
+                          background: activeScenario === "fraud_security" ? "rgba(239,68,68,0.1)" : activeScenario === "cx_escalation" ? "rgba(245,158,11,0.1)" : "rgba(34,197,94,0.1)",
+                        }}>
+                          {activeScenario === "fraud_security" ? "CRITICAL" : activeScenario === "cx_escalation" ? "HIGH" : "MEDIUM"}
+                        </span>
+                      ) : "—"}
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-4 pt-3 border-t border-[var(--border-subtle)]">
+                  <span className="text-[10px] font-mono text-[var(--muted)] flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--success)] pulse-dot" />
+                    LIVE MONITORING
+                  </span>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
       {/* ── Dashboard Grid ─────────────────────────────────────────────── */}
       <div className="max-w-[1400px] mx-auto px-3 sm:px-6 py-4 sm:py-6">
         {/* Row 1: Event Context | Prosody | Security */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 sm:gap-4 mb-3 sm:mb-4">
-          {/* Event Context */}
-          <div className="col-span-1 sm:col-span-1 lg:col-span-3 panel p-4 sm:p-5">
+          {/* Event Context - hidden on mobile, use sidebar instead */}
+          <div className="hidden lg:block lg:col-span-3 panel p-4 sm:p-5">
             <PanelHeader icon={Globe} title="Event Context" badge="LIVE" badgeColor="#22c55e" />
             <div className="grid grid-cols-2 gap-3 sm:gap-4 text-sm">
               <div>
