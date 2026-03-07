@@ -800,15 +800,40 @@ export default function Home() {
             <PanelHeader
               icon={Mic}
               title="Acoustic Layer"
-              badge={isRecording ? "RECORDING" : isAnalyzingAudio ? "ANALYZING" : demoPhase === "streaming" ? "ACTIVE" : "IDLE"}
-              badgeColor={isRecording ? "#ef4444" : isAnalyzingAudio ? "#f59e0b" : demoPhase === "streaming" ? "#22c55e" : undefined}
+              badge={
+                vapiStatus === "active" ? "LIVE STREAM" :
+                vapiStatus === "connecting" ? "CONNECTING" :
+                isRecording ? "RECORDING" :
+                isAnalyzingAudio ? "ANALYZING" :
+                demoPhase === "streaming" ? "ACTIVE" : "IDLE"
+              }
+              badgeColor={
+                vapiStatus === "active" ? "#22c55e" :
+                vapiStatus === "connecting" ? "#f59e0b" :
+                isRecording ? "#ef4444" :
+                isAnalyzingAudio ? "#f59e0b" :
+                demoPhase === "streaming" ? "#22c55e" : undefined
+              }
             />
             <div className="mt-4">
-              <WaveformVisualizer isActive={isRecording || demoPhase === "streaming"} />
+              <WaveformVisualizer isActive={vapiStatus === "active" || isRecording || demoPhase === "streaming"} />
             </div>
 
-            {/* Recording timer */}
-            {isRecording && (
+            {/* Vapi live status */}
+            {vapiStatus === "active" && (
+              <div className="flex items-center justify-center gap-2 mt-3 text-xs text-[var(--success)]">
+                <span className="w-2 h-2 rounded-full bg-[var(--success)] pulse-dot" />
+                WebRTC Stream Active
+              </div>
+            )}
+            {vapiStatus === "connecting" && (
+              <div className="flex items-center justify-center gap-2 mt-3 text-xs text-[var(--warning)]">
+                <Loader2 className="w-3 h-3 animate-spin" /> Connecting to Vapi...
+              </div>
+            )}
+
+            {/* Recording timer (fallback mode) */}
+            {isRecording && vapiStatus === "idle" && (
               <div className="text-center mt-3">
                 <span className="text-lg font-mono font-semibold text-[var(--danger)]">{formatTime(recordingTime)}</span>
               </div>
@@ -819,21 +844,37 @@ export default function Home() {
               </div>
             )}
 
-            {/* Mic button */}
-            <div className="flex justify-center mt-4">
+            {/* Action buttons */}
+            <div className="flex flex-col items-center gap-2 mt-4">
+              {/* Vapi WebRTC button (primary) */}
               <button
-                onClick={isRecording ? stopRecording : startRecording}
-                disabled={isAnalyzingAudio}
-                className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-all disabled:opacity-50"
+                onClick={vapiStatus !== "idle" ? stopVapiCall : startVapiCall}
+                disabled={isRecording || isAnalyzingAudio || isRunning}
+                className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-all disabled:opacity-50 w-full justify-center"
                 style={{
-                  background: isRecording ? "var(--danger)" : "var(--brand-gradient)",
+                  background: vapiStatus !== "idle" ? "var(--danger)" : "var(--brand-gradient)",
                   color: "white",
                 }}
               >
-                {isRecording ? (
-                  <><Square className="w-3 h-3" /> Stop Recording</>
+                {vapiStatus === "active" ? (
+                  <><PhoneOff className="w-3 h-3" /> End Live Call</>
+                ) : vapiStatus === "connecting" ? (
+                  <><Loader2 className="w-3 h-3 animate-spin" /> Connecting...</>
                 ) : (
-                  <><Mic className="w-3 h-3" /> Record Audio</>
+                  <><PhoneCall className="w-3 h-3" /> Start Live Call</>
+                )}
+              </button>
+
+              {/* Mic recording fallback */}
+              <button
+                onClick={isRecording ? stopRecording : startRecording}
+                disabled={isAnalyzingAudio || vapiStatus !== "idle" || isRunning}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-medium transition-all disabled:opacity-30 border border-[var(--border-subtle)] text-[var(--muted-light)] hover:text-[var(--foreground)]"
+              >
+                {isRecording ? (
+                  <><Square className="w-2.5 h-2.5" /> Stop Mic</>
+                ) : (
+                  <><Mic className="w-2.5 h-2.5" /> Record &amp; Analyze</>
                 )}
               </button>
             </div>
@@ -843,26 +884,68 @@ export default function Home() {
                 <Radio className="w-3 h-3" /> VAPI WEBRTC
               </span>
               <span className="text-[10px] font-mono text-[var(--muted)]">
-                {isRecording ? "LIVE" : demoPhase === "streaming" ? "128ms" : "0ms"} LATENCY
+                {vapiStatus === "active" ? `${latencyMs}ms` : isRecording ? "LIVE" : demoPhase === "streaming" ? "128ms" : "0ms"} LATENCY
               </span>
             </div>
           </div>
 
           {/* Transcription */}
           <div className="col-span-12 md:col-span-5 panel p-5">
-            <PanelHeader icon={FileText} title="Transcription" badge="CHIRP USM" badgeColor="#06b6d4" />
+            <PanelHeader
+              icon={FileText}
+              title="Transcription"
+              badge={vapiStatus === "active" ? "VAPI LIVE" : "CHIRP USM"}
+              badgeColor={vapiStatus === "active" ? "#22c55e" : "#06b6d4"}
+            />
             <div className="min-h-[200px] max-h-[260px] overflow-y-auto pr-2">
-              {demoPhase === "idle" ? (
+              {/* Vapi live transcript */}
+              {liveTranscript.length > 0 ? (
+                <div className="space-y-2">
+                  <AnimatePresence>
+                    {liveTranscript.map((line, i) => {
+                      const singlishWords = ["lah", "leh", "lor", "walao", "wah", "aiya", "buay tahan", "kan cheong", "sotong", "buay"];
+                      let highlighted = line.text;
+                      singlishWords.forEach((w) => {
+                        const regex = new RegExp(`\\b${w}\\b`, "gi");
+                        highlighted = highlighted.replace(regex, `<mark class="bg-[var(--accent-glow)] text-[var(--accent-light)] px-1 rounded font-medium">${w}</mark>`);
+                      });
+
+                      return (
+                        <motion.div
+                          key={`live-${i}`}
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className={`text-sm leading-relaxed p-2 rounded-lg ${
+                            line.role === "user" ? "bg-[var(--line-bg-caller)]" : "bg-[var(--line-bg-agent)] ml-4"
+                          }`}
+                        >
+                          <span className="text-[10px] font-mono text-[var(--muted)] block mb-0.5">
+                            {line.role === "user" ? "CALLER" : "AGENT"}
+                          </span>
+                          <span dangerouslySetInnerHTML={{ __html: highlighted }} />
+                        </motion.div>
+                      );
+                    })}
+                  </AnimatePresence>
+                  {vapiStatus === "active" && (
+                    <div className="flex items-center gap-2 text-xs text-[var(--success)] mt-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[var(--success)] pulse-dot" />
+                      Streaming live...
+                    </div>
+                  )}
+                </div>
+              ) : demoPhase === "idle" && vapiStatus === "idle" ? (
                 <p className="text-sm text-[var(--muted)] italic mt-12 text-center">
                   Awaiting audio stream...
                 </p>
               ) : (
+                /* Demo transcript fallback */
                 <div className="space-y-2">
                   <AnimatePresence>
                     {transcript.slice(0, visibleLines).map((line, i) => {
                       const isCaller = line.toLowerCase().startsWith("caller") || line.toLowerCase().startsWith("customer") || line.toLowerCase().startsWith("target");
                       const text = line.replace(/^(Caller|Agent|Customer|Target):\s*/i, "");
-                      // Highlight Singlish words
                       const singlishWords = ["lah", "leh", "lor", "walao", "wah", "aiya", "buay tahan", "kan cheong", "sotong", "buay"];
                       let highlighted = text;
                       singlishWords.forEach((w) => {
@@ -888,7 +971,7 @@ export default function Home() {
                       );
                     })}
                   </AnimatePresence>
-                  {demoPhase === "streaming" && (
+                  {demoPhase === "streaming" && vapiStatus === "idle" && (
                     <div className="flex items-center gap-2 text-xs text-[var(--muted)] mt-2">
                       <Loader2 className="w-3 h-3 animate-spin" />
                       Transcribing...
