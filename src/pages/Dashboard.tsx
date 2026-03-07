@@ -289,7 +289,8 @@ export default function Dashboard() {
   useEffect(() => {
     const key = import.meta.env.VITE_VAPI_PUBLIC_KEY;
     if (key) {
-      import("@vapi-ai/web").then((mod) => {
+      const vapiModule = "@vapi-ai/web";
+      import(/* @vite-ignore */ vapiModule).then((mod) => {
         vapiRef.current = new mod.default(key);
       }).catch(() => {
         console.warn("Vapi SDK not available");
