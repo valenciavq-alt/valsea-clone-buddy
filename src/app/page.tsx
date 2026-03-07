@@ -505,7 +505,7 @@ export default function Home() {
           <div className="col-span-12 md:col-span-4 panel p-5">
             <PanelHeader icon={Shield} title="Security Layer" badge="MODULATE" badgeColor="#a855f7" />
             <div className="space-y-4">
-              <div className="flex items-center justify-between py-2 border-b border-white/[0.04]">
+              <div className="flex items-center justify-between py-2 border-b border-[var(--border-subtle)]">
                 <span className="text-xs font-mono tracking-wider text-[var(--muted-light)]">SYNTHETIC PROB.</span>
                 <span className="text-sm font-mono font-semibold">
                   {demoPhase === "complete"
