@@ -212,7 +212,13 @@ const DEMO_TRANSCRIPTS: Record<Scenario, string[]> = {
 
 const DEMO_EMOTIONS: Record<Scenario, EmotionScores> = {
   logistics: { frustration: 0.72, stress: 0.55, politeness: 0.45, hesitation: 0.2, urgency: 0.68 },
+  fintech: { frustration: 0.35, stress: 0.78, politeness: 0.6, hesitation: 0.1, urgency: 0.88 },
   cx_escalation: { frustration: 0.85, stress: 0.7, politeness: 0.3, hesitation: 0.15, urgency: 0.8 },
+  healthcare: { frustration: 0.15, stress: 0.92, politeness: 0.75, hesitation: 0.45, urgency: 0.95 },
+  legal: { frustration: 0.2, stress: 0.65, politeness: 0.55, hesitation: 0.3, urgency: 0.5 },
+  commerce: { frustration: 0.05, stress: 0.1, politeness: 0.9, hesitation: 0.35, urgency: 0.25 },
+  conversational_ai: { frustration: 0.6, stress: 0.3, politeness: 0.65, hesitation: 0.2, urgency: 0.4 },
+  enterprise_ops: { frustration: 0.25, stress: 0.45, politeness: 0.7, hesitation: 0.1, urgency: 0.6 },
   fraud_security: { frustration: 0.1, stress: 0.9, politeness: 0.15, hesitation: 0.05, urgency: 0.95 },
 };
 
