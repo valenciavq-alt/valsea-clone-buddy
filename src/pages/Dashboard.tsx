@@ -944,10 +944,10 @@ export default function Dashboard() {
                     <p className="font-semibold mt-1">
                       {demoPhase === "complete" ? (
                         <span className="text-xs font-mono px-2 py-0.5 rounded" style={{
-                          color: activeScenario === "fraud_security" ? "var(--danger)" : activeScenario === "cx_escalation" ? "var(--warning)" : "var(--success)",
-                          background: activeScenario === "fraud_security" ? "rgba(239,68,68,0.1)" : activeScenario === "cx_escalation" ? "rgba(245,158,11,0.1)" : "rgba(34,197,94,0.1)",
+                          color: getSeverity(activeScenario).color,
+                          background: getSeverity(activeScenario).bg,
                         }}>
-                          {activeScenario === "fraud_security" ? "CRITICAL" : activeScenario === "cx_escalation" ? "HIGH" : "MEDIUM"}
+                          {getSeverity(activeScenario).label}
                         </span>
                       ) : "—"}
                     </p>
