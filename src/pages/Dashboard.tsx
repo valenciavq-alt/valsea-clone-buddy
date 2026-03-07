@@ -79,7 +79,7 @@ interface EnterprisePayload {
   data: Record<string, any>;
 }
 
-type Scenario = "logistics" | "cx_escalation" | "fraud_security";
+type Scenario = "logistics" | "fintech" | "cx_escalation" | "healthcare" | "legal" | "commerce" | "conversational_ai" | "enterprise_ops" | "fraud_security";
 
 interface ScenarioConfig {
   label: string;
@@ -90,19 +90,55 @@ interface ScenarioConfig {
 
 const SCENARIOS: Record<Scenario, ScenarioConfig> = {
   logistics: {
-    label: "Cross-Border Logistics",
+    label: "Supply Chain",
     source: "Singapore",
     target: "Logistics System",
     scenario: "Cross-Border Logistics",
   },
+  fintech: {
+    label: "Fintech",
+    source: "Hong Kong",
+    target: "Compliance Engine",
+    scenario: "Voice-Authenticated Transaction",
+  },
   cx_escalation: {
-    label: "CX Escalation",
+    label: "Contact Centre",
     source: "Malaysia",
     target: "CX Platform",
     scenario: "Customer Escalation",
   },
+  healthcare: {
+    label: "Healthcare",
+    source: "Philippines",
+    target: "Clinical System",
+    scenario: "Multilingual Triage",
+  },
+  legal: {
+    label: "Legal",
+    source: "Indonesia",
+    target: "Compliance Hub",
+    scenario: "Regulatory Evidence",
+  },
+  commerce: {
+    label: "Commerce",
+    source: "Thailand",
+    target: "Marketplace",
+    scenario: "Voice Product Discovery",
+  },
+  conversational_ai: {
+    label: "Conv. AI",
+    source: "Multi-region",
+    target: "LLM Pipeline",
+    scenario: "Speech Structuring Layer",
+  },
+  enterprise_ops: {
+    label: "Enterprise",
+    source: "Regional HQ",
+    target: "Workflow Engine",
+    scenario: "Meeting Intelligence",
+  },
   fraud_security: {
-    label: "Fraud / Security",
+    label: "Security",
     source: "Unknown",
     target: "Security Hub",
     scenario: "Fraud Detection",
