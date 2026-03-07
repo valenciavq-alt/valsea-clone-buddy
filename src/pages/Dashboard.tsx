@@ -455,7 +455,7 @@ function PanelHeader({
 
 // ─── Main Dashboard ──────────────────────────────────────────────────────────
 
-export default function Dashboard({ onBack }: { onBack?: () => void }) {
+export default function Dashboard() {
   const { showToast } = useToast();
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [activeScenario, setActiveScenario] = useState<Scenario>("logistics");
@@ -802,15 +802,6 @@ export default function Dashboard({ onBack }: { onBack?: () => void }) {
         <div className="max-w-[1400px] mx-auto px-3 sm:px-6 h-12 sm:h-14 flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-6">
             <div className="flex items-center gap-2.5">
-              {onBack && (
-                <button
-                  onClick={onBack}
-                  className="w-8 h-8 rounded-lg flex items-center justify-center bg-[var(--bar-track)] hover:bg-[var(--accent-glow)] transition-colors mr-1"
-                  title="Back to verticals"
-                >
-                  <ChevronDown className="w-4 h-4 text-[var(--muted-light)] rotate-90" />
-                </button>
-              )}
               <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "var(--brand-gradient)" }}>
                 <Globe className="w-4 h-4 text-white" />
               </div>
