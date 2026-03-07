@@ -697,7 +697,7 @@ export default function Home() {
           {/* Event Context */}
           <div className="col-span-1 sm:col-span-1 lg:col-span-3 panel p-4 sm:p-5">
             <PanelHeader icon={Globe} title="Event Context" badge="LIVE" badgeColor="#22c55e" />
-            <div className="grid grid-cols-2 gap-4 text-sm">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 text-sm">
               <div>
                 <span className="text-[10px] tracking-wider uppercase text-[var(--muted)] flex items-center gap-1">
                   <Radio className="w-3 h-3" /> Source
