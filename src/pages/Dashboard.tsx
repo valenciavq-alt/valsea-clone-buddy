@@ -22,7 +22,7 @@ import {
   PanelLeftOpen,
   X,
 } from "lucide-react";
-import { analyzeDialog } from "../lib/analyze";
+import { analyzeDialog } from "@/lib/analyze";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
