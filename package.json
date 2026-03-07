@@ -10,8 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.98.0",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@vapi-ai/web": "^2.5.2",
     "@vitejs/plugin-react-swc": "4.2.3",
     "autoprefixer": "^10.4.0",
     "clsx": "^2.1.1",
