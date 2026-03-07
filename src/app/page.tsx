@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Upload,
@@ -17,7 +17,10 @@ import {
   Activity,
   Globe,
   Loader2,
+  Mic,
+  PhoneOff,
 } from "lucide-react";
+import Vapi from "@vapi-ai/web";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -112,6 +115,59 @@ export default function Home() {
   const [fileName, setFileName] = useState<string | null>(null);
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Vapi Real-time Setup
+  const [vapi] = useState(() => {
+    return typeof window !== "undefined"
+      ? new Vapi(process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY || "")
+      : (null as any);
+  });
+  const [callStatus, setCallStatus] = useState<"idle" | "connecting" | "active">("idle");
+  const [liveTranscript, setLiveTranscript] = useState<string>("");
+
+  useEffect(() => {
+    if (!vapi) return;
+    vapi.on("call-start", () => setCallStatus("active"));
+    vapi.on("call-end", () => setCallStatus("idle"));
+    vapi.on("message", (msg: any) => {
+      if (msg.type === "transcript" && msg.transcript) {
+        setLiveTranscript((prev) => prev + "\n" + (msg.role === "user" ? "User: " : "Agent: ") + msg.transcript);
+        setDialogText((prev) => prev + "\n" + (msg.role === "user" ? "User: " : "Agent: ") + msg.transcript);
+      }
+    });
+    return () => {
+      vapi.removeAllListeners();
+    };
+  }, [vapi]);
+
+  const toggleCall = async () => {
+    if (callStatus === "active" || callStatus === "connecting") {
+      vapi.stop();
+    } else {
+      setCallStatus("connecting");
+      setDialogText("");
+      setLiveTranscript("");
+      try {
+        await vapi.start({
+          name: "VALSEA Security Guard",
+          voice: { provider: "11labs", voiceId: "21m00Tcm4TlvDq8ikWAM" },
+          model: {
+            provider: "google",
+            model: "gemini-1.5-flash",
+            messages: [
+              {
+                role: "system",
+                content: "You are the VALSEA honeypot AI layer. Speak briefly and act like a polite but confused customer service operative to keep the user (or potential scammer) talking."
+              }
+            ]
+          }
+        });
+      } catch (err) {
+        console.error(err);
+        setCallStatus("idle");
+      }
+    }
+  };
 
   // ── File handling ────────────────────────────────────────────────────────
 
@@ -392,6 +448,17 @@ export default function Home() {
                 >
                   Analyze
                   <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Live WebRTC Vapi CTA */}
+              <div className="mt-8 flex flex-col items-center border-t border-black/[0.05] pt-8">
+                <span className="text-xs uppercase tracking-wider font-semibold text-[var(--muted)] mb-4">Or test real-time WebRTC audio stream</span>
+                <button
+                  onClick={toggleCall}
+                  className={`flex items-center gap-2 px-6 py-3 rounded-full text-white font-medium shadow-md transition-all ${callStatus === "idle" ? "bg-black hover:scale-105" : callStatus === "connecting" ? "bg-yellow-500 animate-pulse" : "bg-red-500 hover:scale-105"}`}
+                >
+                  {callStatus === "idle" ? <><Mic className="w-4 h-4" /> Start Live Voice Call</> : callStatus === "connecting" ? <><Loader2 className="w-4 h-4 spin-slow" /> Connecting Vapi...</> : <><PhoneOff className="w-4 h-4" /> Stop Live Call & Analyze</>}
                 </button>
               </div>
             </motion.div>
