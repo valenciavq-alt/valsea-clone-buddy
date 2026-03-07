@@ -776,6 +776,7 @@ export default function Dashboard() {
           setPayload(DEMO_PAYLOADS[activeScenario]);
           setDemoPhase("complete");
           setIsRunning(false);
+          showToast("Analysis completed successfully.", "success");
         }, 800);
       }
     }, 1200);
