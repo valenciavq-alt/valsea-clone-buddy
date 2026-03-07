@@ -370,7 +370,7 @@ function getSeverity(scenario: Scenario): { label: string; color: string; bg: st
   return { label: "MEDIUM", color: "var(--success)", bg: "rgba(34,197,94,0.1)" };
 }
 
-
+function ProsodyBar({ label, value, color }: { label: string; value: number; color: string }) {
   const pct = Math.round(value * 100);
   return (
     <div className="flex items-center gap-3">
