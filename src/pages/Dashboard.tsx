@@ -456,6 +456,7 @@ export default function Dashboard() {
       console.error("[Vapi Start Error]", err);
       setVapiStatus("idle");
       setDemoPhase("idle");
+      showToast(classifyError(err));
     }
   }, [runLiveAnalysis, scheduleAnalysis]);
 
