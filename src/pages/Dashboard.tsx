@@ -831,7 +831,7 @@ export default function Dashboard() {
             >
               <PanelLeftOpen className="w-4 h-4 text-[var(--muted-light)]" />
             </button>
-            <div className="hidden md:flex items-center bg-[var(--bar-track)] rounded-lg p-0.5">
+            <div className="hidden md:flex items-center bg-[var(--bar-track)] rounded-lg p-0.5 overflow-x-auto max-w-[600px] lg:max-w-none">
               {(Object.keys(SCENARIOS) as Scenario[]).map((key) => (
                 <button
                   key={key}
