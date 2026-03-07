@@ -79,7 +79,7 @@ interface EnterprisePayload {
   data: Record<string, any>;
 }
 
-type Scenario = "logistics" | "cx_escalation" | "fraud_security";
+type Scenario = "logistics" | "fintech" | "cx_escalation" | "healthcare" | "legal" | "commerce" | "conversational_ai" | "enterprise_ops" | "fraud_security";
 
 interface ScenarioConfig {
   label: string;
@@ -90,19 +90,55 @@ interface ScenarioConfig {
 
 const SCENARIOS: Record<Scenario, ScenarioConfig> = {
   logistics: {
-    label: "Cross-Border Logistics",
+    label: "Supply Chain",
     source: "Singapore",
     target: "Logistics System",
     scenario: "Cross-Border Logistics",
   },
+  fintech: {
+    label: "Fintech",
+    source: "Hong Kong",
+    target: "Compliance Engine",
+    scenario: "Voice-Authenticated Transaction",
+  },
   cx_escalation: {
-    label: "CX Escalation",
+    label: "Contact Centre",
     source: "Malaysia",
     target: "CX Platform",
     scenario: "Customer Escalation",
   },
+  healthcare: {
+    label: "Healthcare",
+    source: "Philippines",
+    target: "Clinical System",
+    scenario: "Multilingual Triage",
+  },
+  legal: {
+    label: "Legal",
+    source: "Indonesia",
+    target: "Compliance Hub",
+    scenario: "Regulatory Evidence",
+  },
+  commerce: {
+    label: "Commerce",
+    source: "Thailand",
+    target: "Marketplace",
+    scenario: "Voice Product Discovery",
+  },
+  conversational_ai: {
+    label: "Conv. AI",
+    source: "Multi-region",
+    target: "LLM Pipeline",
+    scenario: "Speech Structuring Layer",
+  },
+  enterprise_ops: {
+    label: "Enterprise",
+    source: "Regional HQ",
+    target: "Workflow Engine",
+    scenario: "Meeting Intelligence",
+  },
   fraud_security: {
-    label: "Fraud / Security",
+    label: "Security",
     source: "Unknown",
     target: "Security Hub",
     scenario: "Fraud Detection",
@@ -117,11 +153,53 @@ const DEMO_TRANSCRIPTS: Record<Scenario, string[]> = {
     "Agent: Let me pull that up for you. I see the container is currently at Tanjong Pagar terminal.",
     "Caller: Aiya, my customer buay tahan already. Can expedite or not?",
   ],
+  fintech: [
+    "Caller: Hello, I want to verify my wire transfer to Shanghai. The compliance team hold it since morning ah.",
+    "Agent: Sure, let me check the transaction status for you.",
+    "Caller: Wah, this one very urgent leh. My counterparty waiting. If cannot clear today, deal collapse already.",
+    "Agent: I see the hold is due to a KYC flag. Let me escalate to compliance.",
+    "Caller: Please lah, I do this transfer every month. Same beneficiary. Why suddenly got problem?",
+  ],
   cx_escalation: [
     "Customer: I very frustrated with this service leh. Nobody help me for two weeks already!",
     "Agent: I'm so sorry to hear that. Let me escalate this right away.",
     "Customer: Please lah, I just want my refund. Kan cheong spider here waiting.",
     "Agent: I understand the urgency. I'll process this as priority.",
+  ],
+  healthcare: [
+    "Caller: Doc, my lola, she having chest pain since last night. Very worry ah.",
+    "Agent: I understand. Can you describe the pain location and severity?",
+    "Caller: She say here, the left side. Parang tinutusok daw. She cannot breathe properly also.",
+    "Agent: Is she conscious and responsive right now?",
+    "Caller: Yes, but she very pale. We give her aspirin already. Ambulance how long ah?",
+  ],
+  legal: [
+    "Caller: Pak, saya mau report. The recording from last week meeting, ada evidence of insider trading.",
+    "Agent: Can you provide the date, time, and participants of the meeting?",
+    "Caller: March 3rd, afternoon session. Director Tan and the CFO both on the call. I have the timestamp.",
+    "Agent: This will be flagged for OJK regulatory review. Please preserve all related communications.",
+    "Caller: Baik. But I need protection lah. Whistleblower protection must be guaranteed.",
+  ],
+  commerce: [
+    "Caller: Sawasdee kha, I looking for the viral skincare set. The one TikTok show, with snail mucin one.",
+    "Agent: We have several snail mucin sets. Do you have a preferred brand?",
+    "Caller: The Korean one lah, COSRX I think. But I want the bundle with toner also.",
+    "Agent: I found the COSRX Advanced Snail Bundle. Shall I add to your cart?",
+    "Caller: How much ah? If got free shipping to Bangkok I take two set.",
+  ],
+  conversational_ai: [
+    "Caller: 你好, I need help setting up my smart home. The Alexa cannot understand my accent lah.",
+    "Agent: I understand. Which devices are you trying to connect?",
+    "Caller: The aircon and the lights. I say 'turn on aircon' but it hear 'turn on bacon'. Walao eh.",
+    "Agent: Let me calibrate the voice model for your accent profile.",
+    "Caller: Can also add Cantonese commands ah? My mother only speak Cantonese one.",
+  ],
+  enterprise_ops: [
+    "Caller: Team, let's recap the Q1 targets. APAC revenue up 12% but margins squeezed lah.",
+    "Agent: Should I flag the margin compression for the board deck?",
+    "Caller: Yes, and highlight the Indonesia expansion costs. That one buay tahan the burn rate.",
+    "Agent: Noted. I'll structure the action items from this briefing.",
+    "Caller: Also need to action the hiring freeze memo. HR to confirm headcount by Friday.",
   ],
   fraud_security: [
     "Caller: Hello, this is the bank security department. Your account has been compromised.",
@@ -134,13 +212,25 @@ const DEMO_TRANSCRIPTS: Record<Scenario, string[]> = {
 
 const DEMO_EMOTIONS: Record<Scenario, EmotionScores> = {
   logistics: { frustration: 0.72, stress: 0.55, politeness: 0.45, hesitation: 0.2, urgency: 0.68 },
+  fintech: { frustration: 0.35, stress: 0.78, politeness: 0.6, hesitation: 0.1, urgency: 0.88 },
   cx_escalation: { frustration: 0.85, stress: 0.7, politeness: 0.3, hesitation: 0.15, urgency: 0.8 },
+  healthcare: { frustration: 0.15, stress: 0.92, politeness: 0.75, hesitation: 0.45, urgency: 0.95 },
+  legal: { frustration: 0.2, stress: 0.65, politeness: 0.55, hesitation: 0.3, urgency: 0.5 },
+  commerce: { frustration: 0.05, stress: 0.1, politeness: 0.9, hesitation: 0.35, urgency: 0.25 },
+  conversational_ai: { frustration: 0.6, stress: 0.3, politeness: 0.65, hesitation: 0.2, urgency: 0.4 },
+  enterprise_ops: { frustration: 0.25, stress: 0.45, politeness: 0.7, hesitation: 0.1, urgency: 0.6 },
   fraud_security: { frustration: 0.1, stress: 0.9, politeness: 0.15, hesitation: 0.05, urgency: 0.95 },
 };
 
 const DEMO_SECURITY: Record<Scenario, SecurityMetrics> = {
   logistics: { syntheticProb: 0.03, behavioralRisk: 0.08, livenessStatus: "verified" },
+  fintech: { syntheticProb: 0.02, behavioralRisk: 0.15, livenessStatus: "verified" },
   cx_escalation: { syntheticProb: 0.05, behavioralRisk: 0.12, livenessStatus: "verified" },
+  healthcare: { syntheticProb: 0.01, behavioralRisk: 0.04, livenessStatus: "verified" },
+  legal: { syntheticProb: 0.04, behavioralRisk: 0.1, livenessStatus: "verified" },
+  commerce: { syntheticProb: 0.02, behavioralRisk: 0.03, livenessStatus: "verified" },
+  conversational_ai: { syntheticProb: 0.06, behavioralRisk: 0.07, livenessStatus: "verified" },
+  enterprise_ops: { syntheticProb: 0.01, behavioralRisk: 0.05, livenessStatus: "verified" },
   fraud_security: { syntheticProb: 0.78, behavioralRisk: 0.92, livenessStatus: "failed" },
 };
 
@@ -150,10 +240,40 @@ const DEMO_INTENT: Record<Scenario, IntentLayers> = {
     cultural: "Singlish markers ('walao', 'buay tahan', 'lah') indicate genuine frustration, not hostility. 'Kan cheong' implies time pressure from downstream client.",
     trueIntent: "Expedite container release from Tanjong Pagar terminal. Customer's downstream client is pressuring for delivery — risk of churn if unresolved within 24h.",
   },
+  fintech: {
+    literal: "Client requesting status update on held wire transfer to Shanghai counterparty.",
+    cultural: "'Leh' and 'lah' soften urgency but stress is high. Repeated monthly transfer pattern suggests legitimate transaction flagged by overzealous compliance rules.",
+    trueIntent: "Escalate KYC hold to compliance officer immediately. Legitimate recurring transfer — false positive flag risks losing high-value client relationship.",
+  },
   cx_escalation: {
     literal: "Customer requesting refund after two weeks of unresolved support tickets.",
     cultural: "'Kan cheong spider' is Singlish for extreme anxiety/impatience. 'Leh' softens complaint but frustration is high.",
     trueIntent: "Immediate refund processing required. Customer loyalty at critical risk — potential social media escalation if not resolved this session.",
+  },
+  healthcare: {
+    literal: "Family member reporting elderly patient with chest pain and breathing difficulty.",
+    cultural: "'Lola' is Filipino for grandmother. 'Parang tinutusok' means stabbing pain in Tagalog. Caller code-switches between English and Filipino under stress.",
+    trueIntent: "PRIORITY TRIAGE: Suspected cardiac event in elderly female. Aspirin administered. Dispatch emergency response immediately — time-critical intervention required.",
+  },
+  legal: {
+    literal: "Whistleblower reporting potential insider trading evidence from recorded meeting.",
+    cultural: "'Pak' is respectful Indonesian address. 'Baik' confirms understanding. Caller mixing Bahasa and English indicates formal but anxious reporting. Whistleblower protection concern is culturally significant.",
+    trueIntent: "Flag for OJK regulatory review. Preserve meeting recording as evidence. Activate whistleblower protection protocol — caller at risk of retaliation.",
+  },
+  commerce: {
+    literal: "Customer searching for viral Korean skincare bundle with shipping inquiry.",
+    cultural: "'Sawasdee kha' is polite Thai greeting. Code-switching to Singlish ('lah', 'ah') suggests Southeast Asian diaspora buyer. Price sensitivity and free shipping are key decision factors.",
+    trueIntent: "High purchase intent — customer ready to buy 2x bundles if free shipping confirmed. Upsell opportunity: recommend complementary products. Capture for remarketing.",
+  },
+  conversational_ai: {
+    literal: "User requesting smart home voice assistant calibration for non-standard accent.",
+    cultural: "'Walao eh' expresses comedic frustration at ASR failure. 'One' as sentence-final particle is Singlish. Request for Cantonese support indicates multi-generational household.",
+    trueIntent: "Calibrate voice model for Singlish-accented English. Add Cantonese command set for secondary user. Core problem: standard ASR fails on regional accents — VALSEA value proposition.",
+  },
+  enterprise_ops: {
+    literal: "Executive team reviewing Q1 APAC performance and actioning operational decisions.",
+    cultural: "'Lah' in executive context normalizes casual tone in formal setting. 'Buay tahan' about burn rate conveys strong concern about Indonesia expansion sustainability.",
+    trueIntent: "Auto-generate board deck with margin analysis. Action items: hiring freeze memo to HR (deadline Friday), Indonesia expansion cost review. Tag finance team for burn rate assessment.",
   },
   fraud_security: {
     literal: "Caller claiming to be bank security, demanding immediate fund transfer and OTP.",
@@ -166,46 +286,89 @@ const DEMO_PAYLOADS: Record<Scenario, EnterprisePayload> = {
   logistics: {
     type: "maersk_shipping_api",
     data: {
-      shipment_id: "MAEU-2847391",
-      container: "TCLU-7293841",
-      origin_port: "SGSIN",
-      destination: "HKHKG",
-      status: "HELD_AT_PORT",
-      priority: "EXPEDITE",
-      sla_impact: "HIGH",
-      churn_risk: 0.73,
-      action: "RELEASE_CONTAINER",
+      shipment_id: "MAEU-2847391", container: "TCLU-7293841", origin_port: "SGSIN",
+      destination: "HKHKG", status: "HELD_AT_PORT", priority: "EXPEDITE",
+      sla_impact: "HIGH", churn_risk: 0.73, action: "RELEASE_CONTAINER",
+    },
+  },
+  fintech: {
+    type: "swift_compliance_gateway",
+    data: {
+      transaction_id: "SWIFT-HK-20260307-4821", beneficiary: "Shanghai Corp Ltd",
+      amount: "USD 2,400,000", hold_reason: "KYC_FLAG", pattern: "RECURRING_MONTHLY",
+      risk_score: 0.15, action: "ESCALATE_TO_COMPLIANCE_OFFICER", sla: "2H",
     },
   },
   cx_escalation: {
     type: "zendesk_escalation",
     data: {
-      ticket_id: "ZD-48291",
-      customer_id: "CUS-88412",
-      priority: "URGENT",
-      sentiment: "CRITICAL_NEGATIVE",
-      resolution: "REFUND_PROCESS",
-      escalation_level: 3,
-      churn_probability: 0.89,
-      action: "IMMEDIATE_REFUND",
+      ticket_id: "ZD-48291", customer_id: "CUS-88412", priority: "URGENT",
+      sentiment: "CRITICAL_NEGATIVE", resolution: "REFUND_PROCESS",
+      escalation_level: 3, churn_probability: 0.89, action: "IMMEDIATE_REFUND",
+    },
+  },
+  healthcare: {
+    type: "hl7_fhir_triage",
+    data: {
+      patient_age: "elderly", symptoms: ["chest_pain_left", "dyspnea", "pallor"],
+      triage_level: "EMERGENCY", aspirin_administered: true,
+      language: "en-tl", action: "DISPATCH_EMERGENCY_RESPONSE", eta_target: "8min",
+    },
+  },
+  legal: {
+    type: "ojk_regulatory_filing",
+    data: {
+      case_id: "OJK-WB-20260303", allegation: "INSIDER_TRADING",
+      subjects: ["Director Tan", "CFO"], evidence_type: "MEETING_RECORDING",
+      whistleblower_protection: true, action: "FILE_REGULATORY_REPORT",
+    },
+  },
+  commerce: {
+    type: "shopify_commerce_api",
+    data: {
+      product: "COSRX Advanced Snail Bundle", sku: "COSRX-SNL-BDL-01",
+      quantity: 2, shipping_zone: "TH-BKK", free_shipping_eligible: true,
+      buyer_intent_score: 0.92, action: "ADD_TO_CART_AND_UPSELL",
+    },
+  },
+  conversational_ai: {
+    type: "voice_model_calibration",
+    data: {
+      primary_accent: "singlish_en", secondary_language: "yue_cantonese",
+      device_ecosystem: "alexa", calibration_type: "ACCENT_PROFILE",
+      asr_error_rate_before: 0.34, action: "DEPLOY_CUSTOM_VOICE_MODEL",
+    },
+  },
+  enterprise_ops: {
+    type: "enterprise_workflow_engine",
+    data: {
+      meeting_type: "Q1_REVIEW", region: "APAC", revenue_delta: "+12%",
+      margin_alert: true, action_items: [
+        { owner: "Finance", task: "Indonesia burn rate review", deadline: "2026-03-14" },
+        { owner: "HR", task: "Confirm headcount freeze", deadline: "2026-03-14" },
+      ],
+      action: "GENERATE_BOARD_DECK",
     },
   },
   fraud_security: {
     type: "mas_regulatory_alert",
     data: {
-      alert_id: "MAS-SEC-20260307",
-      threat_type: "SOCIAL_ENGINEERING",
-      severity: "CRITICAL",
-      synthetic_voice_prob: 0.78,
-      behavioral_fraud_score: 0.92,
-      action: "TERMINATE_AND_ALERT",
-      regulatory_body: "MAS",
-      report_to: "DBS_FRAUD_UNIT",
+      alert_id: "MAS-SEC-20260307", threat_type: "SOCIAL_ENGINEERING",
+      severity: "CRITICAL", synthetic_voice_prob: 0.78,
+      behavioral_fraud_score: 0.92, action: "TERMINATE_AND_ALERT",
+      regulatory_body: "MAS", report_to: "DBS_FRAUD_UNIT",
     },
   },
 };
 
 // ─── Prosody Bar ─────────────────────────────────────────────────────────────
+
+function getSeverity(scenario: Scenario): { label: string; color: string; bg: string } {
+  if (scenario === "fraud_security") return { label: "CRITICAL", color: "var(--danger)", bg: "rgba(239,68,68,0.1)" };
+  if (scenario === "healthcare") return { label: "CRITICAL", color: "var(--danger)", bg: "rgba(239,68,68,0.1)" };
+  if (scenario === "cx_escalation" || scenario === "fintech" || scenario === "legal") return { label: "HIGH", color: "var(--warning)", bg: "rgba(245,158,11,0.1)" };
+  return { label: "MEDIUM", color: "var(--success)", bg: "rgba(34,197,94,0.1)" };
+}
 
 function ProsodyBar({ label, value, color }: { label: string; value: number; color: string }) {
   const pct = Math.round(value * 100);
@@ -668,7 +831,7 @@ export default function Dashboard() {
             >
               <PanelLeftOpen className="w-4 h-4 text-[var(--muted-light)]" />
             </button>
-            <div className="hidden md:flex items-center bg-[var(--bar-track)] rounded-lg p-0.5">
+            <div className="hidden md:flex items-center bg-[var(--bar-track)] rounded-lg p-0.5 overflow-x-auto max-w-[600px] lg:max-w-none">
               {(Object.keys(SCENARIOS) as Scenario[]).map((key) => (
                 <button
                   key={key}
@@ -781,10 +944,10 @@ export default function Dashboard() {
                     <p className="font-semibold mt-1">
                       {demoPhase === "complete" ? (
                         <span className="text-xs font-mono px-2 py-0.5 rounded" style={{
-                          color: activeScenario === "fraud_security" ? "var(--danger)" : activeScenario === "cx_escalation" ? "var(--warning)" : "var(--success)",
-                          background: activeScenario === "fraud_security" ? "rgba(239,68,68,0.1)" : activeScenario === "cx_escalation" ? "rgba(245,158,11,0.1)" : "rgba(34,197,94,0.1)",
+                          color: getSeverity(activeScenario).color,
+                          background: getSeverity(activeScenario).bg,
                         }}>
-                          {activeScenario === "fraud_security" ? "CRITICAL" : activeScenario === "cx_escalation" ? "HIGH" : "MEDIUM"}
+                          {getSeverity(activeScenario).label}
                         </span>
                       ) : "—"}
                     </p>
@@ -851,11 +1014,11 @@ export default function Dashboard() {
                     <span
                       className="text-xs font-mono px-2 py-0.5 rounded"
                       style={{
-                        color: activeScenario === "fraud_security" ? "var(--danger)" : activeScenario === "cx_escalation" ? "var(--warning)" : "var(--success)",
-                        background: activeScenario === "fraud_security" ? "rgba(239,68,68,0.1)" : activeScenario === "cx_escalation" ? "rgba(245,158,11,0.1)" : "rgba(34,197,94,0.1)",
+                        color: getSeverity(activeScenario).color,
+                        background: getSeverity(activeScenario).bg,
                       }}
                     >
-                      {activeScenario === "fraud_security" ? "CRITICAL" : activeScenario === "cx_escalation" ? "HIGH" : "MEDIUM"}
+                      {getSeverity(activeScenario).label}
                     </span>
                   ) : "—"}
                 </p>
