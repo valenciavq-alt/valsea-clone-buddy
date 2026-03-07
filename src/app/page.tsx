@@ -901,7 +901,7 @@ export default function Home() {
           </div>
 
           {/* Transcription */}
-          <div className="col-span-12 md:col-span-5 panel p-5">
+          <div className="col-span-1 sm:col-span-1 lg:col-span-5 panel p-4 sm:p-5">
             <PanelHeader
               icon={FileText}
               title="Transcription"
