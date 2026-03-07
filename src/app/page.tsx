@@ -1,758 +1,657 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Upload,
-  FileText,
-  Sparkles,
-  ShieldCheck,
-  ShieldAlert,
-  Brain,
-  MessageSquareText,
-  ArrowRight,
-  RotateCcw,
-  AlertTriangle,
-  CheckCircle2,
   Activity,
   Globe,
-  Loader2,
+  Shield,
+  Brain,
   Mic,
-  PhoneOff,
+  Radio,
+  AlertTriangle,
+  Zap,
+  Eye,
+  FileText,
+  ChevronDown,
+  Play,
+  Square,
+  Loader2,
 } from "lucide-react";
-import Vapi from "@vapi-ai/web";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-interface AnalysisResult {
-  transcript: { role: "user" | "assistant"; text: string }[];
-  emotions: {
-    frustration: number;
-    anxiety: number;
-    politeness: number;
-    confidence: number;
-  };
-  security: {
-    deepfakeProb: number;
-    threatFlag: boolean;
-    riskLevel: "low" | "medium" | "high";
-  };
-  cognitive: {
-    status: string;
-    intent: string;
-    translation: string;
-    cultural_context: string;
-    fraud_verdict: string;
-    action_advised: string;
-  };
-  summary: string;
+interface EmotionScores {
+  frustration: number;
+  stress: number;
+  politeness: number;
+  hesitation: number;
+  urgency: number;
 }
 
-type Phase = "upload" | "analyzing" | "dashboard";
+interface SecurityMetrics {
+  syntheticProb: number;
+  behavioralRisk: number;
+  livenessStatus: "scanning" | "verified" | "failed";
+}
 
-// ─── Gauge Component ─────────────────────────────────────────────────────────
+interface IntentLayers {
+  literal: string;
+  cultural: string;
+  trueIntent: string;
+}
 
-function GaugeCircle({
-  value,
-  max = 1,
-  size = 100,
-  color,
-  label,
-  displayValue,
-}: {
-  value: number;
-  max?: number;
-  size?: number;
-  color: string;
+interface EnterprisePayload {
+  type: string;
+  data: Record<string, any>;
+}
+
+type Scenario = "logistics" | "cx_escalation" | "fraud_security";
+
+interface ScenarioConfig {
   label: string;
-  displayValue?: string;
-}) {
-  const radius = (size - 16) / 2;
-  const circumference = 2 * Math.PI * radius;
-  const progress = Math.min(value / max, 1);
-  const offset = circumference - progress * circumference;
+  source: string;
+  target: string;
+  scenario: string;
+}
 
+const SCENARIOS: Record<Scenario, ScenarioConfig> = {
+  logistics: {
+    label: "Cross-Border Logistics",
+    source: "Singapore",
+    target: "Logistics System",
+    scenario: "Cross-Border Logistics",
+  },
+  cx_escalation: {
+    label: "CX Escalation",
+    source: "Malaysia",
+    target: "CX Platform",
+    scenario: "Customer Escalation",
+  },
+  fraud_security: {
+    label: "Fraud / Security",
+    source: "Unknown",
+    target: "Security Hub",
+    scenario: "Fraud Detection",
+  },
+};
+
+// Demo transcript data per scenario
+const DEMO_TRANSCRIPTS: Record<Scenario, string[]> = {
+  logistics: [
+    "Caller: Eh hello, I need to check my shipment lah. The container stuck at port already three days.",
+    "Agent: I understand sir. Can I have your tracking number please?",
+    "Caller: Walao, I already give you people the number yesterday! Why never update one?",
+    "Agent: Let me pull that up for you. I see the container is currently at Tanjong Pagar terminal.",
+    "Caller: Aiya, my customer buay tahan already. Can expedite or not?",
+  ],
+  cx_escalation: [
+    "Customer: I very frustrated with this service leh. Nobody help me for two weeks already!",
+    "Agent: I'm so sorry to hear that. Let me escalate this right away.",
+    "Customer: Please lah, I just want my refund. Kan cheong spider here waiting.",
+    "Agent: I understand the urgency. I'll process this as priority.",
+  ],
+  fraud_security: [
+    "Caller: Hello, this is the bank security department. Your account has been compromised.",
+    "Caller: You need to transfer your funds immediately to this safe account.",
+    "Caller: I need your OTP number now. The police are involved.",
+    "Target: Uh... okay, let me check—",
+    "Caller: Do it NOW. Your money will be frozen if you don't act immediately.",
+  ],
+};
+
+const DEMO_EMOTIONS: Record<Scenario, EmotionScores> = {
+  logistics: { frustration: 0.72, stress: 0.55, politeness: 0.45, hesitation: 0.2, urgency: 0.68 },
+  cx_escalation: { frustration: 0.85, stress: 0.7, politeness: 0.3, hesitation: 0.15, urgency: 0.8 },
+  fraud_security: { frustration: 0.1, stress: 0.9, politeness: 0.15, hesitation: 0.05, urgency: 0.95 },
+};
+
+const DEMO_SECURITY: Record<Scenario, SecurityMetrics> = {
+  logistics: { syntheticProb: 0.03, behavioralRisk: 0.08, livenessStatus: "verified" },
+  cx_escalation: { syntheticProb: 0.05, behavioralRisk: 0.12, livenessStatus: "verified" },
+  fraud_security: { syntheticProb: 0.78, behavioralRisk: 0.92, livenessStatus: "failed" },
+};
+
+const DEMO_INTENT: Record<Scenario, IntentLayers> = {
+  logistics: {
+    literal: "Customer inquiring about delayed shipment at port, requesting expedition of container release.",
+    cultural: "Singlish markers ('walao', 'buay tahan', 'lah') indicate genuine frustration, not hostility. 'Kan cheong' implies time pressure from downstream client.",
+    trueIntent: "Expedite container release from Tanjong Pagar terminal. Customer's downstream client is pressuring for delivery — risk of churn if unresolved within 24h.",
+  },
+  cx_escalation: {
+    literal: "Customer requesting refund after two weeks of unresolved support tickets.",
+    cultural: "'Kan cheong spider' is Singlish for extreme anxiety/impatience. 'Leh' softens complaint but frustration is high.",
+    trueIntent: "Immediate refund processing required. Customer loyalty at critical risk — potential social media escalation if not resolved this session.",
+  },
+  fraud_security: {
+    literal: "Caller claiming to be bank security, demanding immediate fund transfer and OTP.",
+    cultural: "No cultural markers — scripted social engineering attack using authority impersonation and urgency tactics.",
+    trueIntent: "SOCIAL ENGINEERING ATTACK. Caller is impersonating bank authority to extract OTP and initiate unauthorized fund transfer. Immediate call termination and security alert required.",
+  },
+};
+
+const DEMO_PAYLOADS: Record<Scenario, EnterprisePayload> = {
+  logistics: {
+    type: "maersk_shipping_api",
+    data: {
+      shipment_id: "MAEU-2847391",
+      container: "TCLU-7293841",
+      origin_port: "SGSIN",
+      destination: "HKHKG",
+      status: "HELD_AT_PORT",
+      priority: "EXPEDITE",
+      sla_impact: "HIGH",
+      churn_risk: 0.73,
+      action: "RELEASE_CONTAINER",
+    },
+  },
+  cx_escalation: {
+    type: "zendesk_escalation",
+    data: {
+      ticket_id: "ZD-48291",
+      customer_id: "CUS-88412",
+      priority: "URGENT",
+      sentiment: "CRITICAL_NEGATIVE",
+      resolution: "REFUND_PROCESS",
+      escalation_level: 3,
+      churn_probability: 0.89,
+      action: "IMMEDIATE_REFUND",
+    },
+  },
+  fraud_security: {
+    type: "mas_regulatory_alert",
+    data: {
+      alert_id: "MAS-SEC-20260307",
+      threat_type: "SOCIAL_ENGINEERING",
+      severity: "CRITICAL",
+      synthetic_voice_prob: 0.78,
+      behavioral_fraud_score: 0.92,
+      action: "TERMINATE_AND_ALERT",
+      regulatory_body: "MAS",
+      report_to: "DBS_FRAUD_UNIT",
+    },
+  },
+};
+
+// ─── Prosody Bar ─────────────────────────────────────────────────────────────
+
+function ProsodyBar({ label, value, color }: { label: string; value: number; color: string }) {
+  const pct = Math.round(value * 100);
   return (
-    <div className="flex flex-col items-center gap-2">
-      <div className="relative" style={{ width: size, height: size }}>
-        <svg width={size} height={size} className="-rotate-90">
-          <circle
-            cx={size / 2}
-            cy={size / 2}
-            r={radius}
-            className="gauge-track"
-          />
-          <circle
-            cx={size / 2}
-            cy={size / 2}
-            r={radius}
-            className="gauge-fill"
-            stroke={color}
-            strokeDasharray={circumference}
-            strokeDashoffset={offset}
-          />
-        </svg>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-lg font-semibold text-[var(--foreground)]">
-            {displayValue ?? `${Math.round(progress * 100)}%`}
-          </span>
-        </div>
+    <div className="flex items-center gap-3">
+      <span className="w-24 text-xs font-medium text-[var(--muted-light)] tracking-wide">{label}</span>
+      <div className="flex-1 h-2 rounded-full bg-white/[0.04] overflow-hidden">
+        <motion.div
+          initial={{ width: 0 }}
+          animate={{ width: `${pct}%` }}
+          transition={{ duration: 1.2, ease: [0.25, 0.1, 0, 1] }}
+          className="h-full rounded-full"
+          style={{ background: color }}
+        />
       </div>
-      <span className="text-xs font-medium text-[var(--muted)] tracking-wide">
-        {label}
-      </span>
+      <span className="w-10 text-right text-xs font-mono text-[var(--muted)]">{pct}%</span>
     </div>
   );
 }
 
-// ─── Main Page ───────────────────────────────────────────────────────────────
+// ─── Waveform Visualizer ─────────────────────────────────────────────────────
+
+function WaveformVisualizer({ isActive }: { isActive: boolean }) {
+  const bars = 40;
+  return (
+    <div className="flex items-end justify-center gap-[2px] h-16">
+      {Array.from({ length: bars }).map((_, i) => (
+        <motion.div
+          key={i}
+          className="w-[3px] rounded-full bg-[var(--accent)]"
+          style={{ opacity: isActive ? 0.6 : 0.15 }}
+          animate={
+            isActive
+              ? {
+                  height: [8, Math.random() * 48 + 8, 8],
+                }
+              : { height: 8 }
+          }
+          transition={
+            isActive
+              ? {
+                  duration: 0.4 + Math.random() * 0.4,
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                  delay: i * 0.02,
+                }
+              : { duration: 0.3 }
+          }
+        />
+      ))}
+    </div>
+  );
+}
+
+// ─── Panel Header ────────────────────────────────────────────────────────────
+
+function PanelHeader({
+  icon: Icon,
+  title,
+  badge,
+  badgeColor,
+}: {
+  icon: React.ElementType;
+  title: string;
+  badge?: string;
+  badgeColor?: string;
+}) {
+  return (
+    <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center gap-2">
+        <Icon className="w-4 h-4 text-[var(--accent-light)]" />
+        <span className="text-xs font-semibold tracking-[0.15em] uppercase text-[var(--foreground)]">
+          {title}
+        </span>
+      </div>
+      {badge && (
+        <span
+          className="text-[10px] font-mono font-semibold tracking-wider px-2 py-0.5 rounded-full border"
+          style={{
+            color: badgeColor || "var(--cyan)",
+            borderColor: badgeColor ? `${badgeColor}33` : "rgba(6,182,212,0.2)",
+            background: badgeColor ? `${badgeColor}10` : "rgba(6,182,212,0.06)",
+          }}
+        >
+          {badge}
+        </span>
+      )}
+    </div>
+  );
+}
+
+// ─── Main Dashboard ──────────────────────────────────────────────────────────
 
 export default function Home() {
-  const [phase, setPhase] = useState<Phase>("upload");
-  const [dialogText, setDialogText] = useState("");
-  const [isDragging, setIsDragging] = useState(false);
-  const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
-  const [fileName, setFileName] = useState<string | null>(null);
-  const [audioFile, setAudioFile] = useState<File | null>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [activeScenario, setActiveScenario] = useState<Scenario>("logistics");
+  const [isRunning, setIsRunning] = useState(false);
+  const [demoPhase, setDemoPhase] = useState<"idle" | "streaming" | "complete">("idle");
+  const [visibleLines, setVisibleLines] = useState<number>(0);
+  const [emotions, setEmotions] = useState<EmotionScores>({ frustration: 0, stress: 0, politeness: 0, hesitation: 0, urgency: 0 });
+  const [security, setSecurity] = useState<SecurityMetrics>({ syntheticProb: 0, behavioralRisk: 0, livenessStatus: "scanning" });
+  const [intent, setIntent] = useState<IntentLayers>({ literal: "", cultural: "", trueIntent: "" });
+  const [payload, setPayload] = useState<EnterprisePayload | null>(null);
+  const [streamStats] = useState({ streams: 1402, p50: 124, regions: 12, alerts: 0 });
 
-  // Vapi Real-time Setup
-  const [vapi] = useState(() => {
-    return typeof window !== "undefined"
-      ? new Vapi(process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY || "")
-      : (null as any);
-  });
-  const [callStatus, setCallStatus] = useState<"idle" | "connecting" | "active">("idle");
-  const [liveTranscript, setLiveTranscript] = useState<string>("");
+  const config = SCENARIOS[activeScenario];
+  const transcript = DEMO_TRANSCRIPTS[activeScenario];
 
+  const runDemo = useCallback(() => {
+    setIsRunning(true);
+    setDemoPhase("streaming");
+    setVisibleLines(0);
+    setEmotions({ frustration: 0, stress: 0, politeness: 0, hesitation: 0, urgency: 0 });
+    setSecurity({ syntheticProb: 0, behavioralRisk: 0, livenessStatus: "scanning" });
+    setIntent({ literal: "", cultural: "", trueIntent: "" });
+    setPayload(null);
+
+    const lines = transcript;
+    let lineIdx = 0;
+
+    const lineInterval = setInterval(() => {
+      lineIdx++;
+      setVisibleLines(lineIdx);
+
+      // Gradually increase emotion scores
+      const progress = lineIdx / lines.length;
+      const target = DEMO_EMOTIONS[activeScenario];
+      setEmotions({
+        frustration: target.frustration * progress,
+        stress: target.stress * progress,
+        politeness: target.politeness * Math.min(progress * 1.5, 1),
+        hesitation: target.hesitation * progress,
+        urgency: target.urgency * progress,
+      });
+
+      if (lineIdx >= lines.length) {
+        clearInterval(lineInterval);
+
+        // Final results after transcript complete
+        setTimeout(() => {
+          setEmotions(DEMO_EMOTIONS[activeScenario]);
+          setSecurity(DEMO_SECURITY[activeScenario]);
+          setIntent(DEMO_INTENT[activeScenario]);
+          setPayload(DEMO_PAYLOADS[activeScenario]);
+          setDemoPhase("complete");
+          setIsRunning(false);
+        }, 800);
+      }
+    }, 1200);
+
+    return () => clearInterval(lineInterval);
+  }, [activeScenario, transcript]);
+
+  const resetDemo = () => {
+    setIsRunning(false);
+    setDemoPhase("idle");
+    setVisibleLines(0);
+    setEmotions({ frustration: 0, stress: 0, politeness: 0, hesitation: 0, urgency: 0 });
+    setSecurity({ syntheticProb: 0, behavioralRisk: 0, livenessStatus: "scanning" });
+    setIntent({ literal: "", cultural: "", trueIntent: "" });
+    setPayload(null);
+  };
+
+  // Reset when scenario changes
   useEffect(() => {
-    if (!vapi) return;
-    vapi.on("call-start", () => setCallStatus("active"));
-    vapi.on("call-end", () => setCallStatus("idle"));
-    vapi.on("message", (msg: any) => {
-      if (msg.type === "transcript" && msg.transcript) {
-        setLiveTranscript((prev) => prev + "\n" + (msg.role === "user" ? "User: " : "Agent: ") + msg.transcript);
-        setDialogText((prev) => prev + "\n" + (msg.role === "user" ? "User: " : "Agent: ") + msg.transcript);
-      }
-    });
-    return () => {
-      vapi.removeAllListeners();
-    };
-  }, [vapi]);
-
-  const toggleCall = async () => {
-    if (callStatus === "active" || callStatus === "connecting") {
-      vapi.stop();
-    } else {
-      setCallStatus("connecting");
-      setDialogText("");
-      setLiveTranscript("");
-      try {
-        await vapi.start({
-          name: "VALSEA Security Guard",
-          voice: { provider: "11labs", voiceId: "21m00Tcm4TlvDq8ikWAM" },
-          model: {
-            provider: "google",
-            model: "gemini-1.5-flash",
-            messages: [
-              {
-                role: "system",
-                content: "You are the VALSEA honeypot AI layer. Speak briefly and act like a polite but confused customer service operative to keep the user (or potential scammer) talking."
-              }
-            ]
-          }
-        });
-      } catch (err) {
-        console.error(err);
-        setCallStatus("idle");
-      }
-    }
-  };
-
-  // ── File handling ────────────────────────────────────────────────────────
-
-  const handleFile = useCallback((file: File) => {
-    setFileName(file.name);
-
-    if (file.type.startsWith("audio/") || file.name.match(/\.(wav|mp3|m4a|aiff|flac)$/i)) {
-      setAudioFile(file);
-      setDialogText("Audio file uploaded: " + file.name + "\nReady to analyze via VALSEA.");
-      return;
-    }
-
-    setAudioFile(null);
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const text = e.target?.result as string;
-      setDialogText(text);
-    };
-    reader.readAsText(file);
-  }, []);
-
-  const handleDrop = useCallback(
-    (e: React.DragEvent) => {
-      e.preventDefault();
-      setIsDragging(false);
-      const file = e.dataTransfer.files[0];
-      if (file) handleFile(file);
-    },
-    [handleFile]
-  );
-
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  }, []);
-
-  const handleDragLeave = useCallback(() => {
-    setIsDragging(false);
-  }, []);
-
-  // ── Analysis (real Gemini API call) ──────────────────────────────────────
-
-  const [error, setError] = useState<string | null>(null);
-
-  const runAnalysis = useCallback(async () => {
-    if (!dialogText.trim() && !audioFile) return;
-    setPhase("analyzing");
-    setError(null);
-
-    try {
-      // Parse dialog into transcript lines for the UI if it is text
-      let lines: { role: "user" | "assistant"; text: string }[] = [];
-      if (!audioFile) {
-        lines = dialogText
-          .split("\n")
-          .filter((l) => l.trim())
-          .map((line) => {
-            const isUser =
-              line.toLowerCase().startsWith("customer") ||
-              line.toLowerCase().startsWith("caller") ||
-              line.toLowerCase().startsWith("user");
-            return {
-              role: (isUser ? "user" : "assistant") as "user" | "assistant",
-              text: line.replace(/^(customer|caller|user|agent|assistant|operator)\s*[:：]\s*/i, ""),
-            };
-          });
-      }
-
-      // Call the real Gemini-powered analysis API via VALSEA
-      let res;
-      if (audioFile) {
-        const formData = new FormData();
-        formData.append("file", audioFile);
-        res = await fetch("/api/analyze", {
-          method: "POST",
-          body: formData,
-        });
-      } else {
-        res = await fetch("/api/analyze", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ dialog: dialogText }),
-        });
-      }
-
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.error || `Analysis failed (${res.status})`);
-      }
-
-      const apiResult = await res.json();
-
-      let transcriptToUse = lines;
-      if (audioFile && apiResult.transcript) {
-        transcriptToUse = apiResult.transcript;
-      } else if (lines.length === 0) {
-        transcriptToUse = [{ role: "user", text: dialogText }];
-      }
-
-      // Merge transcript from client-side parsing with API analysis
-      const result: AnalysisResult = {
-        transcript: transcriptToUse,
-        emotions: apiResult.emotions,
-        security: apiResult.security,
-        cognitive: apiResult.cognitive,
-        summary: apiResult.summary,
-      };
-
-      setAnalysis(result);
-      setPhase("dashboard");
-    } catch (err) {
-      console.error("Analysis failed:", err);
-      setError(err instanceof Error ? err.message : "Something went wrong");
-      setPhase("upload");
-    }
-  }, [dialogText]);
-
-  const reset = () => {
-    setPhase("upload");
-    setDialogText("");
-    setAnalysis(null);
-    setFileName(null);
-    setAudioFile(null);
-  };
-
-  // ── Render ──────────────────────────────────────────────────────────────
+    resetDemo();
+  }, [activeScenario]);
 
   return (
-    <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] font-sans relative overflow-hidden">
-      {/* Subtle background gradient orbs — Apple style */}
-      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-30%] left-[-10%] w-[600px] h-[600px] bg-blue-200/30 rounded-full blur-[120px]" />
-        <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-purple-200/20 rounded-full blur-[120px]" />
-        <div className="absolute top-[40%] right-[20%] w-[400px] h-[400px] bg-green-200/15 rounded-full blur-[100px]" />
-      </div>
-
-      {/* ── Header ──────────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-50 backdrop-blur-xl bg-[var(--background)]/70 border-b border-black/[0.06]">
-        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-sm">
-              <Sparkles className="w-4 h-4 text-white" />
+    <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] font-sans">
+      {/* ── Top Navigation Bar ─────────────────────────────────────────── */}
+      <header className="sticky top-0 z-50 border-b border-white/[0.06] bg-[var(--surface)]/80 backdrop-blur-xl">
+        <div className="max-w-[1400px] mx-auto px-6 h-14 flex items-center justify-between">
+          {/* Logo & Stats */}
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "var(--brand-gradient)" }}>
+                <Globe className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <span className="text-sm font-bold tracking-tight text-white">VALSEA</span>
+                <span className="text-[10px] block -mt-0.5 tracking-[0.2em] uppercase text-[var(--muted)]">Speech Intelligence</span>
+              </div>
             </div>
-            <span className="text-base font-semibold tracking-tight">
-              VALSEA
-            </span>
-            <span className="text-xs text-[var(--muted)] font-medium ml-1 hidden sm:inline">
-              Voice Analysis Engine
-            </span>
+
+            <div className="hidden md:flex items-center gap-5 text-xs text-[var(--muted)] font-mono">
+              <span><Zap className="w-3 h-3 inline mr-1 text-[var(--success)]" />{streamStats.streams.toLocaleString()} <span className="text-[var(--muted-light)]">streams</span></span>
+              <span>⏱ {streamStats.p50}ms <span className="text-[var(--muted-light)]">P50</span></span>
+              <span>🌐 {streamStats.regions} <span className="text-[var(--muted-light)]">regions</span></span>
+              <span>⚠ {streamStats.alerts} <span className="text-[var(--muted-light)]">alerts</span></span>
+              <span className="flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-[var(--success)] pulse-dot" />
+                <span className="text-[var(--success)]">All Systems</span>
+              </span>
+            </div>
           </div>
 
-          {phase === "dashboard" && (
-            <motion.button
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              onClick={reset}
-              className="apple-btn-secondary apple-btn text-sm !py-2 !px-4"
+          {/* Scenario Tabs + Run */}
+          <div className="flex items-center gap-3">
+            <div className="hidden md:flex items-center bg-white/[0.04] rounded-lg p-0.5">
+              {(Object.keys(SCENARIOS) as Scenario[]).map((key) => (
+                <button
+                  key={key}
+                  onClick={() => setActiveScenario(key)}
+                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+                    activeScenario === key
+                      ? "bg-[var(--accent)] text-white shadow-sm"
+                      : "text-[var(--muted-light)] hover:text-white"
+                  }`}
+                >
+                  {SCENARIOS[key].label}
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={isRunning ? resetDemo : runDemo}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold text-white transition-all"
+              style={{
+                background: isRunning ? "var(--danger)" : "var(--brand-gradient)",
+              }}
             >
-              <RotateCcw className="w-3.5 h-3.5" />
-              New Analysis
-            </motion.button>
-          )}
+              {isRunning ? (
+                <>
+                  <Square className="w-3 h-3" /> STOP
+                </>
+              ) : (
+                <>
+                  <Play className="w-3 h-3" /> RUN DEMO
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </header>
 
-      {/* ── Content ─────────────────────────────────────────────────── */}
-      <div className="max-w-6xl mx-auto px-6 py-8">
-        <AnimatePresence mode="wait">
-          {/* ════════════════════════════════════════════════════════════
-              PHASE 1: Upload
-          ════════════════════════════════════════════════════════════ */}
-          {phase === "upload" && (
-            <motion.div
-              key="upload"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.4, ease: [0.25, 0.1, 0, 1] }}
-              className="max-w-2xl mx-auto pt-12"
-            >
-              {/* Hero text */}
-              <div className="text-center mb-10">
-                <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight leading-tight mb-4">
-                  Analyze any
-                  <br />
-                  <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                    conversation.
-                  </span>
-                </h1>
-                <p className="text-base text-[var(--muted)] max-w-md mx-auto leading-relaxed">
-                  Upload a dialog to decode intent, emotion, cultural context,
-                  and security threats — all in seconds.
+      {/* ── Dashboard Grid ─────────────────────────────────────────────── */}
+      <div className="max-w-[1400px] mx-auto px-6 py-6">
+        {/* Row 1: Event Context | Prosody | Security */}
+        <div className="grid grid-cols-12 gap-4 mb-4">
+          {/* Event Context */}
+          <div className="col-span-12 md:col-span-3 panel p-5">
+            <PanelHeader icon={Globe} title="Event Context" badge="LIVE" badgeColor="#22c55e" />
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <span className="text-[10px] tracking-wider uppercase text-[var(--muted)] flex items-center gap-1">
+                  <Radio className="w-3 h-3" /> Source
+                </span>
+                <p className="font-semibold mt-1">{config.source}</p>
+              </div>
+              <div>
+                <span className="text-[10px] tracking-wider uppercase text-[var(--muted)] flex items-center gap-1">
+                  <Globe className="w-3 h-3" /> Target
+                </span>
+                <p className="font-semibold mt-1">{config.target}</p>
+              </div>
+              <div>
+                <span className="text-[10px] tracking-wider uppercase text-[var(--muted)] flex items-center gap-1">
+                  <FileText className="w-3 h-3" /> Scenario
+                </span>
+                <p className="font-semibold mt-1">{config.scenario}</p>
+              </div>
+              <div>
+                <span className="text-[10px] tracking-wider uppercase text-[var(--muted)] flex items-center gap-1">
+                  ⏱ Time
+                </span>
+                <p className="font-semibold mt-1">Now</p>
+              </div>
+              <div>
+                <span className="text-[10px] tracking-wider uppercase text-[var(--muted)] flex items-center gap-1">
+                  <Eye className="w-3 h-3" /> Confidence
+                </span>
+                <p className="font-semibold mt-1 font-mono">
+                  {demoPhase === "complete" ? "94%" : "—"}
                 </p>
               </div>
-
-              {/* Dropzone */}
-              <div
-                onDrop={handleDrop}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                className={`dropzone p-8 text-center cursor-pointer transition-all ${isDragging ? "active" : ""
-                  }`}
-                onClick={() => textareaRef.current?.focus()}
-              >
-                {dialogText ? (
-                  <div className="text-left">
-                    {fileName && (
-                      <div className="flex items-center gap-2 mb-4 text-sm text-[var(--muted)]">
-                        <FileText className="w-4 h-4" />
-                        <span>{fileName}</span>
-                      </div>
-                    )}
-                    <textarea
-                      ref={textareaRef}
-                      value={dialogText}
-                      onChange={(e) => setDialogText(e.target.value)}
-                      className="w-full bg-transparent border-none outline-none resize-none text-sm leading-relaxed text-[var(--foreground)] min-h-[200px] font-mono"
-                      placeholder="Paste or type a conversation..."
-                    />
-                  </div>
-                ) : (
-                  <div className="py-8">
-                    <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center mx-auto mb-4">
-                      <Upload className="w-6 h-6 text-[var(--accent)]" />
-                    </div>
-                    <p className="text-base font-medium text-[var(--foreground)] mb-1">
-                      Drop a dialog file or click to type
-                    </p>
-                    <p className="text-sm text-[var(--muted)]">
-                      Supports .txt files or paste text directly
-                    </p>
-
-                    <textarea
-                      ref={textareaRef}
-                      value={dialogText}
-                      onChange={(e) => setDialogText(e.target.value)}
-                      className="w-full bg-transparent border-none outline-none resize-none text-sm leading-relaxed text-[var(--foreground)] mt-6 min-h-[120px] font-mono text-center placeholder:text-center"
-                      placeholder="Or paste your conversation here..."
-                    />
-                  </div>
-                )}
+              <div>
+                <span className="text-[10px] tracking-wider uppercase text-[var(--muted)] flex items-center gap-1">
+                  <AlertTriangle className="w-3 h-3" /> Severity
+                </span>
+                <p className="font-semibold mt-1">
+                  {demoPhase === "complete" ? (
+                    <span
+                      className="text-xs font-mono px-2 py-0.5 rounded"
+                      style={{
+                        color: activeScenario === "fraud_security" ? "var(--danger)" : activeScenario === "cx_escalation" ? "var(--warning)" : "var(--success)",
+                        background: activeScenario === "fraud_security" ? "rgba(239,68,68,0.1)" : activeScenario === "cx_escalation" ? "rgba(245,158,11,0.1)" : "rgba(34,197,94,0.1)",
+                      }}
+                    >
+                      {activeScenario === "fraud_security" ? "CRITICAL" : activeScenario === "cx_escalation" ? "HIGH" : "MEDIUM"}
+                    </span>
+                  ) : "—"}
+                </p>
               </div>
+            </div>
+          </div>
 
-              {/* Hidden file input */}
-              <input
-                type="file"
-                id="fileInput"
-                accept=".txt,.csv,.json,.log,audio/*"
-                className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) handleFile(file);
-                }}
-              />
+          {/* Prosody Analysis */}
+          <div className="col-span-12 md:col-span-5 panel p-5">
+            <PanelHeader icon={Activity} title="Prosody Analysis" badge="HUME AI" badgeColor="#f59e0b" />
+            <div className="space-y-3">
+              <ProsodyBar label="Frustration" value={emotions.frustration} color="var(--danger)" />
+              <ProsodyBar label="Stress" value={emotions.stress} color="var(--warning)" />
+              <ProsodyBar label="Politeness" value={emotions.politeness} color="var(--success)" />
+              <ProsodyBar label="Hesitation" value={emotions.hesitation} color="var(--purple)" />
+              <ProsodyBar label="Urgency" value={emotions.urgency} color="var(--cyan)" />
+            </div>
+          </div>
 
+          {/* Security Layer */}
+          <div className="col-span-12 md:col-span-4 panel p-5">
+            <PanelHeader icon={Shield} title="Security Layer" badge="MODULATE" badgeColor="#a855f7" />
+            <div className="space-y-4">
+              <div className="flex items-center justify-between py-2 border-b border-white/[0.04]">
+                <span className="text-xs font-mono tracking-wider text-[var(--muted-light)]">SYNTHETIC PROB.</span>
+                <span className="text-sm font-mono font-semibold">
+                  {demoPhase === "complete"
+                    ? `${Math.round(security.syntheticProb * 100)}%`
+                    : "—"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between py-2 border-b border-white/[0.04]">
+                <span className="text-xs font-mono tracking-wider text-[var(--muted-light)]">BEHAVIORAL RISK</span>
+                <span className="text-sm font-mono font-semibold">
+                  {demoPhase === "complete"
+                    ? `${Math.round(security.behavioralRisk * 100)}%`
+                    : "—"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between py-2">
+                <span className="text-xs font-mono tracking-wider text-[var(--muted-light)]">LIVENESS</span>
+                <span className="flex items-center gap-1.5 text-xs font-mono font-semibold">
+                  <span
+                    className="w-2 h-2 rounded-full pulse-dot"
+                    style={{
+                      background:
+                        security.livenessStatus === "verified"
+                          ? "var(--success)"
+                          : security.livenessStatus === "failed"
+                          ? "var(--danger)"
+                          : "var(--warning)",
+                    }}
+                  />
+                  {security.livenessStatus === "scanning" ? "SCANNING" : security.livenessStatus.toUpperCase()}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
 
-              {/* Error display */}
-              {error && (
-                <div className="mt-4 p-3 bg-red-50 border border-red-200/60 rounded-xl text-sm text-red-600 flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 shrink-0" />
-                  {error}
+        {/* Row 2: Acoustic | Transcription | Intent */}
+        <div className="grid grid-cols-12 gap-4 mb-4">
+          {/* Acoustic Layer */}
+          <div className="col-span-12 md:col-span-3 panel p-5">
+            <PanelHeader icon={Mic} title="Acoustic Layer" badge={demoPhase === "streaming" ? "ACTIVE" : "IDLE"} badgeColor={demoPhase === "streaming" ? "#22c55e" : undefined} />
+            <div className="mt-4">
+              <WaveformVisualizer isActive={demoPhase === "streaming"} />
+            </div>
+            <div className="flex items-center justify-between mt-6 pt-3 border-t border-white/[0.04]">
+              <span className="text-[10px] font-mono text-[var(--muted)] flex items-center gap-1">
+                <Radio className="w-3 h-3" /> VAPI WEBRTC
+              </span>
+              <span className="text-[10px] font-mono text-[var(--muted)]">
+                {demoPhase === "streaming" ? "128ms" : "0ms"} LATENCY
+              </span>
+            </div>
+          </div>
+
+          {/* Transcription */}
+          <div className="col-span-12 md:col-span-5 panel p-5">
+            <PanelHeader icon={FileText} title="Transcription" badge="CHIRP USM" badgeColor="#06b6d4" />
+            <div className="min-h-[200px] max-h-[260px] overflow-y-auto pr-2">
+              {demoPhase === "idle" ? (
+                <p className="text-sm text-[var(--muted)] italic mt-12 text-center">
+                  Awaiting audio stream...
+                </p>
+              ) : (
+                <div className="space-y-2">
+                  <AnimatePresence>
+                    {transcript.slice(0, visibleLines).map((line, i) => {
+                      const isCaller = line.toLowerCase().startsWith("caller") || line.toLowerCase().startsWith("customer") || line.toLowerCase().startsWith("target");
+                      const text = line.replace(/^(Caller|Agent|Customer|Target):\s*/i, "");
+                      // Highlight Singlish words
+                      const singlishWords = ["lah", "leh", "lor", "walao", "wah", "aiya", "buay tahan", "kan cheong", "sotong", "buay"];
+                      let highlighted = text;
+                      singlishWords.forEach((w) => {
+                        const regex = new RegExp(`\\b${w}\\b`, "gi");
+                        highlighted = highlighted.replace(regex, `<mark class="bg-[var(--accent-glow)] text-[var(--accent-light)] px-1 rounded font-medium">${w}</mark>`);
+                      });
+
+                      return (
+                        <motion.div
+                          key={i}
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className={`text-sm leading-relaxed p-2 rounded-lg ${
+                            isCaller ? "bg-white/[0.03]" : "bg-[var(--accent-glow)] ml-4"
+                          }`}
+                        >
+                          <span className="text-[10px] font-mono text-[var(--muted)] block mb-0.5">
+                            {isCaller ? "CALLER" : "AGENT"}
+                          </span>
+                          <span dangerouslySetInnerHTML={{ __html: highlighted }} />
+                        </motion.div>
+                      );
+                    })}
+                  </AnimatePresence>
+                  {demoPhase === "streaming" && (
+                    <div className="flex items-center gap-2 text-xs text-[var(--muted)] mt-2">
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                      Transcribing...
+                    </div>
+                  )}
                 </div>
               )}
+            </div>
+          </div>
 
-              {/* Action buttons */}
-              <div className="flex items-center justify-center gap-3 mt-6">
-                <label
-                  htmlFor="fileInput"
-                  className="apple-btn apple-btn-secondary text-sm cursor-pointer !py-2.5 !px-5"
-                >
-                  <FileText className="w-4 h-4" />
-                  Browse Files
-                </label>
-                <button
-                  onClick={runAnalysis}
-                  disabled={!dialogText.trim() && !audioFile}
-                  className="apple-btn text-sm !py-2.5 !px-6"
-                >
-                  Analyze
-                  <ArrowRight className="w-4 h-4" />
-                </button>
+          {/* Intent Engine */}
+          <div className="col-span-12 md:col-span-4 panel p-5">
+            <PanelHeader icon={Brain} title="Intent Engine" badge="GEMINI 2.5 PRO" badgeColor="#818cf8" />
+            <div className="space-y-3">
+              <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+                <span className="text-[10px] font-mono tracking-wider text-[var(--muted)] block mb-1.5">LITERAL TRANSLATION</span>
+                <p className="text-xs leading-relaxed text-[var(--muted-light)]">
+                  {intent.literal || <span className="italic text-[var(--muted)]">—</span>}
+                </p>
               </div>
-
-              {/* Live WebRTC Vapi CTA */}
-              <div className="mt-8 flex flex-col items-center border-t border-black/[0.05] pt-8">
-                <span className="text-xs uppercase tracking-wider font-semibold text-[var(--muted)] mb-4">Or test real-time WebRTC audio stream</span>
-                <button
-                  onClick={toggleCall}
-                  className={`flex items-center gap-2 px-6 py-3 rounded-full text-white font-medium shadow-md transition-all ${callStatus === "idle" ? "bg-black hover:scale-105" : callStatus === "connecting" ? "bg-yellow-500 animate-pulse" : "bg-red-500 hover:scale-105"}`}
-                >
-                  {callStatus === "idle" ? <><Mic className="w-4 h-4" /> Start Live Voice Call</> : callStatus === "connecting" ? <><Loader2 className="w-4 h-4 spin-slow" /> Connecting Vapi...</> : <><PhoneOff className="w-4 h-4" /> Stop Live Call & Analyze</>}
-                </button>
+              <div className="flex justify-center">
+                <ChevronDown className="w-4 h-4 text-[var(--muted)]" />
               </div>
-            </motion.div>
-          )}
+              <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+                <span className="text-[10px] font-mono tracking-wider text-[var(--muted)] block mb-1.5">CULTURAL / PROSODY OVERRIDE</span>
+                <p className="text-xs leading-relaxed text-[var(--muted-light)]">
+                  {intent.cultural || <span className="italic text-[var(--muted)]">—</span>}
+                </p>
+              </div>
+              <div className="flex justify-center">
+                <ChevronDown className="w-4 h-4 text-[var(--muted)]" />
+              </div>
+              <div className="p-3 rounded-lg bg-[var(--accent-glow)] border border-[var(--accent)]/20">
+                <span className="text-[10px] font-mono tracking-wider text-[var(--danger)] font-bold block mb-1.5">TRUE INTENT</span>
+                <p className="text-xs leading-relaxed font-medium">
+                  {intent.trueIntent || <span className="italic text-[var(--muted)]">—</span>}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
 
-          {/* ════════════════════════════════════════════════════════════
-              PHASE 2: Analyzing
-          ════════════════════════════════════════════════════════════ */}
-          {phase === "analyzing" && (
+        {/* Row 3: Enterprise Action */}
+        <div className="panel p-5">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Zap className="w-4 h-4 text-[var(--accent-light)]" />
+              <span className="text-xs font-semibold tracking-[0.15em] uppercase">Enterprise Action</span>
+            </div>
+            <span className="text-[10px] font-mono tracking-wider text-[var(--muted)] px-2 py-0.5 rounded-full border border-white/[0.06]">
+              JSON PAYLOAD
+            </span>
+          </div>
+
+          {payload ? (
             <motion.div
-              key="analyzing"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.4, ease: [0.25, 0.1, 0, 1] }}
-              className="flex flex-col items-center justify-center pt-32"
-            >
-              <div className="relative mb-8">
-                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500/10 to-indigo-500/10 flex items-center justify-center">
-                  <Loader2 className="w-8 h-8 text-[var(--accent)] spin-slow" />
-                </div>
-                <div className="absolute inset-0 rounded-full border-2 border-blue-500/20 spin-slow" style={{ animationDuration: '3s' }} />
-              </div>
-              <h2 className="text-2xl font-semibold tracking-tight mb-2">
-                Analyzing conversation
-              </h2>
-              <p className="text-[var(--muted)] text-sm max-w-xs text-center leading-relaxed">
-                Decoding intent, emotion, cultural nuance, and security signals...
-              </p>
-              <div className="flex gap-6 mt-8">
-                {["Transcription", "Prosody", "Security", "Cognition"].map(
-                  (step, i) => (
-                    <motion.div
-                      key={step}
-                      initial={{ opacity: 0.3 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: i * 0.6, duration: 0.4 }}
-                      className="flex items-center gap-1.5 text-xs text-[var(--muted)]"
-                    >
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ delay: i * 0.6 + 0.3 }}
-                        className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"
-                      />
-                      {step}
-                    </motion.div>
-                  )
-                )}
-              </div>
-            </motion.div>
-          )}
-
-          {/* ════════════════════════════════════════════════════════════
-              PHASE 3: Dashboard
-          ════════════════════════════════════════════════════════════ */}
-          {phase === "dashboard" && analysis && (
-            <motion.div
-              key="dashboard"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
-              {/* Summary banner */}
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="glass-card p-5 mb-6 flex items-start gap-4"
-              >
-                <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center shrink-0 mt-0.5">
-                  <CheckCircle2 className="w-5 h-5 text-[var(--success)]" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-semibold mb-0.5">
-                    Analysis Complete
-                  </h3>
-                  <p className="text-sm text-[var(--muted)] leading-relaxed">
-                    {analysis.summary}
-                  </p>
-                </div>
-              </motion.div>
-
-              {/* Dashboard grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 stagger-children">
-                {/* ── Transcript Card ─────────────────────────── */}
-                <div className="lg:col-span-2 glass-card p-6">
-                  <div className="flex items-center gap-2 mb-5">
-                    <MessageSquareText className="w-4 h-4 text-[var(--accent)]" />
-                    <h3 className="text-sm font-semibold">Transcript</h3>
-                  </div>
-                  <div className="space-y-3 max-h-[320px] overflow-y-auto pr-2">
-                    {analysis.transcript.map((msg, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{ opacity: 0, x: -8 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.15 + i * 0.05 }}
-                        className={`flex gap-3 ${msg.role === "user" ? "" : "flex-row-reverse"}`}
-                      >
-                        <div
-                          className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-xs font-semibold ${msg.role === "user"
-                            ? "bg-blue-100 text-blue-600"
-                            : "bg-green-100 text-green-600"
-                            }`}
-                        >
-                          {msg.role === "user" ? "C" : "A"}
-                        </div>
-                        <div
-                          className={`py-2.5 px-4 rounded-2xl text-sm leading-relaxed max-w-[80%] ${msg.role === "user"
-                            ? "bg-gray-100 text-[var(--foreground)]"
-                            : "bg-blue-50 text-[var(--foreground)]"
-                            }`}
-                        >
-                          {msg.text}
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* ── Emotion Gauges ──────────────────────────── */}
-                <div className="glass-card p-6">
-                  <div className="flex items-center gap-2 mb-5">
-                    <Activity className="w-4 h-4 text-indigo-500" />
-                    <h3 className="text-sm font-semibold">Prosody Analysis</h3>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <GaugeCircle
-                      value={analysis.emotions.frustration}
-                      color="#ff3b30"
-                      label="Frustration"
-                      size={90}
-                    />
-                    <GaugeCircle
-                      value={analysis.emotions.anxiety}
-                      color="#ff9f0a"
-                      label="Anxiety"
-                      size={90}
-                    />
-                    <GaugeCircle
-                      value={analysis.emotions.politeness}
-                      color="#34c759"
-                      label="Politeness"
-                      size={90}
-                    />
-                    <GaugeCircle
-                      value={analysis.emotions.confidence}
-                      color="#0071e3"
-                      label="Confidence"
-                      size={90}
-                    />
-                  </div>
-                </div>
-
-                {/* ── Security Card ───────────────────────────── */}
-                <div className="glass-card p-6">
-                  <div className="flex items-center gap-2 mb-5">
-                    {analysis.security.threatFlag ? (
-                      <ShieldAlert className="w-4 h-4 text-[var(--danger)]" />
-                    ) : (
-                      <ShieldCheck className="w-4 h-4 text-[var(--success)]" />
-                    )}
-                    <h3 className="text-sm font-semibold">Security</h3>
-                  </div>
-
-                  <div className="flex items-center gap-4 mb-5">
-                    <GaugeCircle
-                      value={analysis.security.deepfakeProb}
-                      color={
-                        analysis.security.deepfakeProb > 0.7
-                          ? "#ff3b30"
-                          : analysis.security.deepfakeProb > 0.4
-                            ? "#ff9f0a"
-                            : "#34c759"
-                      }
-                      label="Deepfake"
-                      size={80}
-                    />
-                    <div className="flex-1 space-y-3">
-                      <div>
-                        <span className="text-xs text-[var(--muted)] block mb-1">
-                          Risk Level
-                        </span>
-                        <span
-                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${analysis.security.riskLevel === "high"
-                            ? "bg-red-50 text-red-600"
-                            : analysis.security.riskLevel === "medium"
-                              ? "bg-yellow-50 text-yellow-700"
-                              : "bg-green-50 text-green-600"
-                            }`}
-                        >
-                          {analysis.security.riskLevel === "high" && (
-                            <AlertTriangle className="w-3 h-3" />
-                          )}
-                          {analysis.security.riskLevel.charAt(0).toUpperCase() +
-                            analysis.security.riskLevel.slice(1)}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-xs text-[var(--muted)] block mb-1">
-                          Threat
-                        </span>
-                        <span
-                          className={`text-sm font-medium ${analysis.security.threatFlag
-                            ? "text-[var(--danger)]"
-                            : "text-[var(--success)]"
-                            }`}
-                        >
-                          {analysis.security.threatFlag
-                            ? "Flagged"
-                            : "Clear"}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* ── Cognitive Analysis Card ─────────────────── */}
-                <div className="lg:col-span-2 glass-card p-6">
-                  <div className="flex items-center gap-2 mb-5">
-                    <Brain className="w-4 h-4 text-[var(--accent)]" />
-                    <h3 className="text-sm font-semibold">
-                      Cognitive Synthesis
-                    </h3>
-                    <span className="text-[10px] bg-blue-50 text-[var(--accent)] px-2 py-0.5 rounded-full font-medium ml-auto">
-                      Gemini Flash
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {[
-                      {
-                        label: "Intent",
-                        value: analysis.cognitive.intent,
-                        icon: <Sparkles className="w-3.5 h-3.5" />,
-                      },
-                      {
-                        label: "Translation",
-                        value: analysis.cognitive.translation,
-                        icon: <Globe className="w-3.5 h-3.5" />,
-                      },
-                      {
-                        label: "Cultural Context",
-                        value: analysis.cognitive.cultural_context,
-                        icon: <MessageSquareText className="w-3.5 h-3.5" />,
-                      },
-                      {
-                        label: "Action Advised",
-                        value: analysis.cognitive.action_advised,
-                        icon: <ArrowRight className="w-3.5 h-3.5" />,
-                      },
-                    ].map((item) => (
-                      <div
-                        key={item.label}
-                        className="bg-gray-50/80 rounded-xl p-4 border border-black/[0.03]"
-                      >
-                        <div className="flex items-center gap-1.5 mb-2 text-[var(--muted)]">
-                          {item.icon}
-                          <span className="text-xs font-medium uppercase tracking-wide">
-                            {item.label}
-                          </span>
-                        </div>
-                        <p className="text-sm leading-relaxed text-[var(--foreground)]">
-                          {item.value}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Fraud verdict */}
-                  <div
-                    className={`mt-4 p-4 rounded-xl border text-sm flex items-start gap-3 ${analysis.cognitive.fraud_verdict.includes("HIGH")
-                      ? "bg-red-50/80 border-red-200/60 text-red-700"
-                      : "bg-green-50/80 border-green-200/60 text-green-700"
-                      }`}
-                  >
-                    {analysis.cognitive.fraud_verdict.includes("HIGH") ? (
-                      <ShieldAlert className="w-4 h-4 mt-0.5 shrink-0" />
-                    ) : (
-                      <ShieldCheck className="w-4 h-4 mt-0.5 shrink-0" />
-                    )}
-                    <div>
-                      <span className="font-semibold text-xs uppercase tracking-wide block mb-0.5">
-                        Fraud Verdict
-                      </span>
-                      {analysis.cognitive.fraud_verdict}
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <pre className="text-xs font-mono leading-relaxed text-[var(--muted-light)] bg-black/20 rounded-lg p-4 overflow-x-auto">
+                {JSON.stringify(payload, null, 2)}
+              </pre>
             </motion.div>
+          ) : (
+            <div className="text-center py-8 text-sm text-[var(--muted)] italic">
+              Awaiting analysis completion to generate enterprise payload...
+            </div>
           )}
-        </AnimatePresence>
+        </div>
       </div>
     </main>
   );

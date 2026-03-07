@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
+// @ts-ignore
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "VALSEA — Voice Analysis Engine",
+  title: "VALSEA — Speech Intelligence Platform",
   description:
-    "Decode intent, emotion, cultural nuance and security threats from any conversation.",
+    "Real-time voice analysis engine. Decode intent, emotion, cultural nuance and security threats from any conversation.",
 };
 
 export default function RootLayout({
