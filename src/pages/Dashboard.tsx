@@ -455,7 +455,7 @@ function PanelHeader({
 
 // ─── Main Dashboard ──────────────────────────────────────────────────────────
 
-export default function Dashboard() {
+export default function Dashboard({ onBack }: { onBack?: () => void }) {
   const { showToast } = useToast();
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [activeScenario, setActiveScenario] = useState<Scenario>("logistics");
