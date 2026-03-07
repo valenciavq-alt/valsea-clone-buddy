@@ -650,7 +650,7 @@ export default function Home() {
               <Zap className="w-4 h-4 text-[var(--accent-light)]" />
               <span className="text-xs font-semibold tracking-[0.15em] uppercase">Enterprise Action</span>
             </div>
-            <span className="text-[10px] font-mono tracking-wider text-[var(--muted)] px-2 py-0.5 rounded-full border border-white/[0.06]">
+            <span className="text-[10px] font-mono tracking-wider text-[var(--muted)] px-2 py-0.5 rounded-full border border-[var(--border-subtle)]">
               JSON PAYLOAD
             </span>
           </div>
