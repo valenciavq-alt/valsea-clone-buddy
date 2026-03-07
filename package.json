@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
+    "@tailwindcss/vite": "^4.2.1",
     "@vapi-ai/web": "^2.5.2",
     "@vitejs/plugin-react-swc": "^4.2.3",
     "clsx": "^2.1.1",
@@ -18,6 +19,7 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "tailwind-merge": "^3.5.0",
+    "tailwindcss": "4",
     "vite": "^6"
   },
   "devDependencies": {
