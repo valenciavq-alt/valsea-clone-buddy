@@ -1,21 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { VALSEAProvider } from "@/context/VALSEAContext";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
-  title: "Project VALSEA",
-  description: "Voice-to-Action Logistics & Sentiment Engine",
+  title: "VALSEA — Voice Analysis Engine",
+  description:
+    "Decode intent, emotion, cultural nuance and security threats from any conversation.",
 };
 
 export default function RootLayout({
@@ -25,13 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <VALSEAProvider>
-          {children}
-        </VALSEAProvider>
-      </body>
+      <body className="antialiased">{children}</body>
     </html>
   );
 }

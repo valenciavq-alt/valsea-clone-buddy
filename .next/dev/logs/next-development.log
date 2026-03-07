@@ -1,0 +1,70 @@
+[00:00:00.415] Server  LOG     ✓ Ready in 285ms
+[00:00:02.114] Server  ERROR   ⨯ ./src/app/globals.css:988:8
+Parsing CSS source code failed
+  986 |   }
+  987 | }
+> 988 | @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+      |        ^
+  989 | :root {
+  990 |   --background: #f5f5f7;
+  991 |   --foreground: #1d1d1f;
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+
+[00:00:02.302] Browser ERROR   uncaughtError: Error: ./src/app/globals.css:988:8
+Parsing CSS source code failed
+  986 |   }
+  987 | }
+> 988 | @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+      |        ^
+  989 | :root {
+  990 |   --background: #f5f5f7;
+  991 |   --foreground: #1d1d1f;
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+
+[00:00:02.455] Browser ERROR   ./src/app/globals.css:988:8
+Parsing CSS source code failed
+  986 |   }
+  987 | }
+> 988 | @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+      |        ^
+  989 | :root {
+  990 |   --background: #f5f5f7;
+  991 |   --foreground: #1d1d1f;
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+[00:00:02.455] Browser ERROR   ./src/app/globals.css:988:8
+Parsing CSS source code failed
+  986 |   }
+  987 | }
+> 988 | @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+      |        ^
+  989 | :root {
+  990 |   --background: #f5f5f7;
+  991 |   --foreground: #1d1d1f;
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+[00:00:30.587] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
