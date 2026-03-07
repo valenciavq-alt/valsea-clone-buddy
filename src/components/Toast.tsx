@@ -46,10 +46,14 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 color: "var(--foreground)",
               }}
             >
-              <AlertTriangle
-                className="w-4 h-4 mt-0.5 flex-shrink-0"
-                style={{ color: t.type === "error" ? "var(--danger)" : t.type === "warning" ? "var(--warning)" : "var(--cyan)" }}
-              />
+              {t.type === "success" ? (
+                <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: "hsl(142, 71%, 45%)" }} />
+              ) : (
+                <AlertTriangle
+                  className="w-4 h-4 mt-0.5 flex-shrink-0"
+                  style={{ color: t.type === "error" ? "var(--danger)" : t.type === "warning" ? "var(--warning)" : "var(--cyan)" }}
+                />
+              )}
               <span className="text-xs leading-relaxed flex-1">{t.message}</span>
               <button onClick={() => dismiss(t.id)} className="flex-shrink-0 mt-0.5 opacity-50 hover:opacity-100">
                 <X className="w-3 h-3" />
