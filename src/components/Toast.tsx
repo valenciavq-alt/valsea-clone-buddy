@@ -41,8 +41,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               transition={{ duration: 0.2 }}
               className="flex items-start gap-3 px-4 py-3 rounded-lg border shadow-lg backdrop-blur-xl"
               style={{
-                background: t.type === "error" ? "rgba(239,68,68,0.12)" : t.type === "warning" ? "rgba(245,158,11,0.12)" : "rgba(6,182,212,0.12)",
-                borderColor: t.type === "error" ? "rgba(239,68,68,0.3)" : t.type === "warning" ? "rgba(245,158,11,0.3)" : "rgba(6,182,212,0.3)",
+                background: t.type === "error" ? "rgba(239,68,68,0.12)" : t.type === "warning" ? "rgba(245,158,11,0.12)" : t.type === "success" ? "rgba(34,197,94,0.12)" : "rgba(6,182,212,0.12)",
+                borderColor: t.type === "error" ? "rgba(239,68,68,0.3)" : t.type === "warning" ? "rgba(245,158,11,0.3)" : t.type === "success" ? "rgba(34,197,94,0.3)" : "rgba(6,182,212,0.3)",
                 color: "var(--foreground)",
               }}
             >
