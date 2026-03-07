@@ -589,7 +589,7 @@ export default function Home() {
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.3 }}
                           className={`text-sm leading-relaxed p-2 rounded-lg ${
-                            isCaller ? "bg-white/[0.03]" : "bg-[var(--accent-glow)] ml-4"
+                            isCaller ? "bg-[var(--line-bg-caller)]" : "bg-[var(--line-bg-agent)] ml-4"
                           }`}
                         >
                           <span className="text-[10px] font-mono text-[var(--muted)] block mb-0.5">
