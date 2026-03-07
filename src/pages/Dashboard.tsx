@@ -19,6 +19,8 @@ import {
   Moon,
   PhoneCall,
   PhoneOff,
+  PanelLeftOpen,
+  X,
 } from "lucide-react";
 import { analyzeDialog } from "@/lib/analyze";
 
