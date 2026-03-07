@@ -293,6 +293,7 @@ function PanelHeader({
 // ─── Main Dashboard ──────────────────────────────────────────────────────────
 
 export default function Dashboard() {
+  const { showToast } = useToast();
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [activeScenario, setActiveScenario] = useState<Scenario>("logistics");
   const [eventSidebarOpen, setEventSidebarOpen] = useState(false);
