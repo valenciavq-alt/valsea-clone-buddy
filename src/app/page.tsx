@@ -661,7 +661,7 @@ export default function Home() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
-              <pre className="text-xs font-mono leading-relaxed text-[var(--muted-light)] bg-black/20 rounded-lg p-4 overflow-x-auto">
+              <pre className="text-xs font-mono leading-relaxed text-[var(--muted-light)] bg-[var(--code-bg)] rounded-lg p-4 overflow-x-auto">
                 {JSON.stringify(payload, null, 2)}
               </pre>
             </motion.div>
