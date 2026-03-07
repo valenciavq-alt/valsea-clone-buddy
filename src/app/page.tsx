@@ -606,7 +606,7 @@ export default function Home() {
     <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] font-sans">
       {/* ── Top Navigation Bar ─────────────────────────────────────────── */}
       <header className="sticky top-0 z-50 border-b border-[var(--border-subtle)] bg-[var(--header-bg)] backdrop-blur-xl">
-        <div className="max-w-[1400px] mx-auto px-6 h-14 flex items-center justify-between">
+        <div className="max-w-[1400px] mx-auto px-3 sm:px-6 h-12 sm:h-14 flex items-center justify-between">
           {/* Logo & Stats */}
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-2.5">
