@@ -615,7 +615,7 @@ export default function Home() {
           <div className="col-span-12 md:col-span-4 panel p-5">
             <PanelHeader icon={Brain} title="Intent Engine" badge="GEMINI 2.5 PRO" badgeColor="#818cf8" />
             <div className="space-y-3">
-              <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+              <div className="p-3 rounded-lg bg-[var(--bar-track)] border border-[var(--border-subtle)]">
                 <span className="text-[10px] font-mono tracking-wider text-[var(--muted)] block mb-1.5">LITERAL TRANSLATION</span>
                 <p className="text-xs leading-relaxed text-[var(--muted-light)]">
                   {intent.literal || <span className="italic text-[var(--muted)]">—</span>}
