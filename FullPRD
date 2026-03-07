@@ -1,0 +1,91 @@
+PRD: Project VALSEA (Voice-to-Action Logistics & Sentiment Engine)
+
+Tagline: Bridging the chasm between what is said, how it’s felt, and what is meant.
+Objective: Build a real-time, multimodal orchestration layer that decodes Asian-accented speech (Singlish, regional dialects), emotional prosody, and behavioral fraud markers into structured enterprise data.
+1. Executive Summary & Vision
+
+Standard Speech-to-Text (ASR) systems are fundamentally biased; they optimize for "Standard English" and ignore the cultural, emotional, and tonal nuances of how the majority of the world actually speaks. This creates a massive "empathy gap" leading to lost logistics deals, skyrocketing customer churn (e.g., Grab), and vulnerability to next-gen deepfake fraud.
+
+Project VALSEA introduces the "Third Ear." By parallel-processing audio through Google Chirp, Hume AI, and Modulate—and using Gemini 3 Flash as the cognitive synthesizer—we transform messy, emotional, accented human speech into perfectly structured, secure, and actionable enterprise intent.
+2. The Hackathon Demo Stack (Architecture)
+
+    Ingestion (Control Plane): Vapi – Acts as the WebRTC Gateway maintaining <500ms latency and handling the audio stream forking.
+
+    Acoustic Layer: Google Cloud Speech-to-Text (Chirp USM) – Optimized for complex Asian-accented English and rapid code-switching (e.g., English to Mandarin/Malay).
+
+    Prosody Layer: Hume AI – Analyzes vocal tones to capture the "unspoken" emotional state (frustration, hesitation, politeness).
+
+    Security Layer: Modulate (Velma) – Scans for real-time deepfake markers and behavioral fraud patterns.
+
+    Cognitive Hub: Gemini 3 Flash – The "Reasoning" engine that ingests the JSON outputs from Chirp, Hume, and Modulate to execute the "Intent Realignment" and route logic.
+
+3. Core Hackathon Use Cases to Demo
+
+To prove horizontal scalability and business viability, the demo will switch between three distinct personas:
+3.1. Cross-Border Logistics (The "Buay Tahan" Scenario)
+
+    The Problem: Language-specific dependencies and cultural misinterpretations cost global logistics billions in delayed quotes and ruined vendor relationships.
+
+    The Scenario: A Singaporean distributor uses Singlish/Hokkien slang mixed with English to negotiate a delivery with a Swedish partner. "Björn, your deadline very tight leh. This Friday delivery... buay tahan (cannot endure) lah."
+
+    VALSEA Pipeline: Translates the slang and the stressed tone into a structured intent. It recognizes the cultural "face-saving" and prevents the Swede from pushing harder.
+
+    Result: Outputs a structured "High Priority / Delivery Re-route" TMS entry and "Whispers" to the Swedish operator to offer a Monday delivery to save the deal.
+
+3.2. High-Velocity CX for Grab (The "Blur Like Sotong" Scenario)
+
+    The Problem: Text-only AI reads regional slang as noise, missing critical churn indicators in high-volume call centers.
+
+    The Scenario: A frustrated passenger complains about a lost driver. "Walao eh, the driver is blur like sotong! He say he arrived but where got?"
+
+    VALSEA Pipeline: Maps the slang to specific driver behaviors. Hume detects extreme prosodic frustration, overriding the standard chatbot loop.
+
+    Result: Bypasses the standard queue, triggers an immediate human handoff, and automatically issues a pre-emptive $3 apology voucher based on the emotional severity score.
+
+3.3. Security: The "Indian-Accented" Social Engineering Guard
+
+    The Problem: Fraud rings use localized scripts and AI voice cloning to bypass standard security. Hanging up on them teaches the enterprise nothing.
+
+    The Scenario: A social engineering attack targeting a Malaysian banking customer. The attacker uses an Indian-accented AI voice clone (Deepfake) and localized slang. "Hello Ma'am, very kan cheong situation! Hacker is inside your account! Transfer money now!"
+
+    VALSEA Pipeline:
+
+        Modulate detects the spectral signature and flags Synthetic_Probability: 0.98.
+
+        Gemini 3 flags the "kan cheong" (urgent/anxious) pressure tactic as a classic social engineering vector.
+
+    Result (The Hackathon Reveal): Instead of dropping the call, VALSEA executes a Dynamic Honeypot Protocol. The real user is muted and shielded. Gemini 3 takes over, generating a confused, compliant synthetic voice to keep the scammer talking. This gathers acoustic telemetry and behavioral data to generate a Forensic Interaction Report (FIR) for the enterprise PI team.
+
+4. Detailed Pipeline Workflow (The "Winning" Logic)
+
+This is the exact sequence of events the backend will execute during the live demo:
+Phase	Component	Action / Logic
+1. Audio Forking	Vapi	Audio is streamed simultaneously via WebSockets to Chirp, Hume, and Modulate to ensure zero latency bottlenecks.
+2. Transcription	Chirp	Handles a driver saying: "I reach warehouse lah, item all 8517 code one."
+3. Prosody Scan	Hume	Detects emotional undercurrents, e.g., [Anxiety: 0.8] and [Hesitation: 0.75] in the speaker's voice.
+4. Fraud Scan	Modulate	Confirms liveness (No deepfake detected) and scores behavioral risk.
+5. Intent Realignment	Gemini 3	Logic: Uses the raw Chirp transcript + Hume score + domain-specific Logistics/Cultural Lexicon to map to a structured outcome.
+6. System Entry	Auto-TMS/CRM	Automatically populates the enterprise dashboard: Status: Arrived, HS Code: 8517.13, Priority: High (based on anxiety).
+5. Functional Requirements (Weekend Build Checklist)
+
+    Vapi Setup: Configure Vapi to use Chirp as the default transcriber and establish custom webhooks to push the raw audio buffer to Hume and Modulate simultaneously.
+
+    The "Cognitive Prompt": Engineer the Gemini 3 system prompt to act as the ultimate decision-maker. It must be instructed to override the literal text if the Hume sentiment score severely contradicts the words (e.g., Polite words + High Distress = Conflict).
+
+    Live Demo UI (The "Memorable Experience"): Build a split-screen React dashboard for the stage presentation.
+
+        Left Side: The raw audio waveform and live Chirp transcript.
+
+        Right Side: The "Brain." Live updating dials for Hume (Emotion) and Modulate (Security Risk), culminating in Gemini 3's final structured JSON output and "Whisper" advice.
+
+    Honeypot Trigger: Create the logic branch where if Modulate_Deepfake > 0.90, Vapi swaps the human mic feed for an LLM-generated audio response loop.
+
+6. Hackathon Winning Strategy Mapping
+
+    Originality & Creativity: Moving beyond text-based LLMs to truly multimodal conversational AI that understands how something is said, not just what is said. And transitioning from passive defense to active "Honeypot" offense.
+
+    Technical Sophistication: Demonstrating a parallel-processing architecture with 4 different state-of-the-art models working in sub-second harmony.
+
+    Business Viability: Directly attacking a billion-dollar friction point: cross-cultural miscommunication, logistics bloat, and deepfake fraud in global enterprise operations.
+
+    Human Empathy: Allowing users to speak naturally in their native accents and slang without being punished by automated systems.
