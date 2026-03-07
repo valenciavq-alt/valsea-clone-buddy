@@ -224,7 +224,13 @@ const DEMO_EMOTIONS: Record<Scenario, EmotionScores> = {
 
 const DEMO_SECURITY: Record<Scenario, SecurityMetrics> = {
   logistics: { syntheticProb: 0.03, behavioralRisk: 0.08, livenessStatus: "verified" },
+  fintech: { syntheticProb: 0.02, behavioralRisk: 0.15, livenessStatus: "verified" },
   cx_escalation: { syntheticProb: 0.05, behavioralRisk: 0.12, livenessStatus: "verified" },
+  healthcare: { syntheticProb: 0.01, behavioralRisk: 0.04, livenessStatus: "verified" },
+  legal: { syntheticProb: 0.04, behavioralRisk: 0.1, livenessStatus: "verified" },
+  commerce: { syntheticProb: 0.02, behavioralRisk: 0.03, livenessStatus: "verified" },
+  conversational_ai: { syntheticProb: 0.06, behavioralRisk: 0.07, livenessStatus: "verified" },
+  enterprise_ops: { syntheticProb: 0.01, behavioralRisk: 0.05, livenessStatus: "verified" },
   fraud_security: { syntheticProb: 0.78, behavioralRisk: 0.92, livenessStatus: "failed" },
 };
 
