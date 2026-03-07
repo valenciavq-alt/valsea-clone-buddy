@@ -17,6 +17,8 @@ import {
   Play,
   Square,
   Loader2,
+  Sun,
+  Moon,
 } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
