@@ -390,7 +390,7 @@ export default function Home() {
                   className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
                     activeScenario === key
                       ? "bg-[var(--accent)] text-white shadow-sm"
-                      : "text-[var(--muted-light)] hover:text-white"
+                      : "text-[var(--muted-light)] hover:text-[var(--foreground)]"
                   }`}
                 >
                   {SCENARIOS[key].label}
