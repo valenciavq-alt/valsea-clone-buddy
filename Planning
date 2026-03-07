@@ -7,31 +7,33 @@ Here is a comprehensive Product Requirements Document (PRD) tailored for an ente
 **Project Name:** Sentinel Voice (AI Speech Normalization & Triage Agent)
 **Document Status:** Draft
 
-## 1. Executive Summary
+## 1. Executive Summary & Hackathon Vision
 
-Sentinel Voice is an AI-driven audio processing agent designed to sit between incoming callers and call center staff. The system addresses two critical operational challenges:
+**Hackathon Alignment ("Bring Something New to Life"):** Sentinel Voice brings to life a culturally-aware, intelligent intermediary that bridges the communication gap in diverse linguistic regions (like Southeast Asia). Unlike standard global AI models that fail at local nuances, Sentinel understands the *soul* of local speech and protects vulnerable users in real-time.
+
+Sentinel Voice is an AI-driven audio processing agent designed to sit between incoming callers and human receivers (call centers, elderly individuals, or vulnerable users). The system addresses two critical operational challenges:
 
 1. **Communication Friction:** Transforming highly localized, code-switched colloquialisms (specifically Singlish) into coherent, professional English so any staff member can efficiently resolve the complaint.
-2. **Threat Interception:** Acting as a real-time defense layer against social engineering and financial crime. The agent will identify bad actors—such as fraudsters utilizing an Indian accent to impersonate government agencies—by analyzing linguistic markers, sentiment, and coercive intent, immediately warning the user or agent.
+2. **Threat Interception:** Acting as a real-time defense layer against social engineering and financial crime. The agent will identify bad actors—such as fraudsters utilizing coercive tactics or specific regional accents to impersonate government agencies—by analyzing linguistic markers, sentiment, and coercive intent, immediately warning the user or agent.
 
 ## 2. Objectives & Success Metrics
 
 * **Reduce Average Handling Time (AHT):** Accelerate issue resolution by providing agents with instantly understandable, standard English summaries of localized complaints.
 * **Proactive Fraud Mitigation:** Increase the real-time detection rate of impersonation scams before they escalate into financial loss or data compromise.
 * **Seamless Workflow Automation:** Ensure high-risk calls are instantly flagged or routed to specialized security teams without manual intervention.
+* **Long-Term Social Impact (Judging Criteria: Impact Potential 20%):** Beyond enterprise call centers, the core engine has massive potential as a consumer-facing app (e.g., an "AI Phone Bouncer" for the elderly) to combat the rising multi-billion-dollar scam industry in Southeast Asia. This tackles the requirement for the project to be useful and substantial beyond the scope of the hackathon.
 
 ## 3. Core Use Cases & Functional Requirements
 
 ### Use Case 1: The Complaint Normalizer
-
 * **Scenario:** A frustrated caller speaks in rapid Singlish mixed with local slang (e.g., "walao sibei jialat, wait so long already, what time coming?!").
 * **System Action:** Ingest the audio stream and process the regional speech.
 * **Output:** The agent's dashboard displays a clean, standardized English translation (e.g., *"Customer is highly frustrated due to a prolonged wait time and is demanding an ETA"*).
 * **Requirement:** Must extract emotional intensity tags (e.g., `strong frustration`, `impatience`) so the agent can adopt an empathetic de-escalation posture.
+* **Originality (Judging Criteria: Creativity & Originality 35%):** Traditional ASRs transcribe this as gibberish. By focusing on *hyper-localized code-switching*, Sentinel solves a problem tech giants often overlook. Taking a unique approach to NLP for local/regional vernaculars adds massive novelty.
 
-### Use Case 2: The Government Impersonation Fraudster
-
-* **Scenario:** A malicious actor calls, utilizing an Indian accent, and aggressively claims to be from a government agency (e.g., Police, Customs, or regulatory body) demanding immediate compliance, OTPs, or financial transfers.
+### Use Case 2: The Coercive Fraudster
+* **Scenario:** A malicious actor calls and aggressively claims to be from a government agency (e.g., Police, Customs) demanding immediate compliance, OTPs, or financial transfers.
 * **System Action:** Detect the specific accent and transcribe the audio. Simultaneously analyze the transcript for coercive vocabulary, urgency markers, and known social engineering typologies.
 * **Output:** A high-priority visual alert on the UI.
 * **Requirement:** Classify the intent as a "Government Impersonation Vector" and inform the user/staff immediately (e.g., *⚠️ HIGH RISK: Suspected Government Impersonation Scam. Do not provide personal details.*).
@@ -41,56 +43,51 @@ Sentinel Voice is an AI-driven audio processing agent designed to sit between in
 To ensure scalability and seamless integration, the entire backend and frontend will be built on Google Cloud, utilizing the Valsea API specifically for its specialized Southeast Asian automatic speech recognition (ASR) capabilities.
 
 * **Speech-to-Text & Localization Engine: Valsea API**
-* **Role:** Replaces standard global ASRs that struggle with local nuances. Valsea processes the raw audio to detect accents (Singlish, Indian English/Tamil, etc.), handle code-switching, and output annotated text, natural English translations, and baseline sentiment.
-
+  * **Role:** Replaces standard global ASRs that struggle with local nuances. Valsea processes the raw audio to detect accents, handle code-switching, and output annotated text, natural English translations, and baseline sentiment.
 
 * **Intent Recognition & Threat Analysis: Google Vertex AI (Gemini 1.5 Pro)**
-* **Role:** The translated text and semantic tags from Valsea are routed to Vertex AI. Gemini analyzes the conversational context against known fraud typologies. It identifies the "government agency" impersonation intent, assesses the threat level, and structures the data for alerting.
-
+  * **Role:** The translated text and semantic tags from Valsea are routed to Vertex AI. Gemini analyzes the conversational context against known fraud typologies. It identifies the "government agency" impersonation intent, assesses the threat level, and structures the data for alerting.
 
 * **Backend Orchestration: Google Cloud Functions & Cloud Run**
-* **Role:** Serverless compute acts as the middleware. It handles webhook events, manages the API calls to Valsea for transcription, and subsequently triggers Vertex AI for the logic processing.
-
+  * **Role:** Serverless compute acts as the middleware. It handles webhook events, manages the API calls to Valsea for transcription, and subsequently triggers Vertex AI for the logic processing.
 
 * **Real-time Event Streaming: Google Cloud Pub/Sub**
-* **Role:** Manages the asynchronous audio streams from the telephony provider and ensures ultra-low-latency delivery of the transcribed text and fraud alerts to the frontend.
-
+  * **Role:** Manages the asynchronous audio streams from the telephony provider and ensures ultra-low-latency delivery of the transcribed text and fraud alerts to the frontend.
 
 * **Database & State Management: Google Cloud Firestore**
-* **Role:** A NoSQL document database used to store active call states, historical transcripts, and fraud incident logs for post-call compliance auditing and reporting.
-
+  * **Role:** A NoSQL document database used to store active call states, historical transcripts, and fraud incident logs for post-call compliance auditing and reporting.
 
 * **Frontend UI / Agent Dashboard: Firebase Hosting**
-* **Role:** Hosts the lightweight web application where the coherent English transcripts, caller sentiment, and dynamic fraud alerts are displayed to the call center staff in real-time.
-
+  * **Role:** Hosts the lightweight web application where the coherent English transcripts, caller sentiment, and dynamic fraud alerts are displayed to the call center staff in real-time.
 
 * **Telephony Integration (Optional): Google Contact Center AI (CCAI)**
-* **Role:** Dialogflow CX can be integrated to dynamically route calls. If a fraudster is detected, the system can automatically drop the call or route it to a specialized security unit.
-
-
+  * **Role:** Dialogflow CX can be integrated to dynamically route calls. If a fraudster is detected, the system can automatically drop the call or route it to a specialized security unit.
 
 ## 5. System User Flow
 
 1. **Audio Ingestion:** A call connects. The audio stream is captured and routed via Cloud Pub/Sub to a Cloud Function.
 2. **Transcription (Valsea):** The Cloud Function sends the audio payload to the **Valsea API**.
-* *Path A (Legitimate Complaint):* Valsea identifies the Singlish, standardizes it to fluent English, and tags it with "High Frustration."
-* *Path B (Fraudster):* Valsea identifies the accent, transcribes the coercive language, and returns the text.
-
-
+   * *Path A (Legitimate Complaint):* Valsea identifies the Singlish, standardizes it to fluent English, and tags it with "High Frustration."
+   * *Path B (Fraudster):* Valsea transcribes the coercive language, accents, and returns the text.
 3. **Context & Threat Analysis (Vertex AI):** The structured text is passed to **Gemini via Vertex AI**.
-* Gemini parses statements like *"I am calling from the authorities, your account is under investigation."* It classifies this against known impersonation fraud vectors.
-
-
+   * Gemini parses statements like *"I am calling from the authorities, your account is under investigation."* It classifies this against known impersonation fraud vectors.
 4. **Real-Time UI Delivery (Firebase):** The Firebase dashboard updates instantly via web sockets.
-* *Path A Output:* Staff sees a clean summary of the customer's issue and actionable next steps.
-* *Path B Output:* The screen flashes a red warning, providing the staff member with an immediate script to terminate the call safely and log the number.
+   * *Path A Output:* Staff sees a clean summary of the customer's issue and actionable next steps.
+   * *Path B Output:* The screen flashes a red warning, providing the staff member with an immediate script to terminate the call safely and log the number.
 
+## 6. Live Demo Strategy (Judging Criteria: Live Demo 45%)
 
+Since the Live Demo makes up almost half of the score, the presentation must be flawless, fast, and highly visual. How it works live decides everything:
+* **The Setup:** Use a split-screen or dual-device presentation setup. Act 1 and Act 2 should be contrasting.
+* **Act 1 (The Singlish Complaint):** Play an audio snippet of rapid, thick Singlish. The dashboard instantly shows the "raw ASR" output struggling (to show context), then immediately updates with the *clean Valsea + Gemini translation* displaying a "Frustrated 💢" emotion tag.
+* **Act 2 (The Scam Call):** A teammate dials in using a common scam script ("Hello, this is the Police, your bank account is frozen..."). As the sentence forms, the dashboard visually turns from green/neutral to RED and flashes a massive **"⚠️ SCAM DETECTED: GOVERNMENT IMPERSONATION"** warning. The visual impact needs to be instantaneous and dramatic.
+* **Execution Tip:** While "live" is important, the network at hackathons can be spotty. Have a localized fallback or tightly controlled WebSocket flow ready to ensure zero latency during the 3-minute pitch. A reliable demo is better than a broken fully-live one.
 
-## 6. Future Considerations
+## 7. Future Considerations & Beyond the Hackathon
 
-* **Automated Suspicious Activity Reporting:** Directly pipe the Vertex AI fraud classifications into case management tools for streamlined incident reporting.
-* **Omnichannel Expansion:** Extend the Valsea + Gemini architecture to process asynchronous audio files (e.g., WhatsApp voice notes forwarded by users to a fraud hotline).
+* **Consumer App Pivot for Maximum Impact:** Shift the long-term vision from B2B call centers to a B2C mobile app/integration that acts as an "AI bouncer" on elderly parents' phones.
+* **Automated Suspicious Activity Reporting:** Directly pipe the Vertex AI fraud classifications into law enforcement or bank case management tools.
+* **Omnichannel Expansion:** Extend the architecture to process asynchronous audio files (e.g., WhatsApp voice notes forwarded by users to a fraud hotline).
 
 
 -- Steven: 1. I assume we narrow down the target customers scope to: call center, corporate front desk. And the incoming call should be handled by? 
