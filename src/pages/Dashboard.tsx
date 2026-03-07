@@ -461,6 +461,8 @@ export default function Dashboard() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [activeScenario, setActiveScenario] = useState<Scenario>("logistics");
   const [eventSidebarOpen, setEventSidebarOpen] = useState(false);
+  const [scenarioDropdownOpen, setScenarioDropdownOpen] = useState(false);
+  const scenarioDropdownRef = useRef<HTMLDivElement>(null);
   const [isRunning, setIsRunning] = useState(false);
   const [demoPhase, setDemoPhase] = useState<"idle" | "streaming" | "complete">("idle");
   const [visibleLines, setVisibleLines] = useState<number>(0);
