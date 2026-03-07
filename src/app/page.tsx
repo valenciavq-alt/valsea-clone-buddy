@@ -639,16 +639,53 @@ export default function Home() {
         <div className="grid grid-cols-12 gap-4 mb-4">
           {/* Acoustic Layer */}
           <div className="col-span-12 md:col-span-3 panel p-5">
-            <PanelHeader icon={Mic} title="Acoustic Layer" badge={demoPhase === "streaming" ? "ACTIVE" : "IDLE"} badgeColor={demoPhase === "streaming" ? "#22c55e" : undefined} />
+            <PanelHeader
+              icon={Mic}
+              title="Acoustic Layer"
+              badge={isRecording ? "RECORDING" : isAnalyzingAudio ? "ANALYZING" : demoPhase === "streaming" ? "ACTIVE" : "IDLE"}
+              badgeColor={isRecording ? "#ef4444" : isAnalyzingAudio ? "#f59e0b" : demoPhase === "streaming" ? "#22c55e" : undefined}
+            />
             <div className="mt-4">
-              <WaveformVisualizer isActive={demoPhase === "streaming"} />
+              <WaveformVisualizer isActive={isRecording || demoPhase === "streaming"} />
             </div>
-            <div className="flex items-center justify-between mt-6 pt-3 border-t border-[var(--border-subtle)]">
+
+            {/* Recording timer */}
+            {isRecording && (
+              <div className="text-center mt-3">
+                <span className="text-lg font-mono font-semibold text-[var(--danger)]">{formatTime(recordingTime)}</span>
+              </div>
+            )}
+            {isAnalyzingAudio && (
+              <div className="flex items-center justify-center gap-2 mt-3 text-xs text-[var(--warning)]">
+                <Loader2 className="w-3 h-3 animate-spin" /> Processing audio...
+              </div>
+            )}
+
+            {/* Mic button */}
+            <div className="flex justify-center mt-4">
+              <button
+                onClick={isRecording ? stopRecording : startRecording}
+                disabled={isAnalyzingAudio}
+                className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-all disabled:opacity-50"
+                style={{
+                  background: isRecording ? "var(--danger)" : "var(--brand-gradient)",
+                  color: "white",
+                }}
+              >
+                {isRecording ? (
+                  <><Square className="w-3 h-3" /> Stop Recording</>
+                ) : (
+                  <><Mic className="w-3 h-3" /> Record Audio</>
+                )}
+              </button>
+            </div>
+
+            <div className="flex items-center justify-between mt-4 pt-3 border-t border-[var(--border-subtle)]">
               <span className="text-[10px] font-mono text-[var(--muted)] flex items-center gap-1">
                 <Radio className="w-3 h-3" /> VAPI WEBRTC
               </span>
               <span className="text-[10px] font-mono text-[var(--muted)]">
-                {demoPhase === "streaming" ? "128ms" : "0ms"} LATENCY
+                {isRecording ? "LIVE" : demoPhase === "streaming" ? "128ms" : "0ms"} LATENCY
               </span>
             </div>
           </div>
