@@ -547,6 +547,7 @@ export default function Dashboard() {
       timerRef.current = setInterval(() => setRecordingTime((t) => t + 1), 1000);
     } catch (err) {
       console.error("Microphone access denied:", err);
+      showToast("Microphone access denied — please allow microphone permissions.", "warning");
     }
   }, []);
 
