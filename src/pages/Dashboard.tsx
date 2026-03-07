@@ -278,7 +278,7 @@ export default function Dashboard() {
   const [vapiStatus, setVapiStatus] = useState<"idle" | "connecting" | "active">("idle");
   const [liveTranscript, setLiveTranscript] = useState<{ role: "user" | "assistant"; text: string }[]>([]);
   const [latencyMs, setLatencyMs] = useState(0);
-  const vapiRef = useRef<Vapi | null>(null);
+  const vapiRef = useRef<any>(null);
   const analysisTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastAnalysisRef = useRef<string>("");
 
