@@ -368,6 +368,7 @@ export default function Dashboard() {
       });
     } catch (err) {
       console.error("[VAPI Live] Analysis failed:", err);
+      showToast(classifyError(err));
     }
   }, []);
 
