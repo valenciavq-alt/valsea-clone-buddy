@@ -281,6 +281,99 @@ export default function Home() {
   const [payload, setPayload] = useState<EnterprisePayload | null>(null);
   const [streamStats] = useState({ streams: 1402, p50: 124, regions: 12, alerts: 0 });
 
+  // Microphone recording state
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
+  const [isAnalyzingAudio, setIsAnalyzingAudio] = useState(false);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const startRecording = useCallback(async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+      mediaRecorderRef.current = mediaRecorder;
+      chunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) chunksRef.current.push(e.data);
+      };
+
+      mediaRecorder.onstop = async () => {
+        stream.getTracks().forEach((t) => t.stop());
+        const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+        const file = new File([blob], "recording.webm", { type: "audio/webm" });
+
+        // Send to analyze endpoint
+        setIsAnalyzingAudio(true);
+        setDemoPhase("streaming");
+        try {
+          const formData = new FormData();
+          formData.append("file", file);
+          const res = await fetch("/api/analyze", { method: "POST", body: formData });
+          if (res.ok) {
+            const data = await res.json();
+            setEmotions({
+              frustration: data.emotions?.frustration ?? 0,
+              stress: data.emotions?.anxiety ?? 0,
+              politeness: data.emotions?.politeness ?? 0,
+              hesitation: 0,
+              urgency: data.emotions?.confidence ?? 0,
+            });
+            setSecurity({
+              syntheticProb: data.security?.deepfakeProb ?? 0,
+              behavioralRisk: data.security?.threatFlag ? 0.85 : 0.05,
+              livenessStatus: data.security?.threatFlag ? "failed" : "verified",
+            });
+            setIntent({
+              literal: data.cognitive?.translation ?? "",
+              cultural: data.cognitive?.cultural_context ?? "",
+              trueIntent: data.cognitive?.intent ?? "",
+            });
+            setPayload({
+              type: "live_audio_analysis",
+              data: {
+                summary: data.summary,
+                fraud_verdict: data.cognitive?.fraud_verdict,
+                action_advised: data.cognitive?.action_advised,
+                risk_level: data.security?.riskLevel,
+                timestamp: new Date().toISOString(),
+              },
+            });
+            setDemoPhase("complete");
+          } else {
+            console.error("Analysis failed:", await res.text());
+            setDemoPhase("idle");
+          }
+        } catch (err) {
+          console.error("Failed to analyze audio:", err);
+          setDemoPhase("idle");
+        } finally {
+          setIsAnalyzingAudio(false);
+        }
+      };
+
+      mediaRecorder.start(250);
+      setIsRecording(true);
+      setRecordingTime(0);
+      timerRef.current = setInterval(() => setRecordingTime((t) => t + 1), 1000);
+    } catch (err) {
+      console.error("Microphone access denied:", err);
+    }
+  }, []);
+
+  const stopRecording = useCallback(() => {
+    mediaRecorderRef.current?.stop();
+    setIsRecording(false);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  }, []);
+
+  const formatTime = (s: number) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
+
   // Theme management
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
