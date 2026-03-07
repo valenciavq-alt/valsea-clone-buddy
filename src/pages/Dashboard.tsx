@@ -740,6 +740,17 @@ export default function Dashboard() {
 
   const toggleTheme = () => setTheme((t) => (t === "light" ? "dark" : "light"));
 
+  // Close scenario dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (scenarioDropdownRef.current && !scenarioDropdownRef.current.contains(e.target as Node)) {
+        setScenarioDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
   const config = SCENARIOS[activeScenario];
   const transcript = DEMO_TRANSCRIPTS[activeScenario];
 
