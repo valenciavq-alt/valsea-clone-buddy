@@ -284,7 +284,164 @@ export default function Home() {
   const [payload, setPayload] = useState<EnterprisePayload | null>(null);
   const [streamStats] = useState({ streams: 1402, p50: 124, regions: 12, alerts: 0 });
 
-  // Microphone recording state
+  // ── Vapi WebRTC Live Streaming ────────────────────────────────────────
+  const [vapiStatus, setVapiStatus] = useState<"idle" | "connecting" | "active">("idle");
+  const [liveTranscript, setLiveTranscript] = useState<{ role: "user" | "assistant"; text: string }[]>([]);
+  const [latencyMs, setLatencyMs] = useState(0);
+  const vapiRef = useRef<Vapi | null>(null);
+  const analysisTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastAnalysisRef = useRef<string>("");
+
+  // Initialize Vapi
+  useEffect(() => {
+    const key = process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY;
+    if (key && typeof window !== "undefined") {
+      vapiRef.current = new Vapi(key);
+    }
+    return () => {
+      vapiRef.current?.removeAllListeners();
+      vapiRef.current?.stop();
+    };
+  }, []);
+
+  // Run analysis on accumulated transcript
+  const runLiveAnalysis = useCallback(async (text: string) => {
+    if (!text.trim() || text === lastAnalysisRef.current) return;
+    lastAnalysisRef.current = text;
+    
+    try {
+      const res = await fetch("/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ dialog: text }),
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      
+      setEmotions({
+        frustration: data.emotions?.frustration ?? 0,
+        stress: data.emotions?.anxiety ?? 0,
+        politeness: data.emotions?.politeness ?? 0,
+        hesitation: 0,
+        urgency: data.emotions?.confidence ?? 0,
+      });
+      setSecurity({
+        syntheticProb: data.security?.deepfakeProb ?? 0,
+        behavioralRisk: data.security?.threatFlag ? 0.85 : 0.05,
+        livenessStatus: data.security?.threatFlag ? "failed" : "verified",
+      });
+      setIntent({
+        literal: data.cognitive?.translation ?? "",
+        cultural: data.cognitive?.cultural_context ?? "",
+        trueIntent: data.cognitive?.intent ?? "",
+      });
+      setPayload({
+        type: "vapi_live_analysis",
+        data: {
+          summary: data.summary,
+          fraud_verdict: data.cognitive?.fraud_verdict,
+          action_advised: data.cognitive?.action_advised,
+          risk_level: data.security?.riskLevel,
+          timestamp: new Date().toISOString(),
+        },
+      });
+    } catch (err) {
+      console.error("[VAPI Live] Analysis failed:", err);
+    }
+  }, []);
+
+  // Schedule debounced analysis
+  const scheduleAnalysis = useCallback((transcriptLines: { role: string; text: string }[]) => {
+    if (analysisTimeoutRef.current) clearTimeout(analysisTimeoutRef.current);
+    analysisTimeoutRef.current = setTimeout(() => {
+      const fullText = transcriptLines.map((l) => `${l.role === "user" ? "Caller" : "Agent"}: ${l.text}`).join("\n");
+      runLiveAnalysis(fullText);
+    }, 2000); // Analyze 2s after last transcript chunk
+  }, [runLiveAnalysis]);
+
+  const startVapiCall = useCallback(async () => {
+    const vapi = vapiRef.current;
+    if (!vapi) {
+      console.warn("Vapi not initialized — check NEXT_PUBLIC_VAPI_PUBLIC_KEY");
+      return;
+    }
+
+    setVapiStatus("connecting");
+    setLiveTranscript([]);
+    setDemoPhase("streaming");
+    setEmotions({ frustration: 0, stress: 0, politeness: 0, hesitation: 0, urgency: 0 });
+    setSecurity({ syntheticProb: 0, behavioralRisk: 0, livenessStatus: "scanning" });
+    setIntent({ literal: "", cultural: "", trueIntent: "" });
+    setPayload(null);
+    lastAnalysisRef.current = "";
+    const startTime = Date.now();
+
+    vapi.removeAllListeners();
+
+    vapi.on("call-start", () => {
+      setVapiStatus("active");
+      setLatencyMs(Date.now() - startTime);
+    });
+
+    vapi.on("call-end", () => {
+      setVapiStatus("idle");
+      // Run final analysis
+      setLiveTranscript((prev) => {
+        const fullText = prev.map((l) => `${l.role === "user" ? "Caller" : "Agent"}: ${l.text}`).join("\n");
+        runLiveAnalysis(fullText);
+        return prev;
+      });
+      setDemoPhase("complete");
+    });
+
+    vapi.on("message", (msg: any) => {
+      if (msg.type === "transcript" && msg.transcriptType === "final" && msg.transcript) {
+        const role: "user" | "assistant" = msg.role === "user" ? "user" : "assistant";
+        setLiveTranscript((prev) => {
+          const updated = [...prev, { role, text: msg.transcript }];
+          scheduleAnalysis(updated);
+          return updated;
+        });
+      }
+    });
+
+    vapi.on("error", (error: Error) => {
+      console.error("[Vapi Error]", error);
+      setVapiStatus("idle");
+      setDemoPhase("idle");
+    });
+
+    try {
+      await vapi.start({
+        transcriber: {
+          provider: "google",
+          model: "telephony",
+          language: "en-US",
+        },
+        model: {
+          provider: "google",
+          model: "gemini-1.5-flash",
+          messages: [
+            {
+              role: "system",
+              content: `You are the VALSEA honeypot AI layer. Speak briefly and act like a polite but confused customer service operative. Keep the user talking so VALSEA can analyze their speech patterns, intent, and cultural context.`,
+            },
+          ],
+        },
+        firstMessage: "Hello, this is Sentinel Voice. How can I help you today?",
+      } as any);
+    } catch (err) {
+      console.error("[Vapi Start Error]", err);
+      setVapiStatus("idle");
+      setDemoPhase("idle");
+    }
+  }, [runLiveAnalysis, scheduleAnalysis]);
+
+  const stopVapiCall = useCallback(() => {
+    vapiRef.current?.stop();
+  }, []);
+
+  // Microphone recording fallback (when no Vapi key)
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [isAnalyzingAudio, setIsAnalyzingAudio] = useState(false);
@@ -308,7 +465,6 @@ export default function Home() {
         const blob = new Blob(chunksRef.current, { type: "audio/webm" });
         const file = new File([blob], "recording.webm", { type: "audio/webm" });
 
-        // Send to analyze endpoint
         setIsAnalyzingAudio(true);
         setDemoPhase("streaming");
         try {
@@ -346,11 +502,9 @@ export default function Home() {
             });
             setDemoPhase("complete");
           } else {
-            console.error("Analysis failed:", await res.text());
             setDemoPhase("idle");
           }
-        } catch (err) {
-          console.error("Failed to analyze audio:", err);
+        } catch {
           setDemoPhase("idle");
         } finally {
           setIsAnalyzingAudio(false);
@@ -376,6 +530,7 @@ export default function Home() {
   }, []);
 
   const formatTime = (s: number) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
+  const hasVapiKey = typeof process !== "undefined" && !!process.env?.NEXT_PUBLIC_VAPI_PUBLIC_KEY;
 
   // Theme management
   useEffect(() => {
