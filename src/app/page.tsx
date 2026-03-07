@@ -382,7 +382,7 @@ export default function Home() {
 
           {/* Scenario Tabs + Run */}
           <div className="flex items-center gap-3">
-            <div className="hidden md:flex items-center bg-white/[0.04] rounded-lg p-0.5">
+            <div className="hidden md:flex items-center bg-[var(--bar-track)] rounded-lg p-0.5">
               {(Object.keys(SCENARIOS) as Scenario[]).map((key) => (
                 <button
                   key={key}
