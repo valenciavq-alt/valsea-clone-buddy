@@ -691,6 +691,7 @@ export default function Dashboard() {
                 },
               });
               setDemoPhase("complete");
+              showToast("Audio analysis completed successfully.", "success");
             } else {
               setDemoPhase("idle");
               showToast(classifyError(new Error(`Audio analysis error: ${res.status}`)));
