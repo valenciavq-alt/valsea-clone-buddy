@@ -22,6 +22,18 @@ import {
   PanelLeftOpen,
   X,
 } from "lucide-react";
+import { useToast } from "@/components/Toast";
+
+function classifyError(err: unknown): string {
+  const msg = err instanceof Error ? err.message : String(err);
+  if (msg.includes("429") || msg.toLowerCase().includes("rate limit")) return "Rate limit exceeded — please wait a moment and try again.";
+  if (msg.includes("402") || msg.toLowerCase().includes("credit") || msg.toLowerCase().includes("quota")) return "API credits exhausted — check your plan usage.";
+  if (msg.includes("401") || msg.includes("403")) return "Authentication failed — check your API key configuration.";
+  if (msg.includes("500") || msg.includes("502") || msg.includes("503")) return "Server error — the analysis service is temporarily unavailable.";
+  if (msg.toLowerCase().includes("fetch") || msg.toLowerCase().includes("network") || msg.toLowerCase().includes("failed to fetch")) return "Network error — check your internet connection.";
+  return msg || "Analysis failed — please try again.";
+}
+
 // ─── Analyze via Lovable Cloud edge function ────────────────────────────────
 async function analyzeDialog(text: string) {
   const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze`;
