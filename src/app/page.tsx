@@ -1,7 +1,13 @@
+"use client";
+
 import VapiCallButton from "@/components/vapi/VapiCallButton";
 import { ShieldAlert, Activity, BrainCircuit, Mic, Waves } from "lucide-react";
+import { useVALSEA } from "@/context/VALSEAContext";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Home() {
+  const { state } = useVALSEA();
+
   return (
     <main className="min-h-screen bg-slate-950 text-slate-50 font-sans selection:bg-emerald-500/30 overflow-hidden relative">
       {/* Background gradients */}
@@ -40,10 +46,12 @@ export default function Home() {
                 </h2>
                 <div className="flex items-center gap-2">
                   <span className="relative flex h-3 w-3">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                    <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${state.isCalling ? "bg-emerald-400" : "bg-slate-400"} opacity-75`}></span>
+                    <span className={`relative inline-flex rounded-full h-3 w-3 ${state.isCalling ? "bg-emerald-500" : "bg-slate-500"}`}></span>
                   </span>
-                  <span className="text-xs text-emerald-400 font-mono tracking-widest font-bold">LISTENING</span>
+                  <span className={`text-xs ${state.isCalling ? "text-emerald-400" : "text-slate-400"} font-mono tracking-widest font-bold`}>
+                    {state.isCalling ? "LISTENING" : "STANDBY"}
+                  </span>
                 </div>
               </div>
 
@@ -52,12 +60,16 @@ export default function Home() {
                 <div className="absolute inset-0 bg-emerald-500/5 mix-blend-overlay" />
                 <div className="flex items-end space-x-[3px] h-12 w-full px-8 justify-center">
                   {[...Array(40)].map((_, i) => (
-                    <div
+                    <motion.div
                       key={i}
                       className="w-1.5 bg-emerald-500/80 rounded-t-sm"
-                      style={{
-                        height: `${Math.max(15, Math.random() * 100)}%`,
-                        animation: `pulse ${0.5 + Math.random() * 1.5}s ease-in-out infinite alternate`
+                      animate={{
+                        height: state.isCalling ? [`${Math.max(15, Math.random() * 100)}%`, `${Math.max(15, Math.random() * 100)}%`] : "15%"
+                      }}
+                      transition={{
+                        duration: 0.2,
+                        repeat: Infinity,
+                        repeatType: "mirror"
                       }}
                     />
                   ))}
@@ -71,15 +83,27 @@ export default function Home() {
                 </div>
                 <p className="text-slate-500 italic mb-3">// Raw Transcription Feed</p>
                 <div className="space-y-4">
-                  <div className="bg-slate-900 border border-slate-800 p-3 rounded-lg border-l-2 border-l-emerald-500">
-                    <p><span className="text-emerald-400 font-bold mb-1 block">Caller (Customer):</span>
-                      &quot;Walao eh, the driver is blur like sotong! He say he arrived but where got?&quot;</p>
-                  </div>
-                  <div className="bg-slate-800/50 border border-slate-700 p-3 rounded-lg border-l-2 border-l-blue-400">
-                    <p><span className="text-blue-400 font-bold mb-1 block">Agent (VALSEA):</span>
-                      &quot;I see that the driver has arrived. I&apos;m investigating this right now. Please hold for just a moment.&quot;</p>
-                  </div>
-                  <p className="animate-pulse text-emerald-500 font-bold">_</p>
+                  <AnimatePresence initial={false}>
+                    {state.transcript.length === 0 && (
+                      <p className="text-slate-600 italic">Waiting for connection...</p>
+                    )}
+                    {state.transcript.map((msg, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className={`p-3 rounded-lg border-l-2 ${msg.role === "user" ? "bg-slate-900 border-slate-800 border-l-emerald-500" : "bg-slate-800/50 border-slate-700 border-l-blue-400"}`}
+                      >
+                        <p>
+                          <span className={`${msg.role === "user" ? "text-emerald-400" : "text-blue-400"} font-bold mb-1 block`}>
+                            {msg.role === "user" ? "Caller (Customer):" : "Agent (VALSEA):"}
+                          </span>
+                          &quot;{msg.text}&quot;
+                        </p>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                  {state.isCalling && <p className="animate-pulse text-emerald-500 font-bold">_</p>}
                 </div>
               </div>
             </div>
@@ -101,41 +125,56 @@ export default function Home() {
                   <div>
                     <div className="flex justify-between text-xs mb-1.5 font-mono">
                       <span className="text-slate-400 uppercase tracking-wider">Frustration</span>
-                      <span className="text-indigo-400 font-bold">0.89</span>
+                      <span className="text-indigo-400 font-bold">{(state.emotions.frustration).toFixed(2)}</span>
                     </div>
                     <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden shadow-inner flex">
-                      <div className="h-full bg-indigo-500 w-[89%] shadow-[0_0_8px_rgba(99,102,241,0.6)]" />
+                      <motion.div
+                        className="h-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.6)]"
+                        animate={{ width: `${state.emotions.frustration * 100}%` }}
+                      />
                     </div>
                   </div>
                   <div>
                     <div className="flex justify-between text-xs mb-1.5 font-mono">
                       <span className="text-slate-400 uppercase tracking-wider">Anxiety</span>
-                      <span className="text-amber-400 font-bold">0.65</span>
+                      <span className="text-amber-400 font-bold">{(state.emotions.anxiety).toFixed(2)}</span>
                     </div>
                     <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden shadow-inner">
-                      <div className="h-full bg-amber-500 w-[65%] shadow-[0_0_8px_rgba(245,158,11,0.6)]" />
+                      <motion.div
+                        className="h-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.6)]"
+                        animate={{ width: `${state.emotions.anxiety * 100}%` }}
+                      />
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Security Engine (Modulate) */}
-              <div className="bg-slate-900/40 border-l border-b border-t border-slate-800 border-r-4 border-r-rose-500/80 rounded-2xl p-5 backdrop-blur-sm shadow-[inset_-15px_0_30px_rgba(244,63,94,0.08)] relative overflow-hidden">
-                <div className="absolute -right-4 -top-4 w-24 h-24 bg-rose-500/10 blur-xl rounded-full mix-blend-screen" />
+              <div className={`bg-slate-900/40 border border-slate-800 rounded-2xl p-5 backdrop-blur-sm shadow-xl relative overflow-hidden transition-colors ${state.security.threatFlag ? "border-r-4 border-r-rose-500/80 shadow-[inset_-15px_0_30px_rgba(244,63,94,0.08)]" : ""}`}>
+                {state.security.threatFlag && (
+                  <div className="absolute -right-4 -top-4 w-24 h-24 bg-rose-500/10 blur-xl rounded-full mix-blend-screen" />
+                )}
                 <h3 className="text-sm font-semibold flex items-center gap-2 mb-4 text-slate-200 z-10 relative">
                   <ShieldAlert className="w-4 h-4 text-rose-400" />
                   Security (Modulate)
                 </h3>
                 <div className="flex items-center justify-between mb-2 z-10 relative">
                   <span className="text-[11px] text-slate-400 uppercase tracking-wider font-mono">Deepfake Prob</span>
-                  <span className="text-rose-400 font-mono text-base font-bold drop-shadow-[0_0_5px_rgba(244,63,94,0.5)]">0.98 !!</span>
+                  <span className={`font-mono text-base font-bold ${state.security.deepfakeProb > 0.8 ? "text-rose-400 drop-shadow-[0_0_5px_rgba(244,63,94,0.5)]" : "text-emerald-400"}`}>
+                    {(state.security.deepfakeProb).toFixed(2)} {state.security.deepfakeProb > 0.8 ? "!!" : ""}
+                  </span>
                 </div>
                 <div className="h-2.5 w-full bg-slate-800 rounded-full overflow-hidden mb-4 shadow-inner z-10 relative">
-                  <div className="h-full bg-rose-500 w-[98%] shadow-[0_0_12px_rgba(244,63,94,1)] animate-pulse" />
+                  <motion.div
+                    className={`h-full ${state.security.deepfakeProb > 0.8 ? "bg-rose-500 shadow-[0_0_12px_rgba(244,63,94,1)] animate-pulse" : "bg-emerald-500"}`}
+                    animate={{ width: `${state.security.deepfakeProb * 100}%` }}
+                  />
                 </div>
-                <div className="bg-rose-500/20 border border-rose-500/40 text-rose-300 text-[10px] px-2.5 py-1.5 rounded-md uppercase tracking-widest font-bold flex items-center justify-center z-10 relative shadow-[0_0_15px_rgba(244,63,94,0.2)]">
-                  <span className="animate-pulse">Behavioral Threat Flagged</span>
-                </div>
+                {state.security.threatFlag && (
+                  <div className="bg-rose-500/20 border border-rose-500/40 text-rose-300 text-[10px] px-2.5 py-1.5 rounded-md uppercase tracking-widest font-bold flex items-center justify-center z-10 relative shadow-[0_0_15px_rgba(244,63,94,0.2)]">
+                    <span className="animate-pulse">Behavioral Threat Flagged</span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -150,24 +189,33 @@ export default function Home() {
                   Cognitive Synthesis
                 </h3>
                 <span className="bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[10px] px-2 py-0.5 rounded uppercase font-mono tracking-widest">
-                  Gemini Flash 3
+                  Gemini Flash 1.5
                 </span>
               </div>
 
               <div className="flex-1 bg-slate-950/80 border border-slate-800/80 rounded-xl p-5 font-mono text-[13px] overflow-y-auto shadow-inner relative z-10 group-hover:border-blue-500/30 transition-colors">
                 <p className="text-slate-500 italic mb-4">// Intent Realignment output via Gemini reasoning engine</p>
-                <div className="text-sky-300 leading-relaxed font-medium">
-                  <span className="text-slate-400">&#123;</span><br />
-                  <div className="pl-4 border-l border-slate-800 group-hover:border-blue-500/30 transition-colors py-1">
-                    <span className="text-blue-300">&quot;status&quot;:</span> <span className="text-emerald-400">&quot;OK&quot;</span>,<br />
-                    <span className="text-blue-300">&quot;intent&quot;:</span> <span className="text-amber-300">&quot;High Priority Complaint - Unfulfilled Logistics&quot;</span>,<br />
-                    <span className="text-blue-300">&quot;translation&quot;:</span> <span className="text-slate-200">&quot;The customer is extremely frustrated. The assigned driver has not arrived despite falsely claiming arrival.&quot;</span>,<br />
-                    <span className="text-blue-300">&quot;cultural_context&quot;:</span> <span className="text-slate-200">&quot;Uses colloquialism &apos;blur like sotong&apos; (Singlish) indicating the driver is perceived as highly incompetent or severely confused.&quot;</span>,<br />
-                    <span className="text-blue-300">&quot;fraud_verdict&quot;:</span> <span className="text-rose-400">&quot;HIGH RISK IMPERSONATION. Social Engineering markers present.&quot;</span>,<br />
-                    <span className="text-blue-300">&quot;action_advised&quot;:</span> <span className="text-slate-200">&quot;Bypass chatbot queue. Trigger Dynamic Honeypot Protocol. Alert PI team.&quot;</span>
-                  </div>
-                  <span className="text-slate-400">&#125;</span>
-                </div>
+
+                {state.cognitive ? (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-sky-300 leading-relaxed font-medium"
+                  >
+                    <span className="text-slate-400">&#123;</span><br />
+                    <div className="pl-4 border-l border-slate-800 group-hover:border-blue-500/30 transition-colors py-1">
+                      <span className="text-blue-300">&quot;status&quot;:</span> <span className="text-emerald-400">&quot;{state.cognitive.status}&quot;</span>,<br />
+                      <span className="text-blue-300">&quot;intent&quot;:</span> <span className="text-amber-300">&quot;{state.cognitive.intent}&quot;</span>,<br />
+                      <span className="text-blue-300">&quot;translation&quot;:</span> <span className="text-slate-200">&quot;{state.cognitive.translation}&quot;</span>,<br />
+                      <span className="text-blue-300">&quot;cultural_context&quot;:</span> <span className="text-slate-200">&quot;{state.cognitive.cultural_context}&quot;</span>,<br />
+                      <span className={`text-blue-300`}>&quot;fraud_verdict&quot;:</span> <span className={state.cognitive.fraud_verdict.includes("HIGH") ? "text-rose-400" : "text-emerald-400"}>&quot;{state.cognitive.fraud_verdict}&quot;</span>,<br />
+                      <span className="text-blue-300">&quot;action_advised&quot;:</span> <span className="text-slate-200">&quot;{state.cognitive.action_advised}&quot;</span>
+                    </div>
+                    <span className="text-slate-400">&#125;</span>
+                  </motion.div>
+                ) : (
+                  <p className="text-slate-700 animate-pulse font-mono">Waiting for intent analysis...</p>
+                )}
 
               </div>
             </div>

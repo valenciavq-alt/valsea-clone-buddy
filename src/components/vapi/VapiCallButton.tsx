@@ -3,21 +3,60 @@
 import { useEffect, useState } from "react";
 import Vapi from "@vapi-ai/web";
 import { PhoneOff, PhoneCall } from "lucide-react";
+import { useVALSEA } from "@/context/VALSEAContext";
 
 export default function VapiCallButton() {
     const [callStatus, setCallStatus] = useState<"inactive" | "loading" | "active">("inactive");
     const [vapi, setVapi] = useState<Vapi | null>(null);
+    const { updateTranscript, updateEmotions, updateSecurity, updateCognitive, setIsCalling, resetState } = useVALSEA();
 
     useEffect(() => {
         // Initialize Vapi with the public key from env
         const vapiInstance = new Vapi(process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY || "dummy-key");
         setVapi(vapiInstance);
 
-        vapiInstance.on("call-start", () => setCallStatus("active"));
-        vapiInstance.on("call-end", () => setCallStatus("inactive"));
+        vapiInstance.on("call-start", () => {
+            setCallStatus("active");
+            setIsCalling(true);
+        });
+
+        vapiInstance.on("call-end", () => {
+            setCallStatus("inactive");
+            setIsCalling(false);
+        });
+
+        vapiInstance.on("speech-update", (update) => {
+            if (update.type === "transcript" && update.status === "final") {
+                updateTranscript(update.role, update.transcript);
+            }
+        });
+
+        vapiInstance.on("message", (message) => {
+            console.log("[Vapi Message]", message);
+            // Handle custom data from webhooks/functions
+            if (message.type === "transcript" && message.transcriptType === "final") {
+                updateTranscript(message.role === "user" ? "user" : "assistant", message.transcript);
+            }
+
+            if (message.type === "function-call-result") {
+                // Example of structured data returning from a tool
+                try {
+                    const result = JSON.parse(message.result);
+                    if (result.type === "valsea-analysis") {
+                        updateEmotions(result.emotions);
+                        updateSecurity(result.security);
+                        updateCognitive(result.cognitive);
+                    }
+                } catch (e) {
+                    console.error("Failed to parse function call result", e);
+                }
+            }
+        });
+
         vapiInstance.on("error", (error: Error) => {
             console.error("Vapi Error:", error);
             setCallStatus("inactive");
+            setIsCalling(false);
         });
 
         return () => {
@@ -32,6 +71,7 @@ export default function VapiCallButton() {
             vapi.stop();
         } else {
             setCallStatus("loading");
+            resetState();
 
             // Start the call with Project VALSEA's intended configuration:
             // Google Chirp for ASR + Gemini 3 Flash as the cognitive hub.
@@ -47,7 +87,11 @@ export default function VapiCallButton() {
                     messages: [
                         {
                             role: "system",
-                            content: "You are the VALSEA Intent Normalizer. Your goal is to ensure 100% mutual understanding between a customer with an Asian-accented English dialect and the business system. Focus on Intent rather than just literal ASR text.",
+                            content: `You are the VALSEA Intent Normalizer. 
+                            Your goal is to ensure 100% mutual understanding between a customer with an Asian-accented English dialect and the business system. 
+                            Focus on Intent rather than just literal ASR text.
+                            
+                            When you detect specific cultural nuances or emotional distress, you should trigger the 'analyze_interaction' tool with the context.`,
                         },
                     ],
                 },

@@ -1,41 +1,84 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Environments
+.env
+.env.production
+.env.*
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
 
-# testing
-/coverage
+# C extensions
+*.so
 
-# next.js
-/.next/
-/out/
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
 
-# production
-/build
+# PyInstaller
+*.manifest
+*.spec
 
-# misc
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# 
 .DS_Store
-*.pem
+.cursorindexingignore
+lost+found/
+.python-version
+node_modules/
 
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
+.vite
 
-# env files (can opt-in for committing if needed)
-.env*
+.agent/skills/*
+!.agent/skills/livekit-api-guardian
 
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+.specstory/history/*
