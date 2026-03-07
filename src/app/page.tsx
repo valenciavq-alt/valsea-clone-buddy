@@ -19,7 +19,10 @@ import {
   Loader2,
   Sun,
   Moon,
+  PhoneCall,
+  PhoneOff,
 } from "lucide-react";
+import Vapi from "@vapi-ai/web";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
