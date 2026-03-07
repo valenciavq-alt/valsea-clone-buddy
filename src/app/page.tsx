@@ -513,7 +513,7 @@ export default function Home() {
                     : "—"}
                 </span>
               </div>
-              <div className="flex items-center justify-between py-2 border-b border-white/[0.04]">
+              <div className="flex items-center justify-between py-2 border-b border-[var(--border-subtle)]">
                 <span className="text-xs font-mono tracking-wider text-[var(--muted-light)]">BEHAVIORAL RISK</span>
                 <span className="text-sm font-mono font-semibold">
                   {demoPhase === "complete"
