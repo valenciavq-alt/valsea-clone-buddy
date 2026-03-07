@@ -752,7 +752,7 @@ export default function Home() {
           </div>
 
           {/* Prosody Analysis */}
-          <div className="col-span-12 md:col-span-5 panel p-5">
+          <div className="col-span-1 sm:col-span-2 lg:col-span-5 panel p-4 sm:p-5">
             <PanelHeader icon={Activity} title="Prosody Analysis" badge="HUME AI" badgeColor="#f59e0b" />
             <div className="space-y-3">
               <ProsodyBar label="Frustration" value={emotions.frustration} color="var(--danger)" />
