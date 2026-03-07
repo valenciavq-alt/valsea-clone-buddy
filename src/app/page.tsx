@@ -624,7 +624,7 @@ export default function Home() {
               <div className="flex justify-center">
                 <ChevronDown className="w-4 h-4 text-[var(--muted)]" />
               </div>
-              <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+              <div className="p-3 rounded-lg bg-[var(--bar-track)] border border-[var(--border-subtle)]">
                 <span className="text-[10px] font-mono tracking-wider text-[var(--muted)] block mb-1.5">CULTURAL / PROSODY OVERRIDE</span>
                 <p className="text-xs leading-relaxed text-[var(--muted-light)]">
                   {intent.cultural || <span className="italic text-[var(--muted)]">—</span>}
