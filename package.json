@@ -12,6 +12,7 @@
   "dependencies": {
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@vitejs/plugin-react-swc": "4.2.3",
     "autoprefixer": "^10.4.0",
     "clsx": "^2.1.1",
     "framer-motion": "^12.35.0",
