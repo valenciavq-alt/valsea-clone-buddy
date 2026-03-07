@@ -994,7 +994,7 @@ export default function Home() {
           </div>
 
           {/* Intent Engine */}
-          <div className="col-span-12 md:col-span-4 panel p-5">
+          <div className="col-span-1 sm:col-span-2 lg:col-span-4 panel p-4 sm:p-5">
             <PanelHeader icon={Brain} title="Intent Engine" badge="GEMINI 2.5 PRO" badgeColor="#818cf8" />
             <div className="space-y-3">
               <div className="p-3 rounded-lg bg-[var(--bar-track)] border border-[var(--border-subtle)]">
