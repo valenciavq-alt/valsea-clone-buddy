@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -23,6 +21,7 @@ import {
   PhoneOff,
 } from "lucide-react";
 import Vapi from "@vapi-ai/web";
+import { analyzeDialog } from "@/lib/analyze";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -81,7 +80,6 @@ const SCENARIOS: Record<Scenario, ScenarioConfig> = {
   },
 };
 
-// Demo transcript data per scenario
 const DEMO_TRANSCRIPTS: Record<Scenario, string[]> = {
   logistics: [
     "Caller: Eh hello, I need to check my shipment lah. The container stuck at port already three days.",
@@ -212,19 +210,12 @@ function WaveformVisualizer({ isActive }: { isActive: boolean }) {
           style={{ opacity: isActive ? 0.6 : 0.15 }}
           animate={
             isActive
-              ? {
-                  height: [8, Math.random() * 48 + 8, 8],
-                }
+              ? { height: [8, Math.random() * 48 + 8, 8] }
               : { height: 8 }
           }
           transition={
             isActive
-              ? {
-                  duration: 0.4 + Math.random() * 0.4,
-                  repeat: Infinity,
-                  repeatType: "reverse",
-                  delay: i * 0.02,
-                }
+              ? { duration: 0.4 + Math.random() * 0.4, repeat: Infinity, repeatType: "reverse", delay: i * 0.02 }
               : { duration: 0.3 }
           }
         />
@@ -272,7 +263,7 @@ function PanelHeader({
 
 // ─── Main Dashboard ──────────────────────────────────────────────────────────
 
-export default function Home() {
+export default function Dashboard() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [activeScenario, setActiveScenario] = useState<Scenario>("logistics");
   const [isRunning, setIsRunning] = useState(false);
@@ -289,13 +280,13 @@ export default function Home() {
   const [liveTranscript, setLiveTranscript] = useState<{ role: "user" | "assistant"; text: string }[]>([]);
   const [latencyMs, setLatencyMs] = useState(0);
   const vapiRef = useRef<Vapi | null>(null);
-  const analysisTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const analysisTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastAnalysisRef = useRef<string>("");
 
   // Initialize Vapi
   useEffect(() => {
-    const key = process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY;
-    if (key && typeof window !== "undefined") {
+    const key = import.meta.env.VITE_VAPI_PUBLIC_KEY;
+    if (key) {
       vapiRef.current = new Vapi(key);
     }
     return () => {
@@ -308,16 +299,10 @@ export default function Home() {
   const runLiveAnalysis = useCallback(async (text: string) => {
     if (!text.trim() || text === lastAnalysisRef.current) return;
     lastAnalysisRef.current = text;
-    
+
     try {
-      const res = await fetch("/api/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ dialog: text }),
-      });
-      if (!res.ok) return;
-      const data = await res.json();
-      
+      const data = await analyzeDialog(text);
+
       setEmotions({
         frustration: data.emotions?.frustration ?? 0,
         stress: data.emotions?.anxiety ?? 0,
@@ -356,13 +341,13 @@ export default function Home() {
     analysisTimeoutRef.current = setTimeout(() => {
       const fullText = transcriptLines.map((l) => `${l.role === "user" ? "Caller" : "Agent"}: ${l.text}`).join("\n");
       runLiveAnalysis(fullText);
-    }, 2000); // Analyze 2s after last transcript chunk
+    }, 2000);
   }, [runLiveAnalysis]);
 
   const startVapiCall = useCallback(async () => {
     const vapi = vapiRef.current;
     if (!vapi) {
-      console.warn("Vapi not initialized — check NEXT_PUBLIC_VAPI_PUBLIC_KEY");
+      console.warn("Vapi not initialized — check VITE_VAPI_PUBLIC_KEY");
       return;
     }
 
@@ -385,7 +370,6 @@ export default function Home() {
 
     vapi.on("call-end", () => {
       setVapiStatus("idle");
-      // Run final analysis
       setLiveTranscript((prev) => {
         const fullText = prev.map((l) => `${l.role === "user" ? "Caller" : "Agent"}: ${l.text}`).join("\n");
         runLiveAnalysis(fullText);
@@ -441,13 +425,13 @@ export default function Home() {
     vapiRef.current?.stop();
   }, []);
 
-  // Microphone recording fallback (when no Vapi key)
+  // Microphone recording fallback
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [isAnalyzingAudio, setIsAnalyzingAudio] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const startRecording = useCallback(async () => {
     try {
@@ -463,45 +447,52 @@ export default function Home() {
       mediaRecorder.onstop = async () => {
         stream.getTracks().forEach((t) => t.stop());
         const blob = new Blob(chunksRef.current, { type: "audio/webm" });
-        const file = new File([blob], "recording.webm", { type: "audio/webm" });
-
+        // In Vite mode without a backend API, audio recording won't have STT.
+        // Show a message instead.
         setIsAnalyzingAudio(true);
         setDemoPhase("streaming");
         try {
-          const formData = new FormData();
-          formData.append("file", file);
-          const res = await fetch("/api/analyze", { method: "POST", body: formData });
-          if (res.ok) {
-            const data = await res.json();
-            setEmotions({
-              frustration: data.emotions?.frustration ?? 0,
-              stress: data.emotions?.anxiety ?? 0,
-              politeness: data.emotions?.politeness ?? 0,
-              hesitation: 0,
-              urgency: data.emotions?.confidence ?? 0,
-            });
-            setSecurity({
-              syntheticProb: data.security?.deepfakeProb ?? 0,
-              behavioralRisk: data.security?.threatFlag ? 0.85 : 0.05,
-              livenessStatus: data.security?.threatFlag ? "failed" : "verified",
-            });
-            setIntent({
-              literal: data.cognitive?.translation ?? "",
-              cultural: data.cognitive?.cultural_context ?? "",
-              trueIntent: data.cognitive?.intent ?? "",
-            });
-            setPayload({
-              type: "live_audio_analysis",
-              data: {
-                summary: data.summary,
-                fraud_verdict: data.cognitive?.fraud_verdict,
-                action_advised: data.cognitive?.action_advised,
-                risk_level: data.security?.riskLevel,
-                timestamp: new Date().toISOString(),
-              },
-            });
-            setDemoPhase("complete");
+          const apiUrl = import.meta.env.VITE_ANALYZE_API_URL;
+          if (apiUrl) {
+            const file = new File([blob], "recording.webm", { type: "audio/webm" });
+            const formData = new FormData();
+            formData.append("file", file);
+            const res = await fetch(apiUrl, { method: "POST", body: formData });
+            if (res.ok) {
+              const data = await res.json();
+              setEmotions({
+                frustration: data.emotions?.frustration ?? 0,
+                stress: data.emotions?.anxiety ?? 0,
+                politeness: data.emotions?.politeness ?? 0,
+                hesitation: 0,
+                urgency: data.emotions?.confidence ?? 0,
+              });
+              setSecurity({
+                syntheticProb: data.security?.deepfakeProb ?? 0,
+                behavioralRisk: data.security?.threatFlag ? 0.85 : 0.05,
+                livenessStatus: data.security?.threatFlag ? "failed" : "verified",
+              });
+              setIntent({
+                literal: data.cognitive?.translation ?? "",
+                cultural: data.cognitive?.cultural_context ?? "",
+                trueIntent: data.cognitive?.intent ?? "",
+              });
+              setPayload({
+                type: "live_audio_analysis",
+                data: {
+                  summary: data.summary,
+                  fraud_verdict: data.cognitive?.fraud_verdict,
+                  action_advised: data.cognitive?.action_advised,
+                  risk_level: data.security?.riskLevel,
+                  timestamp: new Date().toISOString(),
+                },
+              });
+              setDemoPhase("complete");
+            } else {
+              setDemoPhase("idle");
+            }
           } else {
+            console.warn("No VITE_ANALYZE_API_URL configured — audio analysis unavailable in demo mode");
             setDemoPhase("idle");
           }
         } catch {
@@ -530,7 +521,6 @@ export default function Home() {
   }, []);
 
   const formatTime = (s: number) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
-  const hasVapiKey = typeof process !== "undefined" && !!process.env?.NEXT_PUBLIC_VAPI_PUBLIC_KEY;
 
   // Theme management
   useEffect(() => {
@@ -558,7 +548,6 @@ export default function Home() {
       lineIdx++;
       setVisibleLines(lineIdx);
 
-      // Gradually increase emotion scores
       const progress = lineIdx / lines.length;
       const target = DEMO_EMOTIONS[activeScenario];
       setEmotions({
@@ -572,7 +561,6 @@ export default function Home() {
       if (lineIdx >= lines.length) {
         clearInterval(lineInterval);
 
-        // Final results after transcript complete
         setTimeout(() => {
           setEmotions(DEMO_EMOTIONS[activeScenario]);
           setSecurity(DEMO_SECURITY[activeScenario]);
@@ -597,7 +585,6 @@ export default function Home() {
     setPayload(null);
   };
 
-  // Reset when scenario changes
   useEffect(() => {
     resetDemo();
   }, [activeScenario]);
@@ -607,7 +594,6 @@ export default function Home() {
       {/* ── Top Navigation Bar ─────────────────────────────────────────── */}
       <header className="sticky top-0 z-50 border-b border-[var(--border-subtle)] bg-[var(--header-bg)] backdrop-blur-xl">
         <div className="max-w-[1400px] mx-auto px-3 sm:px-6 h-12 sm:h-14 flex items-center justify-between">
-          {/* Logo & Stats */}
           <div className="flex items-center gap-2 sm:gap-6">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "var(--brand-gradient)" }}>
@@ -631,7 +617,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Scenario Tabs + Run */}
           <div className="flex items-center gap-1.5 sm:gap-3">
             <div className="hidden md:flex items-center bg-[var(--bar-track)] rounded-lg p-0.5">
               {(Object.keys(SCENARIOS) as Scenario[]).map((key) => (
@@ -649,7 +634,6 @@ export default function Home() {
               ))}
             </div>
 
-            {/* Mobile scenario selector */}
             <select
               value={activeScenario}
               onChange={(e) => setActiveScenario(e.target.value as Scenario)}
@@ -660,7 +644,6 @@ export default function Home() {
               ))}
             </select>
 
-            {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
               className="w-8 h-8 rounded-lg flex items-center justify-center bg-[var(--bar-track)] hover:bg-[var(--accent-glow)] transition-colors"
@@ -678,11 +661,11 @@ export default function Home() {
             >
               {isRunning ? (
                 <>
-                  <Square className="w-3 h-3" /> STOP
+                  <Square className="w-3 h-3" /> <span className="hidden sm:inline">STOP</span>
                 </>
               ) : (
                 <>
-                  <Play className="w-3 h-3" /> RUN DEMO
+                  <Play className="w-3 h-3" /> <span className="hidden sm:inline">RUN DEMO</span>
                 </>
               )}
             </button>
@@ -770,17 +753,13 @@ export default function Home() {
               <div className="flex items-center justify-between py-2 border-b border-[var(--border-subtle)]">
                 <span className="text-xs font-mono tracking-wider text-[var(--muted-light)]">SYNTHETIC PROB.</span>
                 <span className="text-sm font-mono font-semibold">
-                  {demoPhase === "complete"
-                    ? `${Math.round(security.syntheticProb * 100)}%`
-                    : "—"}
+                  {demoPhase === "complete" ? `${Math.round(security.syntheticProb * 100)}%` : "—"}
                 </span>
               </div>
               <div className="flex items-center justify-between py-2 border-b border-[var(--border-subtle)]">
                 <span className="text-xs font-mono tracking-wider text-[var(--muted-light)]">BEHAVIORAL RISK</span>
                 <span className="text-sm font-mono font-semibold">
-                  {demoPhase === "complete"
-                    ? `${Math.round(security.behavioralRisk * 100)}%`
-                    : "—"}
+                  {demoPhase === "complete" ? `${Math.round(security.behavioralRisk * 100)}%` : "—"}
                 </span>
               </div>
               <div className="flex items-center justify-between py-2">
@@ -830,7 +809,6 @@ export default function Home() {
               <WaveformVisualizer isActive={vapiStatus === "active" || isRecording || demoPhase === "streaming"} />
             </div>
 
-            {/* Vapi live status */}
             {vapiStatus === "active" && (
               <div className="flex items-center justify-center gap-2 mt-3 text-xs text-[var(--success)]">
                 <span className="w-2 h-2 rounded-full bg-[var(--success)] pulse-dot" />
@@ -843,7 +821,6 @@ export default function Home() {
               </div>
             )}
 
-            {/* Recording timer (fallback mode) */}
             {isRecording && vapiStatus === "idle" && (
               <div className="text-center mt-3">
                 <span className="text-lg font-mono font-semibold text-[var(--danger)]">{formatTime(recordingTime)}</span>
@@ -855,9 +832,7 @@ export default function Home() {
               </div>
             )}
 
-            {/* Action buttons */}
             <div className="flex flex-col items-center gap-2 mt-4">
-              {/* Vapi WebRTC button (primary) */}
               <button
                 onClick={vapiStatus !== "idle" ? stopVapiCall : startVapiCall}
                 disabled={isRecording || isAnalyzingAudio || isRunning}
@@ -876,7 +851,6 @@ export default function Home() {
                 )}
               </button>
 
-              {/* Mic recording fallback */}
               <button
                 onClick={isRecording ? stopRecording : startRecording}
                 disabled={isAnalyzingAudio || vapiStatus !== "idle" || isRunning}
@@ -909,7 +883,6 @@ export default function Home() {
               badgeColor={vapiStatus === "active" ? "#22c55e" : "#06b6d4"}
             />
             <div className="min-h-[200px] max-h-[260px] overflow-y-auto pr-2">
-              {/* Vapi live transcript */}
               {liveTranscript.length > 0 ? (
                 <div className="space-y-2">
                   <AnimatePresence>
@@ -951,7 +924,6 @@ export default function Home() {
                   Awaiting audio stream...
                 </p>
               ) : (
-                /* Demo transcript fallback */
                 <div className="space-y-2">
                   <AnimatePresence>
                     {transcript.slice(0, visibleLines).map((line, i) => {
