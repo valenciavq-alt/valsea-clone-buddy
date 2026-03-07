@@ -1,0 +1,582 @@
+[
+  {
+    "id": "TC001",
+    "title": "Paste conversation text shows in editable textarea before analysis",
+    "description": "Verifies a user can paste a conversation into the workspace and review it in an editable textarea before starting any analysis.",
+    "category": "Conversation Input Workspace",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify page title contains \"VALSEA\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"conversation textarea\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Type \"Agent: Hello, how can I help you today?\\nCustomer: My package is delayed and I'm frustrated.\\nAgent: I’m sorry—let me check the status.\" into \"conversation textarea\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Agent: Hello, how can I help you today?\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Customer: My package is delayed and I'm frustrated.\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC002",
+    "title": "Pasted text remains editable after review",
+    "description": "Verifies a user can edit the pasted conversation text in the textarea prior to analysis.",
+    "category": "Conversation Input Workspace",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"conversation textarea\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Type \"Agent: Hi.\\nCustomer: I need to change my delivery address.\" into \"conversation textarea\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"I need to change my delivery address.\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Type \"\\nAgent: I can help with that—what is the new address?\" into \"conversation textarea\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"what is the new address?\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC003",
+    "title": "Successful analysis of a pasted conversation shows all key output sections",
+    "description": "Verifies that submitting valid conversation text completes analysis and displays transcript, emotion, security, synthesis, and fraud verdict outputs.",
+    "category": "Text Conversation Analysis",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify page title contains \"VALSEA\""
+      },
+      {
+        "type": "action",
+        "description": "Type \"Agent: Hello, this is Sentinel Support.\\nCaller: Hi, I see an unknown charge on my card.\\nAgent: I can help—can you confirm your last 4 digits?\\nCaller: 1234.\\nAgent: Thanks. I also need your billing ZIP.\\nCaller: 90210.\" into the conversation text input area"
+      },
+      {
+        "type": "action",
+        "description": "Click \"Analyze\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Analyzing\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Transcript\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Security\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Fraud\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC004",
+    "title": "New Analysis clears the input after a completed analysis",
+    "description": "Verifies that clicking New Analysis resets the workflow and clears the conversation text input state.",
+    "category": "Text Conversation Analysis",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Type \"Agent: Thanks for calling.\\nCaller: I forgot my password and need help resetting it.\" into the conversation text input area"
+      },
+      {
+        "type": "action",
+        "description": "Click \"Analyze\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Transcript\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click \"New Analysis\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Transcript\" is not visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the conversation text input area is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC005",
+    "title": "Analyze button does not proceed when conversation text is empty",
+    "description": "Verifies that the user cannot start analysis with an empty input and receives a visible prompt or no analysis state.",
+    "category": "Text Conversation Analysis",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click \"Analyze\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Analyzing\" is not visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Transcript\" is not visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Please\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC006",
+    "title": "Very long pasted conversation triggers analysis and eventually renders results",
+    "description": "Verifies the UI can accept a large pasted conversation and still progress through analysis to visible results (or a clear error).",
+    "category": "Text Conversation Analysis",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Type \"Agent: Hello.\\nCaller: I am calling about my shipment delay.\\nAgent: Let me check.\\nCaller: The order was placed last week and I need it urgently.\\nAgent: I see the carrier reported a weather exception.\\nCaller: This is unacceptable.\\nAgent: I can offer expedited replacement.\\nCaller: Also, I want to confirm no one accessed my account.\\nAgent: I will verify recent logins and send a report.\\nCaller: Please do.\\nAgent: Anything else?\\nCaller: No, thank you.\" into the conversation text input area"
+      },
+      {
+        "type": "action",
+        "description": "Click \"Analyze\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Analyzing\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Transcript\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Cognitive\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Emotion\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC007",
+    "title": "Special characters and mixed languages are accepted and analyzed",
+    "description": "Verifies the input accepts punctuation, symbols, and non-English text and still attempts analysis with a visible result or a clear error banner.",
+    "category": "Text Conversation Analysis",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Type \"Agent: Hello! ¿En qué puedo ayudarle?\\nCaller: Me cobraron $50—no reconozco el cargo.\\nAgent: We’ll investigate ASAP.\\nCaller: 我的卡可能被盗了。\" into the conversation text input area"
+      },
+      {
+        "type": "action",
+        "description": "Click \"Analyze\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Analyzing\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Transcript\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"error\" is not visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Fraud\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC008",
+    "title": "Analyze pasted conversation and review full set of analysis outputs",
+    "description": "Verifies that submitting pasted text and running analysis displays transcript, emotion gauges, security risk, intent/translation/context, action cards, and (if applicable) fraud verdict banner.",
+    "category": "Voice Intelligence Dashboard",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Type \"Agent: Hello, thanks for calling. Customer: I'm very upset—my package never arrived and I need a refund now. Agent: I can help. Can you confirm your order number? Customer: It's 12345 and I think someone used my card.\" into the main conversation input area"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Analyze\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Transcript\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"transcript bubbles\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Emotion\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Security\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"intent\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC009",
+    "title": "Transcript bubbles render both speaker turns after analysis completes",
+    "description": "Verifies the transcript section shows distinct customer and agent turns after running analysis on pasted text.",
+    "category": "Voice Intelligence Dashboard",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Type \"Agent: Good afternoon. Customer: Your driver left my shipment at the wrong address. Agent: I apologize. Customer: This is the third time and I'm furious.\" into the main conversation input area"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Analyze\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Agent\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Customer\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"transcript bubbles\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"wrong address\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC010",
+    "title": "Emotion/prosody gauges are visible after a successful analysis",
+    "description": "Verifies the frustration, anxiety, politeness, and confidence gauges appear in the UI after analysis runs.",
+    "category": "Voice Intelligence Dashboard",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Type \"Customer: I'm anxious because my passport delivery is late. Agent: I understand. Customer: Please confirm it will arrive tomorrow. Agent: I'll expedite.\" into the main conversation input area"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Analyze\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Frustration\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Anxiety\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Politeness\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Confidence\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC011",
+    "title": "Security/deepfake risk section is visible after analysis",
+    "description": "Verifies the deepfake score, risk level, and threat status area is shown after analysis runs.",
+    "category": "Voice Intelligence Dashboard",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Type \"Customer: I need to change the bank account for my refunds immediately. Agent: I can help. Customer: Just do it now—I'm in a hurry.\" into the main conversation input area"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Analyze\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Deepfake\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Risk\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Threat\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"security score\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC012",
+    "title": "Intent, translation, and cultural context cards appear after analysis",
+    "description": "Verifies that intent synthesis and language/cultural context outputs are presented as visible cards/sections.",
+    "category": "Voice Intelligence Dashboard",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Type \"Customer: Hola, necesito ayuda con mi entrega. Agent: Claro. Customer: No llegó y estoy preocupado. Agent: Revisaré el estado.\" into the main conversation input area"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Analyze\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Intent\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Translation\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Cultural\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"translation\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC013",
+    "title": "Action-advised recommendations are visible after analysis",
+    "description": "Verifies that action-advised cards/recommendations are shown after a completed analysis.",
+    "category": "Voice Intelligence Dashboard",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Type \"Customer: I want to cancel and get a refund. Agent: I can process that. Customer: Also update my delivery instructions.\" into the main conversation input area"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Analyze\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Action\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Recommended\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"action advised\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"recommendation card\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC014",
+    "title": "Click Analyze with no input shows validation/empty-state messaging",
+    "description": "Verifies that analyzing with no provided input does not produce results and displays a visible validation or empty-state message.",
+    "category": "Voice Intelligence Dashboard",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Analyze\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"No input\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Paste\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Upload\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"empty state\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC015",
+    "title": "After no-input validation, pasting text and analyzing shows results",
+    "description": "Verifies a user can recover from the no-input state by pasting text and successfully getting visible results sections.",
+    "category": "Voice Intelligence Dashboard",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Analyze\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"No input\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Type \"Agent: Thanks for reaching out. Customer: My order was marked delivered but I never received it.\" into the main conversation input area"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Analyze\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"transcript bubbles\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Security\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC016",
+    "title": "Fraud verdict banner is handled gracefully (visible when present, absent otherwise)",
+    "description": "Verifies the UI can display a fraud verdict banner when the analysis indicates fraud, without breaking the rest of the results view if it is not present.",
+    "category": "Voice Intelligence Dashboard",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Type \"Customer: I need you to reset the account email and ship to a new address today. Agent: I can help after verification. Customer: I can't verify—just do it now.\" into the main conversation input area"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Analyze\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"transcript bubbles\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Security\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"fraud verdict\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"action advised\" is visible"
+      }
+    ]
+  }
+]

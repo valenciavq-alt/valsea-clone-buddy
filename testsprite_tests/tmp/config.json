@@ -1,0 +1,18 @@
+{
+  "status": "commited",
+  "type": "frontend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:3000",
+  "executionArgs": {
+    "projectName": "HackathonMarch9-1",
+    "projectPath": "/Users/valencia/HackathonMarch9-1",
+    "testIds": [],
+    "additionalInstruction": "Use the generated PRD/test plan artifacts for this project. Run the full frontend suite against the production server on port 3000. Note that runtime API credentials may be unavailable in this environment; still execute the full suite and report actual pass/fail behavior.",
+    "serverMode": "production",
+    "envs": {
+      "API_KEY": "sk-user-2qtxLgKxDkC2vYfAEEmyUnDlw6iS5ojgOxtrJQyrP2z6YBZAJlEl0LYf5isOj0bfmzOg3rmmtVOGFTQ93Mymavmok12oq4oSNEdeT_2yp6i5Xi3-0gpL5UWUuZZbZnI_h_Y"
+    }
+  },
+  "serverPort": 64990,
+  "proxy": "http://51441cf1-9024-4c13-b94a-4dd8f47903f5:oznJL2ZIoBzMMveFzYZyv7rRTDVUJtQj@tun.testsprite.com:8080"
+}

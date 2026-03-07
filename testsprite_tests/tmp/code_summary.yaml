@@ -1,0 +1,100 @@
+version: "2"
+type: frontend
+tech_stack:
+  - TypeScript
+  - Next.js App Router
+  - React
+  - Tailwind CSS
+  - Framer Motion
+  - Lucide React
+  - Vapi Web SDK
+  - Google Generative AI
+  - Google Cloud Speech-to-Text
+routes:
+  - path: /
+    file: src/app/page.tsx
+    auth_required: false
+    description: Main VALSEA analysis workspace for text, file, audio, and live-call driven voice intelligence analysis.
+features:
+  - name: Conversation Input Workspace
+    description: Users can paste a dialog, drag and drop supported files, or browse for text or audio files before analysis.
+    files:
+      - src/app/page.tsx
+    entry_route: /
+    user_interactions:
+      - Paste a conversation into the textarea
+      - Drag and drop a .txt, .csv, .json, .log, or audio file into the upload area
+      - Click Browse Files and select a local file
+      - Review the uploaded filename and editable text before analysis
+    api_calls: []
+    auth_required: false
+  - name: Text Conversation Analysis
+    description: Users can submit pasted or typed conversation text and receive structured emotion, security, intent, translation, and summary output.
+    files:
+      - src/app/page.tsx
+      - src/app/api/analyze/route.ts
+    entry_route: /
+    user_interactions:
+      - Enter or paste conversation text
+      - Click Analyze
+      - Wait through the animated analysis state
+      - Review the transcript, emotion gauges, security card, cognitive synthesis, and fraud verdict
+      - Reset the flow with New Analysis
+    api_calls:
+      - method: POST
+        endpoint: /api/analyze
+    auth_required: false
+  - name: Audio File Analysis
+    description: Users can upload an audio file that is transcribed with Google Cloud Speech before Gemini returns the structured VALSEA analysis.
+    files:
+      - src/app/page.tsx
+      - src/app/api/analyze/route.ts
+    entry_route: /
+    user_interactions:
+      - Upload an audio file
+      - Click Analyze
+      - Wait for transcription and analysis to complete
+      - Review the generated transcript and dashboard outputs
+    api_calls:
+      - method: POST
+        endpoint: /api/analyze
+    auth_required: false
+  - name: Real-Time Vapi Call Trigger
+    description: Users can start or stop a live Vapi-powered call session from the homepage to stream a voice interaction.
+    files:
+      - src/app/page.tsx
+      - src/components/vapi/VapiCallButton.tsx
+      - src/app/api/webhook/vapi/route.ts
+    entry_route: /
+    user_interactions:
+      - Click Start Live Voice Call
+      - Allow microphone/browser call permissions if prompted
+      - Observe connecting and active call states
+      - Stop the live call
+    api_calls:
+      - method: POST
+        endpoint: /api/webhook/vapi
+    auth_required: false
+  - name: Voice Intelligence Dashboard
+    description: The dashboard presents transcript, emotion gauges, security risk, intent synthesis, translation, cultural context, action advised, and fraud verdict.
+    files:
+      - src/app/page.tsx
+    entry_route: /
+    user_interactions:
+      - Read transcript bubbles for customer and agent turns
+      - Inspect frustration, anxiety, politeness, and confidence gauges
+      - Inspect deepfake score, risk level, and threat status
+      - Review intent, translation, cultural context, and action advised cards
+      - Review the fraud verdict banner
+    api_calls: []
+    auth_required: false
+known_limitations:
+  - issue: The live-call feature requires a valid NEXT_PUBLIC_VAPI_PUBLIC_KEY and compatible Vapi configuration to function.
+    location: src/app/page.tsx
+    impact: End-to-end live call testing may fail or remain in idle/connecting states without configured credentials.
+  - issue: The analysis API requires GEMINI_API_KEY, GOOGLE_CLOUD_PROJECT_ID, and GOOGLE_APPLICATION_CREDENTIALS at runtime.
+    location: src/app/api/analyze/route.ts
+    impact: Text and audio analysis return server errors when these environment variables are missing or invalid.
+  - issue: The webhook route acknowledges Vapi events but does not implement actual function-call handling or downstream workflow updates.
+    location: src/app/api/webhook/vapi/route.ts
+    impact: Some real-time orchestration scenarios are UI/demo level only and may not complete full backend actions.
