@@ -22,6 +22,18 @@ import {
   PanelLeftOpen,
   X,
 } from "lucide-react";
+import { useToast } from "@/components/Toast";
+
+function classifyError(err: unknown): string {
+  const msg = err instanceof Error ? err.message : String(err);
+  if (msg.includes("429") || msg.toLowerCase().includes("rate limit")) return "Rate limit exceeded — please wait a moment and try again.";
+  if (msg.includes("402") || msg.toLowerCase().includes("credit") || msg.toLowerCase().includes("quota")) return "API credits exhausted — check your plan usage.";
+  if (msg.includes("401") || msg.includes("403")) return "Authentication failed — check your API key configuration.";
+  if (msg.includes("500") || msg.includes("502") || msg.includes("503")) return "Server error — the analysis service is temporarily unavailable.";
+  if (msg.toLowerCase().includes("fetch") || msg.toLowerCase().includes("network") || msg.toLowerCase().includes("failed to fetch")) return "Network error — check your internet connection.";
+  return msg || "Analysis failed — please try again.";
+}
+
 // ─── Analyze via Lovable Cloud edge function ────────────────────────────────
 async function analyzeDialog(text: string) {
   const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze`;
@@ -281,6 +293,7 @@ function PanelHeader({
 // ─── Main Dashboard ──────────────────────────────────────────────────────────
 
 export default function Dashboard() {
+  const { showToast } = useToast();
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [activeScenario, setActiveScenario] = useState<Scenario>("logistics");
   const [eventSidebarOpen, setEventSidebarOpen] = useState(false);
@@ -355,6 +368,7 @@ export default function Dashboard() {
       });
     } catch (err) {
       console.error("[VAPI Live] Analysis failed:", err);
+      showToast(classifyError(err));
     }
   }, []);
 
@@ -416,6 +430,7 @@ export default function Dashboard() {
       console.error("[Vapi Error]", error);
       setVapiStatus("idle");
       setDemoPhase("idle");
+      showToast(classifyError(error));
     });
 
     try {
@@ -441,6 +456,7 @@ export default function Dashboard() {
       console.error("[Vapi Start Error]", err);
       setVapiStatus("idle");
       setDemoPhase("idle");
+      showToast(classifyError(err));
     }
   }, [runLiveAnalysis, scheduleAnalysis]);
 
@@ -513,13 +529,16 @@ export default function Dashboard() {
               setDemoPhase("complete");
             } else {
               setDemoPhase("idle");
+              showToast(classifyError(new Error(`Audio analysis error: ${res.status}`)));
             }
           } else {
             console.warn("No VITE_ANALYZE_API_URL configured — audio analysis unavailable in demo mode");
             setDemoPhase("idle");
+            showToast("Audio analysis not configured in demo mode.", "warning");
           }
-        } catch {
+        } catch (err) {
           setDemoPhase("idle");
+          showToast(classifyError(err));
         } finally {
           setIsAnalyzingAudio(false);
         }
@@ -531,6 +550,7 @@ export default function Dashboard() {
       timerRef.current = setInterval(() => setRecordingTime((t) => t + 1), 1000);
     } catch (err) {
       console.error("Microphone access denied:", err);
+      showToast("Microphone access denied — please allow microphone permissions.", "warning");
     }
   }, []);
 
