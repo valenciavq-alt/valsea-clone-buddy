@@ -270,6 +270,7 @@ function PanelHeader({
 // ─── Main Dashboard ──────────────────────────────────────────────────────────
 
 export default function Home() {
+  const [theme, setTheme] = useState<"light" | "dark">("light");
   const [activeScenario, setActiveScenario] = useState<Scenario>("logistics");
   const [isRunning, setIsRunning] = useState(false);
   const [demoPhase, setDemoPhase] = useState<"idle" | "streaming" | "complete">("idle");
@@ -279,6 +280,13 @@ export default function Home() {
   const [intent, setIntent] = useState<IntentLayers>({ literal: "", cultural: "", trueIntent: "" });
   const [payload, setPayload] = useState<EnterprisePayload | null>(null);
   const [streamStats] = useState({ streams: 1402, p50: 124, regions: 12, alerts: 0 });
+
+  // Theme management
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () => setTheme((t) => (t === "light" ? "dark" : "light"));
 
   const config = SCENARIOS[activeScenario];
   const transcript = DEMO_TRANSCRIPTS[activeScenario];
