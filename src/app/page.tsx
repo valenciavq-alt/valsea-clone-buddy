@@ -693,7 +693,7 @@ export default function Home() {
       {/* ── Dashboard Grid ─────────────────────────────────────────────── */}
       <div className="max-w-[1400px] mx-auto px-3 sm:px-6 py-4 sm:py-6">
         {/* Row 1: Event Context | Prosody | Security */}
-        <div className="grid grid-cols-12 gap-4 mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 sm:gap-4 mb-3 sm:mb-4">
           {/* Event Context */}
           <div className="col-span-12 md:col-span-3 panel p-5">
             <PanelHeader icon={Globe} title="Event Context" badge="LIVE" badgeColor="#22c55e" />
