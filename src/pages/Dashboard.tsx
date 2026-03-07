@@ -529,13 +529,16 @@ export default function Dashboard() {
               setDemoPhase("complete");
             } else {
               setDemoPhase("idle");
+              showToast(classifyError(new Error(`Audio analysis error: ${res.status}`)));
             }
           } else {
             console.warn("No VITE_ANALYZE_API_URL configured — audio analysis unavailable in demo mode");
             setDemoPhase("idle");
+            showToast("Audio analysis not configured in demo mode.", "warning");
           }
-        } catch {
+        } catch (err) {
           setDemoPhase("idle");
+          showToast(classifyError(err));
         } finally {
           setIsAnalyzingAudio(false);
         }
