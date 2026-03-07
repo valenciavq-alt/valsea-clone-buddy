@@ -286,7 +286,11 @@ export default function Dashboard() {
   useEffect(() => {
     const key = import.meta.env.VITE_VAPI_PUBLIC_KEY;
     if (key) {
-      vapiRef.current = new Vapi(key);
+      import("@vapi-ai/web").then((mod) => {
+        vapiRef.current = new mod.default(key);
+      }).catch(() => {
+        console.warn("Vapi SDK not available");
+      });
     }
     return () => {
       vapiRef.current?.removeAllListeners();
