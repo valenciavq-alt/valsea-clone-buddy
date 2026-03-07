@@ -550,7 +550,7 @@ export default function Home() {
             <div className="mt-4">
               <WaveformVisualizer isActive={demoPhase === "streaming"} />
             </div>
-            <div className="flex items-center justify-between mt-6 pt-3 border-t border-white/[0.04]">
+            <div className="flex items-center justify-between mt-6 pt-3 border-t border-[var(--border-subtle)]">
               <span className="text-[10px] font-mono text-[var(--muted)] flex items-center gap-1">
                 <Radio className="w-3 h-3" /> VAPI WEBRTC
               </span>
