@@ -1026,7 +1026,7 @@ export default function Home() {
         </div>
 
         {/* Row 3: Enterprise Action */}
-        <div className="panel p-5">
+        <div className="panel p-4 sm:p-5">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Zap className="w-4 h-4 text-[var(--accent-light)]" />
