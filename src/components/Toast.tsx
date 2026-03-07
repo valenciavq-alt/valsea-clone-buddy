@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback, createContext, useContext, ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { AlertTriangle, X } from "lucide-react";
+import { AlertTriangle, CheckCircle, X } from "lucide-react";
 
 interface Toast {
   id: number;
   message: string;
-  type: "error" | "warning" | "info";
+  type: "error" | "warning" | "info" | "success";
 }
 
 interface ToastContextType {
@@ -41,15 +41,19 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               transition={{ duration: 0.2 }}
               className="flex items-start gap-3 px-4 py-3 rounded-lg border shadow-lg backdrop-blur-xl"
               style={{
-                background: t.type === "error" ? "rgba(239,68,68,0.12)" : t.type === "warning" ? "rgba(245,158,11,0.12)" : "rgba(6,182,212,0.12)",
-                borderColor: t.type === "error" ? "rgba(239,68,68,0.3)" : t.type === "warning" ? "rgba(245,158,11,0.3)" : "rgba(6,182,212,0.3)",
+                background: t.type === "error" ? "rgba(239,68,68,0.12)" : t.type === "warning" ? "rgba(245,158,11,0.12)" : t.type === "success" ? "rgba(34,197,94,0.12)" : "rgba(6,182,212,0.12)",
+                borderColor: t.type === "error" ? "rgba(239,68,68,0.3)" : t.type === "warning" ? "rgba(245,158,11,0.3)" : t.type === "success" ? "rgba(34,197,94,0.3)" : "rgba(6,182,212,0.3)",
                 color: "var(--foreground)",
               }}
             >
-              <AlertTriangle
-                className="w-4 h-4 mt-0.5 flex-shrink-0"
-                style={{ color: t.type === "error" ? "var(--danger)" : t.type === "warning" ? "var(--warning)" : "var(--cyan)" }}
-              />
+              {t.type === "success" ? (
+                <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: "hsl(142, 71%, 45%)" }} />
+              ) : (
+                <AlertTriangle
+                  className="w-4 h-4 mt-0.5 flex-shrink-0"
+                  style={{ color: t.type === "error" ? "var(--danger)" : t.type === "warning" ? "var(--warning)" : "var(--cyan)" }}
+                />
+              )}
               <span className="text-xs leading-relaxed flex-1">{t.message}</span>
               <button onClick={() => dismiss(t.id)} className="flex-shrink-0 mt-0.5 opacity-50 hover:opacity-100">
                 <X className="w-3 h-3" />
