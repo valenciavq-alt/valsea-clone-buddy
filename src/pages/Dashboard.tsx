@@ -240,10 +240,40 @@ const DEMO_INTENT: Record<Scenario, IntentLayers> = {
     cultural: "Singlish markers ('walao', 'buay tahan', 'lah') indicate genuine frustration, not hostility. 'Kan cheong' implies time pressure from downstream client.",
     trueIntent: "Expedite container release from Tanjong Pagar terminal. Customer's downstream client is pressuring for delivery — risk of churn if unresolved within 24h.",
   },
+  fintech: {
+    literal: "Client requesting status update on held wire transfer to Shanghai counterparty.",
+    cultural: "'Leh' and 'lah' soften urgency but stress is high. Repeated monthly transfer pattern suggests legitimate transaction flagged by overzealous compliance rules.",
+    trueIntent: "Escalate KYC hold to compliance officer immediately. Legitimate recurring transfer — false positive flag risks losing high-value client relationship.",
+  },
   cx_escalation: {
     literal: "Customer requesting refund after two weeks of unresolved support tickets.",
     cultural: "'Kan cheong spider' is Singlish for extreme anxiety/impatience. 'Leh' softens complaint but frustration is high.",
     trueIntent: "Immediate refund processing required. Customer loyalty at critical risk — potential social media escalation if not resolved this session.",
+  },
+  healthcare: {
+    literal: "Family member reporting elderly patient with chest pain and breathing difficulty.",
+    cultural: "'Lola' is Filipino for grandmother. 'Parang tinutusok' means stabbing pain in Tagalog. Caller code-switches between English and Filipino under stress.",
+    trueIntent: "PRIORITY TRIAGE: Suspected cardiac event in elderly female. Aspirin administered. Dispatch emergency response immediately — time-critical intervention required.",
+  },
+  legal: {
+    literal: "Whistleblower reporting potential insider trading evidence from recorded meeting.",
+    cultural: "'Pak' is respectful Indonesian address. 'Baik' confirms understanding. Caller mixing Bahasa and English indicates formal but anxious reporting. Whistleblower protection concern is culturally significant.",
+    trueIntent: "Flag for OJK regulatory review. Preserve meeting recording as evidence. Activate whistleblower protection protocol — caller at risk of retaliation.",
+  },
+  commerce: {
+    literal: "Customer searching for viral Korean skincare bundle with shipping inquiry.",
+    cultural: "'Sawasdee kha' is polite Thai greeting. Code-switching to Singlish ('lah', 'ah') suggests Southeast Asian diaspora buyer. Price sensitivity and free shipping are key decision factors.",
+    trueIntent: "High purchase intent — customer ready to buy 2x bundles if free shipping confirmed. Upsell opportunity: recommend complementary products. Capture for remarketing.",
+  },
+  conversational_ai: {
+    literal: "User requesting smart home voice assistant calibration for non-standard accent.",
+    cultural: "'Walao eh' expresses comedic frustration at ASR failure. 'One' as sentence-final particle is Singlish. Request for Cantonese support indicates multi-generational household.",
+    trueIntent: "Calibrate voice model for Singlish-accented English. Add Cantonese command set for secondary user. Core problem: standard ASR fails on regional accents — VALSEA value proposition.",
+  },
+  enterprise_ops: {
+    literal: "Executive team reviewing Q1 APAC performance and actioning operational decisions.",
+    cultural: "'Lah' in executive context normalizes casual tone in formal setting. 'Buay tahan' about burn rate conveys strong concern about Indonesia expansion sustainability.",
+    trueIntent: "Auto-generate board deck with margin analysis. Action items: hiring freeze memo to HR (deadline Friday), Indonesia expansion cost review. Tag finance team for burn rate assessment.",
   },
   fraud_security: {
     literal: "Caller claiming to be bank security, demanding immediate fund transfer and OTP.",
