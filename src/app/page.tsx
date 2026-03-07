@@ -398,6 +398,15 @@ export default function Home() {
               ))}
             </div>
 
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="w-8 h-8 rounded-lg flex items-center justify-center bg-[var(--bar-track)] hover:bg-[var(--accent-glow)] transition-colors"
+              title={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
+            >
+              {theme === "light" ? <Moon className="w-4 h-4 text-[var(--muted-light)]" /> : <Sun className="w-4 h-4 text-[var(--warning)]" />}
+            </button>
+
             <button
               onClick={isRunning ? resetDemo : runDemo}
               className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold text-white transition-all"
