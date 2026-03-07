@@ -17,6 +17,8 @@ import {
   Play,
   Square,
   Loader2,
+  Sun,
+  Moon,
 } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -180,7 +182,7 @@ function ProsodyBar({ label, value, color }: { label: string; value: number; col
   return (
     <div className="flex items-center gap-3">
       <span className="w-24 text-xs font-medium text-[var(--muted-light)] tracking-wide">{label}</span>
-      <div className="flex-1 h-2 rounded-full bg-white/[0.04] overflow-hidden">
+      <div className="flex-1 h-2 rounded-full bg-[var(--bar-track)] overflow-hidden">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${pct}%` }}
@@ -268,6 +270,7 @@ function PanelHeader({
 // ─── Main Dashboard ──────────────────────────────────────────────────────────
 
 export default function Home() {
+  const [theme, setTheme] = useState<"light" | "dark">("light");
   const [activeScenario, setActiveScenario] = useState<Scenario>("logistics");
   const [isRunning, setIsRunning] = useState(false);
   const [demoPhase, setDemoPhase] = useState<"idle" | "streaming" | "complete">("idle");
@@ -277,6 +280,13 @@ export default function Home() {
   const [intent, setIntent] = useState<IntentLayers>({ literal: "", cultural: "", trueIntent: "" });
   const [payload, setPayload] = useState<EnterprisePayload | null>(null);
   const [streamStats] = useState({ streams: 1402, p50: 124, regions: 12, alerts: 0 });
+
+  // Theme management
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () => setTheme((t) => (t === "light" ? "dark" : "light"));
 
   const config = SCENARIOS[activeScenario];
   const transcript = DEMO_TRANSCRIPTS[activeScenario];
@@ -344,7 +354,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] font-sans">
       {/* ── Top Navigation Bar ─────────────────────────────────────────── */}
-      <header className="sticky top-0 z-50 border-b border-white/[0.06] bg-[var(--surface)]/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-[var(--border-subtle)] bg-[var(--header-bg)] backdrop-blur-xl">
         <div className="max-w-[1400px] mx-auto px-6 h-14 flex items-center justify-between">
           {/* Logo & Stats */}
           <div className="flex items-center gap-6">
@@ -353,7 +363,7 @@ export default function Home() {
                 <Globe className="w-4 h-4 text-white" />
               </div>
               <div>
-                <span className="text-sm font-bold tracking-tight text-white">VALSEA</span>
+                <span className="text-sm font-bold tracking-tight text-[var(--foreground)]">VALSEA</span>
                 <span className="text-[10px] block -mt-0.5 tracking-[0.2em] uppercase text-[var(--muted)]">Speech Intelligence</span>
               </div>
             </div>
@@ -372,7 +382,7 @@ export default function Home() {
 
           {/* Scenario Tabs + Run */}
           <div className="flex items-center gap-3">
-            <div className="hidden md:flex items-center bg-white/[0.04] rounded-lg p-0.5">
+            <div className="hidden md:flex items-center bg-[var(--bar-track)] rounded-lg p-0.5">
               {(Object.keys(SCENARIOS) as Scenario[]).map((key) => (
                 <button
                   key={key}
@@ -380,13 +390,22 @@ export default function Home() {
                   className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
                     activeScenario === key
                       ? "bg-[var(--accent)] text-white shadow-sm"
-                      : "text-[var(--muted-light)] hover:text-white"
+                      : "text-[var(--muted-light)] hover:text-[var(--foreground)]"
                   }`}
                 >
                   {SCENARIOS[key].label}
                 </button>
               ))}
             </div>
+
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="w-8 h-8 rounded-lg flex items-center justify-center bg-[var(--bar-track)] hover:bg-[var(--accent-glow)] transition-colors"
+              title={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
+            >
+              {theme === "light" ? <Moon className="w-4 h-4 text-[var(--muted-light)]" /> : <Sun className="w-4 h-4 text-[var(--warning)]" />}
+            </button>
 
             <button
               onClick={isRunning ? resetDemo : runDemo}
@@ -486,7 +505,7 @@ export default function Home() {
           <div className="col-span-12 md:col-span-4 panel p-5">
             <PanelHeader icon={Shield} title="Security Layer" badge="MODULATE" badgeColor="#a855f7" />
             <div className="space-y-4">
-              <div className="flex items-center justify-between py-2 border-b border-white/[0.04]">
+              <div className="flex items-center justify-between py-2 border-b border-[var(--border-subtle)]">
                 <span className="text-xs font-mono tracking-wider text-[var(--muted-light)]">SYNTHETIC PROB.</span>
                 <span className="text-sm font-mono font-semibold">
                   {demoPhase === "complete"
@@ -494,7 +513,7 @@ export default function Home() {
                     : "—"}
                 </span>
               </div>
-              <div className="flex items-center justify-between py-2 border-b border-white/[0.04]">
+              <div className="flex items-center justify-between py-2 border-b border-[var(--border-subtle)]">
                 <span className="text-xs font-mono tracking-wider text-[var(--muted-light)]">BEHAVIORAL RISK</span>
                 <span className="text-sm font-mono font-semibold">
                   {demoPhase === "complete"
@@ -531,7 +550,7 @@ export default function Home() {
             <div className="mt-4">
               <WaveformVisualizer isActive={demoPhase === "streaming"} />
             </div>
-            <div className="flex items-center justify-between mt-6 pt-3 border-t border-white/[0.04]">
+            <div className="flex items-center justify-between mt-6 pt-3 border-t border-[var(--border-subtle)]">
               <span className="text-[10px] font-mono text-[var(--muted)] flex items-center gap-1">
                 <Radio className="w-3 h-3" /> VAPI WEBRTC
               </span>
@@ -570,7 +589,7 @@ export default function Home() {
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.3 }}
                           className={`text-sm leading-relaxed p-2 rounded-lg ${
-                            isCaller ? "bg-white/[0.03]" : "bg-[var(--accent-glow)] ml-4"
+                            isCaller ? "bg-[var(--line-bg-caller)]" : "bg-[var(--line-bg-agent)] ml-4"
                           }`}
                         >
                           <span className="text-[10px] font-mono text-[var(--muted)] block mb-0.5">
@@ -596,7 +615,7 @@ export default function Home() {
           <div className="col-span-12 md:col-span-4 panel p-5">
             <PanelHeader icon={Brain} title="Intent Engine" badge="GEMINI 2.5 PRO" badgeColor="#818cf8" />
             <div className="space-y-3">
-              <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+              <div className="p-3 rounded-lg bg-[var(--bar-track)] border border-[var(--border-subtle)]">
                 <span className="text-[10px] font-mono tracking-wider text-[var(--muted)] block mb-1.5">LITERAL TRANSLATION</span>
                 <p className="text-xs leading-relaxed text-[var(--muted-light)]">
                   {intent.literal || <span className="italic text-[var(--muted)]">—</span>}
@@ -605,7 +624,7 @@ export default function Home() {
               <div className="flex justify-center">
                 <ChevronDown className="w-4 h-4 text-[var(--muted)]" />
               </div>
-              <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+              <div className="p-3 rounded-lg bg-[var(--bar-track)] border border-[var(--border-subtle)]">
                 <span className="text-[10px] font-mono tracking-wider text-[var(--muted)] block mb-1.5">CULTURAL / PROSODY OVERRIDE</span>
                 <p className="text-xs leading-relaxed text-[var(--muted-light)]">
                   {intent.cultural || <span className="italic text-[var(--muted)]">—</span>}
@@ -631,7 +650,7 @@ export default function Home() {
               <Zap className="w-4 h-4 text-[var(--accent-light)]" />
               <span className="text-xs font-semibold tracking-[0.15em] uppercase">Enterprise Action</span>
             </div>
-            <span className="text-[10px] font-mono tracking-wider text-[var(--muted)] px-2 py-0.5 rounded-full border border-white/[0.06]">
+            <span className="text-[10px] font-mono tracking-wider text-[var(--muted)] px-2 py-0.5 rounded-full border border-[var(--border-subtle)]">
               JSON PAYLOAD
             </span>
           </div>
@@ -642,7 +661,7 @@ export default function Home() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
-              <pre className="text-xs font-mono leading-relaxed text-[var(--muted-light)] bg-black/20 rounded-lg p-4 overflow-x-auto">
+              <pre className="text-xs font-mono leading-relaxed text-[var(--muted-light)] bg-[var(--code-bg)] rounded-lg p-4 overflow-x-auto">
                 {JSON.stringify(payload, null, 2)}
               </pre>
             </motion.div>
