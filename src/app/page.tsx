@@ -807,7 +807,7 @@ export default function Home() {
         {/* Row 2: Acoustic | Transcription | Intent */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 sm:gap-4 mb-3 sm:mb-4">
           {/* Acoustic Layer */}
-          <div className="col-span-12 md:col-span-3 panel p-5">
+          <div className="col-span-1 sm:col-span-1 lg:col-span-3 panel p-4 sm:p-5">
             <PanelHeader
               icon={Mic}
               title="Acoustic Layer"
