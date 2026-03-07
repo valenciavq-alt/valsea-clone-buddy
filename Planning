@@ -91,3 +91,7 @@ To ensure scalability and seamless integration, the entire backend and frontend 
 
 * **Automated Suspicious Activity Reporting:** Directly pipe the Vertex AI fraud classifications into case management tools for streamlined incident reporting.
 * **Omnichannel Expansion:** Extend the Valsea + Gemini architecture to process asynchronous audio files (e.g., WhatsApp voice notes forwarded by users to a fraud hotline).
+
+
+-- Steven: 1. I assume we narrow down the target customers scope to: call center, corporate front desk. And the incoming call should be handled by? 
+
