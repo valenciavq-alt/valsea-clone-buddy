@@ -25,12 +25,6 @@ export default function VapiCallButton() {
             setIsCalling(false);
         });
 
-        vapiInstance.on("speech-update", (update) => {
-            if (update.type === "transcript" && update.status === "final") {
-                updateTranscript(update.role, update.transcript);
-            }
-        });
-
         vapiInstance.on("message", (message) => {
             console.log("[Vapi Message]", message);
             // Handle custom data from webhooks/functions

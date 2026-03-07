@@ -2,13 +2,80 @@ import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import speech from "@google-cloud/speech";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
+const genAI = GEMINI_API_KEY ? new GoogleGenerativeAI(GEMINI_API_KEY) : null;
 
 // Initialize Google Cloud Speech Client (Chirp/Acoustic Layer)
-const speechClient = new speech.SpeechClient({
-    projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
-    keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS,
-});
+let speechClient: InstanceType<typeof speech.SpeechClient> | null = null;
+try {
+    if (process.env.GOOGLE_CLOUD_PROJECT_ID) {
+        speechClient = new speech.SpeechClient({
+            projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
+            keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+        });
+    }
+} catch (e) {
+    console.warn("[Analyze API] Google Cloud Speech client not initialized:", e);
+}
+
+// Demo mode fallback when no API keys are configured
+function generateDemoAnalysis(dialogText: string) {
+    const lowerText = dialogText.toLowerCase();
+    
+    // Detect frustration indicators
+    const frustrationWords = ["upset", "frustrated", "angry", "furious", "terrible", "awful", "worst", "unacceptable", "ridiculous"];
+    const frustration = Math.min(frustrationWords.filter(w => lowerText.includes(w)).length * 0.25 + 0.1, 1);
+    
+    // Detect anxiety indicators
+    const anxietyWords = ["worried", "anxious", "urgent", "asap", "immediately", "emergency", "help", "please"];
+    const anxiety = Math.min(anxietyWords.filter(w => lowerText.includes(w)).length * 0.2 + 0.1, 1);
+    
+    // Detect politeness
+    const politeWords = ["please", "thank", "appreciate", "sorry", "excuse", "kindly"];
+    const politeness = Math.min(politeWords.filter(w => lowerText.includes(w)).length * 0.2 + 0.3, 1);
+    
+    // Detect fraud indicators
+    const fraudWords = ["transfer", "immediately", "police", "frozen", "hacker", "urgent", "otp", "verify", "bank"];
+    const fraudScore = fraudWords.filter(w => lowerText.includes(w)).length;
+    const isFraud = fraudScore >= 3;
+    
+    // Detect Singlish/slang
+    const singlishWords = ["lah", "leh", "lor", "walao", "wah", "aiyo", "buay", "sotong", "kan cheong", "blur"];
+    const hasSinglish = singlishWords.some(w => lowerText.includes(w));
+    
+    return {
+        emotions: {
+            frustration: Math.round(frustration * 100) / 100,
+            anxiety: Math.round(anxiety * 100) / 100,
+            politeness: Math.round(politeness * 100) / 100,
+            confidence: 0.5,
+        },
+        security: {
+            deepfakeProb: 0.05,
+            threatFlag: isFraud,
+            riskLevel: isFraud ? "high" : fraudScore >= 1 ? "medium" : "low",
+        },
+        cognitive: {
+            status: isFraud ? "Escalated" : "Pending",
+            intent: isFraud 
+                ? "Potential social engineering / fraud attempt detected"
+                : "Customer inquiry requiring attention",
+            translation: dialogText.substring(0, 200) + (dialogText.length > 200 ? "..." : ""),
+            cultural_context: hasSinglish 
+                ? "Contains Singlish/Southeast Asian English expressions indicating informal, local communication style"
+                : "Standard English communication",
+            fraud_verdict: isFraud 
+                ? "HIGH RISK — Multiple fraud indicators detected (urgency, authority claims, financial requests)"
+                : fraudScore >= 1 
+                    ? "MEDIUM RISK — Some concerning patterns detected, monitor closely"
+                    : "LOW RISK — No significant fraud indicators found",
+            action_advised: isFraud
+                ? "Immediately escalate to security team. Do not comply with any requests. Document interaction."
+                : "Process customer request through standard workflow. Follow up within SLA.",
+        },
+        summary: `[DEMO MODE] Analysis of ${dialogText.split(/\n/).length} conversation turns. ${isFraud ? "⚠️ Potential fraud detected." : "Standard customer interaction."}`,
+    };
+}
 
 const SYSTEM_PROMPT = `You are VALSEA, a Voice-to-Action Logistics & Sentiment Engine.
 You analyze conversation transcripts to extract structured intelligence.
@@ -46,10 +113,11 @@ Analysis guidelines:
 - Be precise with emotion scores. Use the full 0-1 range based on actual evidence in the text.`;
 
 export async function POST(req: Request) {
+    let dialogText = "";
+    let valseaSemanticTags = null;
+    let transcript = null;
+    
     try {
-        let dialogText = "";
-        let valseaSemanticTags = null;
-        let transcript = null;
 
         const contentType = req.headers.get("content-type") || "";
 
@@ -61,6 +129,15 @@ export async function POST(req: Request) {
             const file = formData.get("file") as File;
             if (!file) {
                 return NextResponse.json({ error: "No file provided" }, { status: 400 });
+            }
+
+            // Check if speech client is available
+            if (!speechClient) {
+                return NextResponse.json({ 
+                    error: "Audio transcription not available", 
+                    details: "Google Cloud Speech credentials not configured. Set GOOGLE_CLOUD_PROJECT_ID and GOOGLE_APPLICATION_CREDENTIALS environment variables.",
+                    hint: "Use text input mode instead, or configure Google Cloud credentials."
+                }, { status: 503 });
             }
 
             console.log("[Analyze API] Processing audio via Google Cloud Speech-to-Text (Chirp)...");
@@ -143,6 +220,18 @@ export async function POST(req: Request) {
 
         console.log("[Analyze API] Processing dialog length:", dialogText.length);
 
+        // ==========================================
+        // DEMO MODE: Fallback when Gemini API key not configured
+        // ==========================================
+        if (!genAI || !GEMINI_API_KEY) {
+            console.log("[Analyze API] Running in DEMO MODE (no GEMINI_API_KEY configured)");
+            const demoResult = generateDemoAnalysis(dialogText);
+            if (transcript) {
+                return NextResponse.json({ ...demoResult, transcript }, { status: 200 });
+            }
+            return NextResponse.json(demoResult, { status: 200 });
+        }
+
         let promptContent = `Here is the conversation to analyze:\n\n${dialogText}`;
         if (valseaSemanticTags && Array.isArray(valseaSemanticTags)) {
             promptContent += `\n\nVALSEA AI Semantic Tags to consider (incorporate these into Emotion scores and Fraud verdicts):\n${JSON.stringify(valseaSemanticTags)}`;
@@ -151,7 +240,7 @@ export async function POST(req: Request) {
         // ==========================================
         // 5. COGNITIVE HUB: Gemini 3 Flash Layer
         // ==========================================
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
         const result = await model.generateContent([
             { text: SYSTEM_PROMPT },
@@ -210,9 +299,19 @@ export async function POST(req: Request) {
 
         return NextResponse.json(validated, { status: 200 });
     } catch (error) {
+        const errorStr = String(error);
         console.error("[Analyze API] Error:", error);
+        
+        // Fallback to demo mode on rate limit or API errors
+        if (errorStr.includes("429") || errorStr.includes("quota") || errorStr.includes("rate limit")) {
+            console.log("[Analyze API] Rate limited - falling back to DEMO MODE");
+            const demoResult = generateDemoAnalysis(dialogText);
+            demoResult.summary = "[DEMO MODE - API quota exceeded] " + demoResult.summary;
+            return NextResponse.json(demoResult, { status: 200 });
+        }
+        
         return NextResponse.json(
-            { error: "Analysis failed", details: String(error) },
+            { error: "Analysis failed", details: errorStr },
             { status: 500 }
         );
     }
