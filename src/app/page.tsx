@@ -764,7 +764,7 @@ export default function Home() {
           </div>
 
           {/* Security Layer */}
-          <div className="col-span-12 md:col-span-4 panel p-5">
+          <div className="col-span-1 sm:col-span-1 lg:col-span-4 panel p-4 sm:p-5">
             <PanelHeader icon={Shield} title="Security Layer" badge="MODULATE" badgeColor="#a855f7" />
             <div className="space-y-4">
               <div className="flex items-center justify-between py-2 border-b border-[var(--border-subtle)]">
