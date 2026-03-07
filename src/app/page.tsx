@@ -614,8 +614,8 @@ export default function Home() {
                 <Globe className="w-4 h-4 text-white" />
               </div>
               <div>
-                <span className="text-sm font-bold tracking-tight text-[var(--foreground)]">VALSEA</span>
-                <span className="text-[10px] block -mt-0.5 tracking-[0.2em] uppercase text-[var(--muted)]">Speech Intelligence</span>
+                <span className="text-xs sm:text-sm font-bold tracking-tight text-[var(--foreground)]">VALSEA</span>
+                <span className="hidden sm:block text-[10px] -mt-0.5 tracking-[0.2em] uppercase text-[var(--muted)]">Speech Intelligence</span>
               </div>
             </div>
 
