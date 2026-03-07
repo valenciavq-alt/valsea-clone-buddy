@@ -22,7 +22,40 @@ import {
   PanelLeftOpen,
   X,
 } from "lucide-react";
-import { analyzeDialog } from "@/lib/analyze";
+// ─── Inline analyzeDialog (avoids separate file resolution issues) ───────────
+async function analyzeDialog(text: string) {
+  const endpoint = import.meta.env.VITE_ANALYSIS_API;
+  if (endpoint) {
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
+    });
+    if (!res.ok) throw new Error(`Analysis API error: ${res.status}`);
+    return res.json();
+  }
+  await new Promise((r) => setTimeout(r, 1200 + Math.random() * 800));
+  const words = text.split(/\s+/).length;
+  const hasQ = text.includes("?");
+  const hasE = text.includes("!");
+  return {
+    summary: `Analyzed ${words} words. ${hasQ ? "Questions detected." : "Declarative tone."} ${hasE ? "Elevated emotional markers." : "Calm register."}`,
+    emotions: {
+      frustration: Math.min(0.95, 0.15 + (hasE ? 0.35 : 0) + Math.random() * 0.2),
+      anxiety: Math.min(0.95, 0.1 + (hasQ ? 0.25 : 0) + Math.random() * 0.2),
+      politeness: Math.min(0.95, 0.5 + Math.random() * 0.3),
+      confidence: Math.min(0.95, 0.4 + Math.random() * 0.35),
+    },
+    security: { deepfakeProb: Math.random() * 0.15, threatFlag: false, riskLevel: "low" },
+    cognitive: {
+      translation: `The speaker is ${hasQ ? "seeking information" : "making statements"} regarding the topic.`,
+      cultural_context: "Standard conversational norms observed.",
+      intent: hasQ ? "Information gathering" : "Statement delivery",
+      fraud_verdict: "No fraud indicators detected",
+      action_advised: words > 50 ? "Continue monitoring." : "No immediate action required.",
+    },
+  };
+}
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
