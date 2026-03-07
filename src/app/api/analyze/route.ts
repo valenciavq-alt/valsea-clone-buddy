@@ -1,7 +1,14 @@
 import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import speech from "@google-cloud/speech";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+
+// Initialize Google Cloud Speech Client (Chirp/Acoustic Layer)
+const speechClient = new speech.SpeechClient({
+    projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
+    keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+});
 
 const SYSTEM_PROMPT = `You are VALSEA, a Voice-to-Action Logistics & Sentiment Engine.
 You analyze conversation transcripts to extract structured intelligence.
@@ -46,6 +53,9 @@ export async function POST(req: Request) {
 
         const contentType = req.headers.get("content-type") || "";
 
+        // ==========================================
+        // 1. ACOUSTIC LAYER: Google Cloud Speech (Chirp)
+        // ==========================================
         if (contentType.includes("multipart/form-data")) {
             const formData = await req.formData();
             const file = formData.get("file") as File;
@@ -53,33 +63,60 @@ export async function POST(req: Request) {
                 return NextResponse.json({ error: "No file provided" }, { status: 400 });
             }
 
-            console.log("[Analyze API] Sending audio to VALSEA Transcribe...");
-            const valseaFormData = new FormData();
-            valseaFormData.append("file", file);
+            console.log("[Analyze API] Processing audio via Google Cloud Speech-to-Text (Chirp)...");
 
-            const valseaRes = await fetch("https://api.valsea.asia/transcribe?enableTags=true&annotate=true&clarify=true", {
-                method: "POST",
-                body: valseaFormData,
-            });
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const audioBytes = Buffer.from(arrayBuffer).toString("base64");
 
-            if (!valseaRes.ok) {
-                const err = await valseaRes.text();
-                return NextResponse.json({ error: "VALSEA API Error", details: err }, { status: valseaRes.status });
+                // Use latest_long model which points to Google's Chirp/Conformer layer in v1
+                const requestObj = {
+                    audio: { content: audioBytes },
+                    config: {
+                        model: "latest_long",
+                        languageCode: "en-SG", // Targeting Singapore/Asian-English
+                        alternativeLanguageCodes: ["cmn-SG", "ms-MY"], // Code-switching support
+                    },
+                };
+
+                const [response] = await speechClient.recognize(requestObj);
+
+                if (response.results && response.results.length > 0) {
+                    dialogText = response.results
+                        .map((res: any) => res.alternatives[0].transcript)
+                        .join("\n");
+                    console.log("[Analyze API] Google Cloud STT Transcribed:", dialogText);
+                } else {
+                    return NextResponse.json({ error: "No speech recognized by Google Cloud." }, { status: 400 });
+                }
+            } catch (err) {
+                console.error("[Analyze API] Google Cloud Speech Error:", err);
+                return NextResponse.json({ error: "Google Cloud STT Failed", details: String(err) }, { status: 500 });
             }
 
-            const valseaData = await valseaRes.json();
-            console.log("[Analyze API] VALSEA audio transcribe response received");
-
-            valseaSemanticTags = valseaData.semantic_tags || valseaData.semanticTags || null;
-            dialogText = valseaData.text || valseaData.rawTranscript || "";
-
-            if (!dialogText) {
-                return NextResponse.json({ error: "Failed to transcribe audio from Valsea" }, { status: 500 });
-            }
-
-            // Provide a neat transcript array for frontend
             transcript = [{ role: "user", text: dialogText }];
+
+            // Now that we have transcript, pass it to Valsea Annotate to act as the Prosody/Security logic layer
+            console.log("[Analyze API] Sending transcribed text to VALSEA Annotate (Prosody/Security)...");
+            try {
+                const annotateRes = await fetch("https://api.valsea.asia/annotate", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ text: dialogText })
+                });
+                if (annotateRes.ok) {
+                    const annotateData = await annotateRes.json();
+                    valseaSemanticTags = annotateData.semantic_tags || null;
+                    console.log("[Analyze API] VALSEA Annotate response received");
+                }
+            } catch (annotateErr) {
+                console.error("[Analyze API] Failed to call Valsea text annotate endpoint.", annotateErr);
+            }
+
         } else {
+            // ==========================================
+            // TEXT ONLY FALLBACK (TESTING)
+            // ==========================================
             const body = await req.json();
             dialogText = body.dialog;
 
@@ -111,7 +148,9 @@ export async function POST(req: Request) {
             promptContent += `\n\nVALSEA AI Semantic Tags to consider (incorporate these into Emotion scores and Fraud verdicts):\n${JSON.stringify(valseaSemanticTags)}`;
         }
 
-        // ── Call Gemini ────────────────────────────────────────────────────
+        // ==========================================
+        // 5. COGNITIVE HUB: Gemini 3 Flash Layer
+        // ==========================================
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
         const result = await model.generateContent([
