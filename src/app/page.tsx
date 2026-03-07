@@ -110,12 +110,21 @@ export default function Home() {
   const [isDragging, setIsDragging] = useState(false);
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
+  const [audioFile, setAudioFile] = useState<File | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // ── File handling ────────────────────────────────────────────────────────
 
   const handleFile = useCallback((file: File) => {
     setFileName(file.name);
+
+    if (file.type.startsWith("audio/") || file.name.match(/\.(wav|mp3|m4a|aiff|flac)$/i)) {
+      setAudioFile(file);
+      setDialogText("Audio file uploaded: " + file.name + "\nReady to analyze via VALSEA.");
+      return;
+    }
+
+    setAudioFile(null);
     const reader = new FileReader();
     reader.onload = (e) => {
       const text = e.target?.result as string;
@@ -143,61 +152,81 @@ export default function Home() {
     setIsDragging(false);
   }, []);
 
-  // ── Analysis (simulated with Gemini-style output) ───────────────────────
+  // ── Analysis (real Gemini API call) ──────────────────────────────────────
+
+  const [error, setError] = useState<string | null>(null);
 
   const runAnalysis = useCallback(async () => {
-    if (!dialogText.trim()) return;
+    if (!dialogText.trim() && !audioFile) return;
     setPhase("analyzing");
+    setError(null);
 
-    // Simulate analysis delay (replace with real Gemini API call)
-    await new Promise((resolve) => setTimeout(resolve, 2800));
+    try {
+      // Parse dialog into transcript lines for the UI if it is text
+      let lines: { role: "user" | "assistant"; text: string }[] = [];
+      if (!audioFile) {
+        lines = dialogText
+          .split("\n")
+          .filter((l) => l.trim())
+          .map((line) => {
+            const isUser =
+              line.toLowerCase().startsWith("customer") ||
+              line.toLowerCase().startsWith("caller") ||
+              line.toLowerCase().startsWith("user");
+            return {
+              role: (isUser ? "user" : "assistant") as "user" | "assistant",
+              text: line.replace(/^(customer|caller|user|agent|assistant|operator)\s*[:：]\s*/i, ""),
+            };
+          });
+      }
 
-    // Parse dialog into transcript lines
-    const lines = dialogText
-      .split("\n")
-      .filter((l) => l.trim())
-      .map((line) => {
-        const isUser =
-          line.toLowerCase().startsWith("customer") ||
-          line.toLowerCase().startsWith("caller") ||
-          line.toLowerCase().startsWith("user");
-        return {
-          role: (isUser ? "user" : "assistant") as "user" | "assistant",
-          text: line.replace(/^(customer|caller|user|agent|assistant|operator)\s*[:：]\s*/i, ""),
-        };
-      });
+      // Call the real Gemini-powered analysis API via VALSEA
+      let res;
+      if (audioFile) {
+        const formData = new FormData();
+        formData.append("file", audioFile);
+        res = await fetch("/api/analyze", {
+          method: "POST",
+          body: formData,
+        });
+      } else {
+        res = await fetch("/api/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ dialog: dialogText }),
+        });
+      }
 
-    // Simulated analysis result
-    const result: AnalysisResult = {
-      transcript: lines.length > 0 ? lines : [{ role: "user", text: dialogText }],
-      emotions: {
-        frustration: parseFloat((Math.random() * 0.6 + 0.2).toFixed(2)),
-        anxiety: parseFloat((Math.random() * 0.5 + 0.1).toFixed(2)),
-        politeness: parseFloat((Math.random() * 0.4 + 0.5).toFixed(2)),
-        confidence: parseFloat((Math.random() * 0.3 + 0.6).toFixed(2)),
-      },
-      security: {
-        deepfakeProb: parseFloat((Math.random() * 0.3).toFixed(2)),
-        threatFlag: Math.random() > 0.7,
-        riskLevel: Math.random() > 0.7 ? "high" : Math.random() > 0.4 ? "medium" : "low",
-      },
-      cognitive: {
-        status: "Resolved",
-        intent: "Delivery Rescheduling Request",
-        translation:
-          "The customer is requesting to reschedule their delivery to Monday due to a scheduling conflict. They are expressing urgency but are being polite.",
-        cultural_context:
-          "Use of Singlish expressions ('lah', 'leh') indicates familiarity and casual rapport. The phrase 'buay tahan' conveys genuine distress.",
-        fraud_verdict: "LOW RISK — Authentic human interaction detected",
-        action_advised:
-          "Acknowledge the customer's urgency, offer Monday delivery window, and send confirmation via preferred channel.",
-      },
-      summary:
-        "Customer requested delivery rescheduling with moderate frustration. No security threats detected. Cultural context properly mapped.",
-    };
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || `Analysis failed (${res.status})`);
+      }
 
-    setAnalysis(result);
-    setPhase("dashboard");
+      const apiResult = await res.json();
+
+      let transcriptToUse = lines;
+      if (audioFile && apiResult.transcript) {
+        transcriptToUse = apiResult.transcript;
+      } else if (lines.length === 0) {
+        transcriptToUse = [{ role: "user", text: dialogText }];
+      }
+
+      // Merge transcript from client-side parsing with API analysis
+      const result: AnalysisResult = {
+        transcript: transcriptToUse,
+        emotions: apiResult.emotions,
+        security: apiResult.security,
+        cognitive: apiResult.cognitive,
+        summary: apiResult.summary,
+      };
+
+      setAnalysis(result);
+      setPhase("dashboard");
+    } catch (err) {
+      console.error("Analysis failed:", err);
+      setError(err instanceof Error ? err.message : "Something went wrong");
+      setPhase("upload");
+    }
   }, [dialogText]);
 
   const reset = () => {
@@ -205,6 +234,7 @@ export default function Home() {
     setDialogText("");
     setAnalysis(null);
     setFileName(null);
+    setAudioFile(null);
   };
 
   // ── Render ──────────────────────────────────────────────────────────────
@@ -329,13 +359,22 @@ export default function Home() {
               <input
                 type="file"
                 id="fileInput"
-                accept=".txt,.csv,.json,.log"
+                accept=".txt,.csv,.json,.log,audio/*"
                 className="hidden"
                 onChange={(e) => {
                   const file = e.target.files?.[0];
                   if (file) handleFile(file);
                 }}
               />
+
+
+              {/* Error display */}
+              {error && (
+                <div className="mt-4 p-3 bg-red-50 border border-red-200/60 rounded-xl text-sm text-red-600 flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 shrink-0" />
+                  {error}
+                </div>
+              )}
 
               {/* Action buttons */}
               <div className="flex items-center justify-center gap-3 mt-6">
@@ -348,7 +387,7 @@ export default function Home() {
                 </label>
                 <button
                   onClick={runAnalysis}
-                  disabled={!dialogText.trim()}
+                  disabled={!dialogText.trim() && !audioFile}
                   className="apple-btn text-sm !py-2.5 !px-6"
                 >
                   Analyze
@@ -455,16 +494,16 @@ export default function Home() {
                       >
                         <div
                           className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-xs font-semibold ${msg.role === "user"
-                              ? "bg-blue-100 text-blue-600"
-                              : "bg-green-100 text-green-600"
+                            ? "bg-blue-100 text-blue-600"
+                            : "bg-green-100 text-green-600"
                             }`}
                         >
                           {msg.role === "user" ? "C" : "A"}
                         </div>
                         <div
                           className={`py-2.5 px-4 rounded-2xl text-sm leading-relaxed max-w-[80%] ${msg.role === "user"
-                              ? "bg-gray-100 text-[var(--foreground)]"
-                              : "bg-blue-50 text-[var(--foreground)]"
+                            ? "bg-gray-100 text-[var(--foreground)]"
+                            : "bg-blue-50 text-[var(--foreground)]"
                             }`}
                         >
                           {msg.text}
@@ -539,10 +578,10 @@ export default function Home() {
                         </span>
                         <span
                           className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${analysis.security.riskLevel === "high"
-                              ? "bg-red-50 text-red-600"
-                              : analysis.security.riskLevel === "medium"
-                                ? "bg-yellow-50 text-yellow-700"
-                                : "bg-green-50 text-green-600"
+                            ? "bg-red-50 text-red-600"
+                            : analysis.security.riskLevel === "medium"
+                              ? "bg-yellow-50 text-yellow-700"
+                              : "bg-green-50 text-green-600"
                             }`}
                         >
                           {analysis.security.riskLevel === "high" && (
@@ -558,8 +597,8 @@ export default function Home() {
                         </span>
                         <span
                           className={`text-sm font-medium ${analysis.security.threatFlag
-                              ? "text-[var(--danger)]"
-                              : "text-[var(--success)]"
+                            ? "text-[var(--danger)]"
+                            : "text-[var(--success)]"
                             }`}
                         >
                           {analysis.security.threatFlag
@@ -626,8 +665,8 @@ export default function Home() {
                   {/* Fraud verdict */}
                   <div
                     className={`mt-4 p-4 rounded-xl border text-sm flex items-start gap-3 ${analysis.cognitive.fraud_verdict.includes("HIGH")
-                        ? "bg-red-50/80 border-red-200/60 text-red-700"
-                        : "bg-green-50/80 border-green-200/60 text-green-700"
+                      ? "bg-red-50/80 border-red-200/60 text-red-700"
+                      : "bg-green-50/80 border-green-200/60 text-green-700"
                       }`}
                   >
                     {analysis.cognitive.fraud_verdict.includes("HIGH") ? (
