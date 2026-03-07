@@ -529,6 +529,7 @@ export default function Dashboard() {
           timestamp: new Date().toISOString(),
         },
       });
+      showToast("Live analysis completed successfully.", "success");
     } catch (err) {
       console.error("[VAPI Live] Analysis failed:", err);
       showToast(classifyError(err));
