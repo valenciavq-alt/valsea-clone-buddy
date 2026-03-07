@@ -837,31 +837,54 @@ export default function Dashboard() {
             >
               <PanelLeftOpen className="w-4 h-4 text-[var(--muted-light)]" />
             </button>
-            <div className="hidden md:flex items-center bg-[var(--bar-track)] rounded-lg p-0.5 overflow-x-auto max-w-[600px] lg:max-w-none">
-              {(Object.keys(SCENARIOS) as Scenario[]).map((key) => (
-                <button
-                  key={key}
-                  onClick={() => setActiveScenario(key)}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
-                    activeScenario === key
-                      ? "bg-[var(--accent)] text-white shadow-sm"
-                      : "text-[var(--muted-light)] hover:text-[var(--foreground)]"
-                  }`}
-                >
-                  {SCENARIOS[key].label}
-                </button>
-              ))}
+            <div className="relative" ref={scenarioDropdownRef}>
+              <button
+                onClick={() => setScenarioDropdownOpen(!scenarioDropdownOpen)}
+                className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg bg-[var(--bar-track)] border border-[var(--border-subtle)] hover:border-[var(--accent)]/30 transition-all"
+              >
+                <span className="text-[var(--foreground)]">{SCENARIOS[activeScenario].label}</span>
+                <ChevronDown className={`w-3.5 h-3.5 text-[var(--muted-light)] transition-transform duration-200 ${scenarioDropdownOpen ? "rotate-180" : ""}`} />
+              </button>
+              <AnimatePresence>
+                {scenarioDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -4, scale: 0.97 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -4, scale: 0.97 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute right-0 top-full mt-1.5 w-56 rounded-xl bg-[var(--surface)] border border-[var(--card-border)] shadow-xl backdrop-blur-xl z-[60] overflow-hidden"
+                  >
+                    <div className="px-3 py-2 border-b border-[var(--border-subtle)]">
+                      <span className="text-[10px] font-mono tracking-[0.15em] uppercase text-[var(--muted)]">Select Vertical</span>
+                    </div>
+                    <div className="py-1 max-h-[320px] overflow-y-auto">
+                      {(Object.keys(SCENARIOS) as Scenario[]).map((key) => (
+                        <button
+                          key={key}
+                          onClick={() => {
+                            setActiveScenario(key);
+                            setScenarioDropdownOpen(false);
+                          }}
+                          className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs transition-colors ${
+                            activeScenario === key
+                              ? "bg-[var(--accent-glow)] text-[var(--accent-light)] font-semibold"
+                              : "text-[var(--muted-light)] hover:bg-[var(--bar-track)] hover:text-[var(--foreground)]"
+                          }`}
+                        >
+                          {activeScenario === key ? (
+                            <Check className="w-3.5 h-3.5 text-[var(--accent)]" />
+                          ) : (
+                            <span className="w-3.5 h-3.5" />
+                          )}
+                          <span>{SCENARIOS[key].label}</span>
+                          <span className="ml-auto text-[10px] font-mono text-[var(--muted)]">{SCENARIOS[key].source}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
-
-            <select
-              value={activeScenario}
-              onChange={(e) => setActiveScenario(e.target.value as Scenario)}
-              className="md:hidden text-[10px] font-medium bg-[var(--bar-track)] border border-[var(--border-subtle)] rounded-md px-2 py-1.5 text-[var(--foreground)]"
-            >
-              {(Object.keys(SCENARIOS) as Scenario[]).map((key) => (
-                <option key={key} value={key}>{SCENARIOS[key].label}</option>
-              ))}
-            </select>
 
             <button
               onClick={toggleTheme}
