@@ -385,10 +385,12 @@ const DEMO_PAYLOADS: Record<Scenario, EnterprisePayload> = {
     type: "carousell_trust_safety_api",
     data: {
       listing_id: "CSL-SG-20260309-7821", category: "MOBILE_PHONES",
-      item: "iPhone 15 Pro 256GB", condition: "MINT", asking_price: 1200,
-      offer_price: 1100, buyer_intent_score: 0.88, seller_rating: 4.7,
-      meetup_location: "Tampines MRT", trust_flags: ["NO_SHOW_ANXIETY"],
-      action: "ENABLE_VERIFIED_MEETUP_AND_SUGGEST_ACCEPT",
+      item: "iPhone 15 Pro Max 256GB", condition: "MINT_WITH_APPLECARE",
+      asking_price: 1400, negotiated_price: 1200, price_delta: "-14%",
+      buyer_intent_score: 0.91, seller_rating: 4.7, buyer_prior_cancellations_received: 2,
+      trust_risk: "ELEVATED", meetup_location: "Tampines MRT",
+      meetup_time: "18:00 SGT", trust_flags: ["REPEAT_NO_SHOW_VICTIM", "PANGSEH_ANXIETY"],
+      actions: ["ACTIVATE_CAROUMEET_VERIFIED_MEETUP", "SEND_LOCATION_PIN_BOTH_PARTIES", "ENABLE_PAYMENT_ESCROW", "TRIGGER_SELLER_CONFIRMATION_REMINDER_T_MINUS_30MIN"],
     },
   },
 };
