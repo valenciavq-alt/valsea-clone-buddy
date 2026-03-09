@@ -218,9 +218,9 @@ const DEMO_TRANSCRIPTS: Record<Scenario, string[]> = {
   carousell_cx: [
     "Buyer: Hello, I interested in the iPhone 15 Pro you listing. Still available ah?",
     "Seller: Yes still have! Meet at Tampines MRT can?",
-    "Buyer: Wah, your price a bit high leh. I see other listings cheaper. Can nego?",
-    "Seller: Bro, mine is mint condition one. Full box, AppleCare still got 6 months. $1,200 last price lah.",
-    "Buyer: Okay lah, $1,100 can? I come today. Cash on the spot. Don't last minute cancel ah!",
+    "Buyer: Walao eh, your price damn high leh. Other people selling $900 only. $800 can?",
+    "Seller: Bro, don't lowball me lah! Mine is mint condition one. Full box, AppleCare still got 6 months. $1,200 last price.",
+    "Buyer: Walao, $1,200 for second-hand? Okay lah okay lah, $1,100 I come today. Cash on the spot. Don't last minute cancel ah!",
   ],
 };
 
