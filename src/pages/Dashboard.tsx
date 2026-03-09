@@ -80,7 +80,7 @@ interface EnterprisePayload {
   data: Record<string, any>;
 }
 
-type Scenario = "logistics" | "fintech" | "cx_escalation" | "healthcare" | "legal" | "commerce" | "conversational_ai" | "enterprise_ops" | "fraud_security";
+type Scenario = "logistics" | "fintech" | "cx_escalation" | "healthcare" | "legal" | "commerce" | "conversational_ai" | "enterprise_ops" | "fraud_security" | "carousell_cx";
 
 interface ScenarioConfig {
   label: string;
