@@ -216,11 +216,12 @@ const DEMO_TRANSCRIPTS: Record<Scenario, string[]> = {
     "Caller: Do it NOW. Your money will be frozen if you don't act immediately.",
   ],
   carousell_cx: [
-    "Buyer: Hello, I interested in the iPhone 15 Pro you listing. Still available ah?",
-    "Seller: Yes still have! Meet at Tampines MRT can?",
-    "Buyer: Walao eh, your price damn high leh. Other people selling $900 only. $800 can?",
-    "Seller: Bro, don't lowball me lah! Mine is mint condition one. Full box, AppleCare still got 6 months. $1,200 last price.",
-    "Buyer: Walao, $1,200 for second-hand? Okay lah okay lah, $1,100 I come today. Cash on the spot. Don't last minute cancel ah!",
+    "Buyer: Hi, the iPhone 15 Pro Max still available? I see your listing — can meet today?",
+    "Seller: Ya still got! Condition 10/10, I baby this phone one. You want come see first?",
+    "Buyer: Walao eh bro, you asking $1,400 ah? Siao lah. I check already, market price around $1,000 only. Don't lowball me but also don't overprice leh.",
+    "Seller: Eh bro, this one got AppleCare+ until December, original box, cable everything. You go Apple store see how much. Serious buyer then come, $1,300 last price can already.",
+    "Buyer: Aiya, okay lah $1,200 I take. I rush down Tampines MRT now. Cash ready. But ah — please don't last minute MIA. Last two sellers pangseh me already, damn sian.",
+    "Seller: Confirm lah bro, I not that kind one. See you 6pm. I wear red shirt, easy spot.",
   ],
 };
 
