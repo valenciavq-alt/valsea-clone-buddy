@@ -218,9 +218,9 @@ const DEMO_TRANSCRIPTS: Record<Scenario, string[]> = {
   carousell_cx: [
     "Buyer: Hello, I interested in the iPhone 15 Pro you listing. Still available ah?",
     "Seller: Yes still have! Meet at Tampines MRT can?",
-    "Buyer: Wah, your price a bit high leh. I see other listings cheaper. Can nego?",
-    "Seller: Bro, mine is mint condition one. Full box, AppleCare still got 6 months. $1,200 last price lah.",
-    "Buyer: Okay lah, $1,100 can? I come today. Cash on the spot. Don't last minute cancel ah!",
+    "Buyer: Walao eh, your price damn high leh. Other people selling $900 only. $800 can?",
+    "Seller: Bro, don't lowball me lah! Mine is mint condition one. Full box, AppleCare still got 6 months. $1,200 last price.",
+    "Buyer: Walao, $1,200 for second-hand? Okay lah okay lah, $1,100 I come today. Cash on the spot. Don't last minute cancel ah!",
   ],
 };
 
@@ -297,9 +297,9 @@ const DEMO_INTENT: Record<Scenario, IntentLayers> = {
     trueIntent: "SOCIAL ENGINEERING ATTACK. Caller is impersonating bank authority to extract OTP and initiate unauthorized fund transfer. Immediate call termination and security alert required.",
   },
   carousell_cx: {
-    literal: "Buyer negotiating price on second-hand iPhone listing, requesting same-day meetup with cash payment.",
-    cultural: "'Ah', 'leh', 'lah' are Singlish discourse particles signaling casual negotiation. 'Don't last minute cancel ah' reveals trust anxiety common in C2C marketplace transactions — prior negative experiences with no-show sellers.",
-    trueIntent: "High-intent buyer ready to close immediately. Price gap is small ($100). Seller should accept to secure the deal — buyer's urgency and cash offer signal genuine purchase intent. Flag trust concern: enable Carousell's verified meetup feature to reduce cancellation risk.",
+    literal: "Buyer aggressively negotiating price on second-hand iPhone listing, opening with a lowball offer before settling higher.",
+    cultural: "'Walao eh' expresses shock/outrage at pricing — classic Singlish negotiation opener. 'Don't lowball me lah' from seller shows frustration at undervaluation. The back-and-forth from $800 lowball to $1,100 is typical C2C marketplace haggling. 'Don't last minute cancel ah' reveals deep trust anxiety from prior no-show experiences.",
+    trueIntent: "High-intent buyer using lowball anchoring strategy. Despite dramatic 'walao' protests, buyer raised offer from $800 to $1,100 quickly — genuine purchase intent confirmed. Seller should accept $1,100 to close the deal. Enable Carousell's verified meetup to address cancellation anxiety and protect both parties.",
   },
 };
 
