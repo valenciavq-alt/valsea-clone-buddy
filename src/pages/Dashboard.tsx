@@ -296,6 +296,11 @@ const DEMO_INTENT: Record<Scenario, IntentLayers> = {
     cultural: "No cultural markers — scripted social engineering attack using authority impersonation and urgency tactics.",
     trueIntent: "SOCIAL ENGINEERING ATTACK. Caller is impersonating bank authority to extract OTP and initiate unauthorized fund transfer. Immediate call termination and security alert required.",
   },
+  carousell_cx: {
+    literal: "Buyer negotiating price on second-hand iPhone listing, requesting same-day meetup with cash payment.",
+    cultural: "'Ah', 'leh', 'lah' are Singlish discourse particles signaling casual negotiation. 'Don't last minute cancel ah' reveals trust anxiety common in C2C marketplace transactions — prior negative experiences with no-show sellers.",
+    trueIntent: "High-intent buyer ready to close immediately. Price gap is small ($100). Seller should accept to secure the deal — buyer's urgency and cash offer signal genuine purchase intent. Flag trust concern: enable Carousell's verified meetup feature to reduce cancellation risk.",
+  },
 };
 
 const DEMO_PAYLOADS: Record<Scenario, EnterprisePayload> = {
