@@ -298,9 +298,9 @@ const DEMO_INTENT: Record<Scenario, IntentLayers> = {
     trueIntent: "SOCIAL ENGINEERING ATTACK. Caller is impersonating bank authority to extract OTP and initiate unauthorized fund transfer. Immediate call termination and security alert required.",
   },
   carousell_cx: {
-    literal: "Buyer aggressively negotiating price on second-hand iPhone listing, opening with a lowball offer before settling higher.",
-    cultural: "'Walao eh' expresses shock/outrage at pricing — classic Singlish negotiation opener. 'Don't lowball me lah' from seller shows frustration at undervaluation. The back-and-forth from $800 lowball to $1,100 is typical C2C marketplace haggling. 'Don't last minute cancel ah' reveals deep trust anxiety from prior no-show experiences.",
-    trueIntent: "High-intent buyer using lowball anchoring strategy. Despite dramatic 'walao' protests, buyer raised offer from $800 to $1,100 quickly — genuine purchase intent confirmed. Seller should accept $1,100 to close the deal. Enable Carousell's verified meetup to address cancellation anxiety and protect both parties.",
+    literal: "Buyer negotiating iPhone 15 Pro Max price down from $1,400 to $1,200, arranging same-day cash meetup at Tampines MRT.",
+    cultural: "'Walao eh' and 'siao lah' express dramatic disbelief at pricing — classic Singlish haggling theatre, not genuine hostility. 'Pangseh' (Hokkien: to stand someone up) reveals real emotional pain from prior no-show sellers. 'Damn sian' signals deep fatigue with marketplace trust issues. Seller's 'I not that kind one' is a culturally significant trust pledge.",
+    trueIntent: "DEAL IMMINENT. Buyer's rapid concession from $1,000 to $1,200 confirms high purchase intent despite theatrical protests. The real CX risk isn't price — it's trust. Two prior no-shows have created abandonment anxiety. Recommend: activate Carousell CarouMeet verified meetup, send both parties a confirmed location pin, and auto-escrow the payment to eliminate cancellation risk on both sides.",
   },
 };
 
