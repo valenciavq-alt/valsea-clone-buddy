@@ -80,7 +80,7 @@ interface EnterprisePayload {
   data: Record<string, any>;
 }
 
-type Scenario = "logistics" | "fintech" | "cx_escalation" | "healthcare" | "legal" | "commerce" | "conversational_ai" | "enterprise_ops" | "fraud_security";
+type Scenario = "logistics" | "fintech" | "cx_escalation" | "healthcare" | "legal" | "commerce" | "conversational_ai" | "enterprise_ops" | "fraud_security" | "carousell_cx";
 
 interface ScenarioConfig {
   label: string;
@@ -143,6 +143,12 @@ const SCENARIOS: Record<Scenario, ScenarioConfig> = {
     source: "Unknown",
     target: "Security Hub",
     scenario: "Fraud Detection",
+  },
+  carousell_cx: {
+    label: "Carousell CX",
+    source: "Singapore",
+    target: "Carousell Platform",
+    scenario: "Marketplace Trust & Safety",
   },
 };
 
@@ -209,6 +215,13 @@ const DEMO_TRANSCRIPTS: Record<Scenario, string[]> = {
     "Target: Uh... okay, let me check—",
     "Caller: Do it NOW. Your money will be frozen if you don't act immediately.",
   ],
+  carousell_cx: [
+    "Buyer: Hello, I interested in the iPhone 15 Pro you listing. Still available ah?",
+    "Seller: Yes still have! Meet at Tampines MRT can?",
+    "Buyer: Wah, your price a bit high leh. I see other listings cheaper. Can nego?",
+    "Seller: Bro, mine is mint condition one. Full box, AppleCare still got 6 months. $1,200 last price lah.",
+    "Buyer: Okay lah, $1,100 can? I come today. Cash on the spot. Don't last minute cancel ah!",
+  ],
 };
 
 const DEMO_EMOTIONS: Record<Scenario, EmotionScores> = {
@@ -221,6 +234,7 @@ const DEMO_EMOTIONS: Record<Scenario, EmotionScores> = {
   conversational_ai: { frustration: 0.6, stress: 0.3, politeness: 0.65, hesitation: 0.2, urgency: 0.4 },
   enterprise_ops: { frustration: 0.25, stress: 0.45, politeness: 0.7, hesitation: 0.1, urgency: 0.6 },
   fraud_security: { frustration: 0.1, stress: 0.9, politeness: 0.15, hesitation: 0.05, urgency: 0.95 },
+  carousell_cx: { frustration: 0.3, stress: 0.2, politeness: 0.55, hesitation: 0.4, urgency: 0.5 },
 };
 
 const DEMO_SECURITY: Record<Scenario, SecurityMetrics> = {
@@ -233,6 +247,7 @@ const DEMO_SECURITY: Record<Scenario, SecurityMetrics> = {
   conversational_ai: { syntheticProb: 0.06, behavioralRisk: 0.07, livenessStatus: "verified" },
   enterprise_ops: { syntheticProb: 0.01, behavioralRisk: 0.05, livenessStatus: "verified" },
   fraud_security: { syntheticProb: 0.78, behavioralRisk: 0.92, livenessStatus: "failed" },
+  carousell_cx: { syntheticProb: 0.08, behavioralRisk: 0.18, livenessStatus: "verified" },
 };
 
 const DEMO_INTENT: Record<Scenario, IntentLayers> = {
@@ -280,6 +295,11 @@ const DEMO_INTENT: Record<Scenario, IntentLayers> = {
     literal: "Caller claiming to be bank security, demanding immediate fund transfer and OTP.",
     cultural: "No cultural markers — scripted social engineering attack using authority impersonation and urgency tactics.",
     trueIntent: "SOCIAL ENGINEERING ATTACK. Caller is impersonating bank authority to extract OTP and initiate unauthorized fund transfer. Immediate call termination and security alert required.",
+  },
+  carousell_cx: {
+    literal: "Buyer negotiating price on second-hand iPhone listing, requesting same-day meetup with cash payment.",
+    cultural: "'Ah', 'leh', 'lah' are Singlish discourse particles signaling casual negotiation. 'Don't last minute cancel ah' reveals trust anxiety common in C2C marketplace transactions — prior negative experiences with no-show sellers.",
+    trueIntent: "High-intent buyer ready to close immediately. Price gap is small ($100). Seller should accept to secure the deal — buyer's urgency and cash offer signal genuine purchase intent. Flag trust concern: enable Carousell's verified meetup feature to reduce cancellation risk.",
   },
 };
 
@@ -358,6 +378,16 @@ const DEMO_PAYLOADS: Record<Scenario, EnterprisePayload> = {
       severity: "CRITICAL", synthetic_voice_prob: 0.78,
       behavioral_fraud_score: 0.92, action: "TERMINATE_AND_ALERT",
       regulatory_body: "MAS", report_to: "DBS_FRAUD_UNIT",
+    },
+  },
+  carousell_cx: {
+    type: "carousell_trust_safety_api",
+    data: {
+      listing_id: "CSL-SG-20260309-7821", category: "MOBILE_PHONES",
+      item: "iPhone 15 Pro 256GB", condition: "MINT", asking_price: 1200,
+      offer_price: 1100, buyer_intent_score: 0.88, seller_rating: 4.7,
+      meetup_location: "Tampines MRT", trust_flags: ["NO_SHOW_ANXIETY"],
+      action: "ENABLE_VERIFIED_MEETUP_AND_SUGGEST_ACCEPT",
     },
   },
 };
