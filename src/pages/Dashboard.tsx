@@ -215,6 +215,13 @@ const DEMO_TRANSCRIPTS: Record<Scenario, string[]> = {
     "Target: Uh... okay, let me check—",
     "Caller: Do it NOW. Your money will be frozen if you don't act immediately.",
   ],
+  carousell_cx: [
+    "Buyer: Hello, I interested in the iPhone 15 Pro you listing. Still available ah?",
+    "Seller: Yes still have! Meet at Tampines MRT can?",
+    "Buyer: Wah, your price a bit high leh. I see other listings cheaper. Can nego?",
+    "Seller: Bro, mine is mint condition one. Full box, AppleCare still got 6 months. $1,200 last price lah.",
+    "Buyer: Okay lah, $1,100 can? I come today. Cash on the spot. Don't last minute cancel ah!",
+  ],
 };
 
 const DEMO_EMOTIONS: Record<Scenario, EmotionScores> = {
