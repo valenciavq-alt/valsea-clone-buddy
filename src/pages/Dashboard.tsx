@@ -144,6 +144,12 @@ const SCENARIOS: Record<Scenario, ScenarioConfig> = {
     target: "Security Hub",
     scenario: "Fraud Detection",
   },
+  carousell_cx: {
+    label: "Carousell CX",
+    source: "Singapore",
+    target: "Carousell Platform",
+    scenario: "Marketplace Trust & Safety",
+  },
 };
 
 const DEMO_TRANSCRIPTS: Record<Scenario, string[]> = {
