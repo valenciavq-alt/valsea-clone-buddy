@@ -380,6 +380,16 @@ const DEMO_PAYLOADS: Record<Scenario, EnterprisePayload> = {
       regulatory_body: "MAS", report_to: "DBS_FRAUD_UNIT",
     },
   },
+  carousell_cx: {
+    type: "carousell_trust_safety_api",
+    data: {
+      listing_id: "CSL-SG-20260309-7821", category: "MOBILE_PHONES",
+      item: "iPhone 15 Pro 256GB", condition: "MINT", asking_price: 1200,
+      offer_price: 1100, buyer_intent_score: 0.88, seller_rating: 4.7,
+      meetup_location: "Tampines MRT", trust_flags: ["NO_SHOW_ANXIETY"],
+      action: "ENABLE_VERIFIED_MEETUP_AND_SUGGEST_ACCEPT",
+    },
+  },
 };
 
 // ─── Prosody Bar ─────────────────────────────────────────────────────────────
