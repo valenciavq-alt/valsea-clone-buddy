@@ -216,11 +216,12 @@ const DEMO_TRANSCRIPTS: Record<Scenario, string[]> = {
     "Caller: Do it NOW. Your money will be frozen if you don't act immediately.",
   ],
   carousell_cx: [
-    "Buyer: Hello, I interested in the iPhone 15 Pro you listing. Still available ah?",
-    "Seller: Yes still have! Meet at Tampines MRT can?",
-    "Buyer: Walao eh, your price damn high leh. Other people selling $900 only. $800 can?",
-    "Seller: Bro, don't lowball me lah! Mine is mint condition one. Full box, AppleCare still got 6 months. $1,200 last price.",
-    "Buyer: Walao, $1,200 for second-hand? Okay lah okay lah, $1,100 I come today. Cash on the spot. Don't last minute cancel ah!",
+    "Buyer: Hi, the iPhone 15 Pro Max still available? I see your listing — can meet today?",
+    "Seller: Ya still got! Condition 10/10, I baby this phone one. You want come see first?",
+    "Buyer: Walao eh bro, you asking $1,400 ah? Siao lah. I check already, market price around $1,000 only. Don't lowball me but also don't overprice leh.",
+    "Seller: Eh bro, this one got AppleCare+ until December, original box, cable everything. You go Apple store see how much. Serious buyer then come, $1,300 last price can already.",
+    "Buyer: Aiya, okay lah $1,200 I take. I rush down Tampines MRT now. Cash ready. But ah — please don't last minute MIA. Last two sellers pangseh me already, damn sian.",
+    "Seller: Confirm lah bro, I not that kind one. See you 6pm. I wear red shirt, easy spot.",
   ],
 };
 
@@ -234,7 +235,7 @@ const DEMO_EMOTIONS: Record<Scenario, EmotionScores> = {
   conversational_ai: { frustration: 0.6, stress: 0.3, politeness: 0.65, hesitation: 0.2, urgency: 0.4 },
   enterprise_ops: { frustration: 0.25, stress: 0.45, politeness: 0.7, hesitation: 0.1, urgency: 0.6 },
   fraud_security: { frustration: 0.1, stress: 0.9, politeness: 0.15, hesitation: 0.05, urgency: 0.95 },
-  carousell_cx: { frustration: 0.3, stress: 0.2, politeness: 0.55, hesitation: 0.4, urgency: 0.5 },
+  carousell_cx: { frustration: 0.45, stress: 0.35, politeness: 0.5, hesitation: 0.15, urgency: 0.65 },
 };
 
 const DEMO_SECURITY: Record<Scenario, SecurityMetrics> = {
@@ -247,7 +248,7 @@ const DEMO_SECURITY: Record<Scenario, SecurityMetrics> = {
   conversational_ai: { syntheticProb: 0.06, behavioralRisk: 0.07, livenessStatus: "verified" },
   enterprise_ops: { syntheticProb: 0.01, behavioralRisk: 0.05, livenessStatus: "verified" },
   fraud_security: { syntheticProb: 0.78, behavioralRisk: 0.92, livenessStatus: "failed" },
-  carousell_cx: { syntheticProb: 0.08, behavioralRisk: 0.18, livenessStatus: "verified" },
+  carousell_cx: { syntheticProb: 0.04, behavioralRisk: 0.22, livenessStatus: "verified" },
 };
 
 const DEMO_INTENT: Record<Scenario, IntentLayers> = {
@@ -297,9 +298,9 @@ const DEMO_INTENT: Record<Scenario, IntentLayers> = {
     trueIntent: "SOCIAL ENGINEERING ATTACK. Caller is impersonating bank authority to extract OTP and initiate unauthorized fund transfer. Immediate call termination and security alert required.",
   },
   carousell_cx: {
-    literal: "Buyer aggressively negotiating price on second-hand iPhone listing, opening with a lowball offer before settling higher.",
-    cultural: "'Walao eh' expresses shock/outrage at pricing — classic Singlish negotiation opener. 'Don't lowball me lah' from seller shows frustration at undervaluation. The back-and-forth from $800 lowball to $1,100 is typical C2C marketplace haggling. 'Don't last minute cancel ah' reveals deep trust anxiety from prior no-show experiences.",
-    trueIntent: "High-intent buyer using lowball anchoring strategy. Despite dramatic 'walao' protests, buyer raised offer from $800 to $1,100 quickly — genuine purchase intent confirmed. Seller should accept $1,100 to close the deal. Enable Carousell's verified meetup to address cancellation anxiety and protect both parties.",
+    literal: "Buyer negotiating iPhone 15 Pro Max price down from $1,400 to $1,200, arranging same-day cash meetup at Tampines MRT.",
+    cultural: "'Walao eh' and 'siao lah' express dramatic disbelief at pricing — classic Singlish haggling theatre, not genuine hostility. 'Pangseh' (Hokkien: to stand someone up) reveals real emotional pain from prior no-show sellers. 'Damn sian' signals deep fatigue with marketplace trust issues. Seller's 'I not that kind one' is a culturally significant trust pledge.",
+    trueIntent: "DEAL IMMINENT. Buyer's rapid concession from $1,000 to $1,200 confirms high purchase intent despite theatrical protests. The real CX risk isn't price — it's trust. Two prior no-shows have created abandonment anxiety. Recommend: activate Carousell CarouMeet verified meetup, send both parties a confirmed location pin, and auto-escrow the payment to eliminate cancellation risk on both sides.",
   },
 };
 
@@ -384,10 +385,12 @@ const DEMO_PAYLOADS: Record<Scenario, EnterprisePayload> = {
     type: "carousell_trust_safety_api",
     data: {
       listing_id: "CSL-SG-20260309-7821", category: "MOBILE_PHONES",
-      item: "iPhone 15 Pro 256GB", condition: "MINT", asking_price: 1200,
-      offer_price: 1100, buyer_intent_score: 0.88, seller_rating: 4.7,
-      meetup_location: "Tampines MRT", trust_flags: ["NO_SHOW_ANXIETY"],
-      action: "ENABLE_VERIFIED_MEETUP_AND_SUGGEST_ACCEPT",
+      item: "iPhone 15 Pro Max 256GB", condition: "MINT_WITH_APPLECARE",
+      asking_price: 1400, negotiated_price: 1200, price_delta: "-14%",
+      buyer_intent_score: 0.91, seller_rating: 4.7, buyer_prior_cancellations_received: 2,
+      trust_risk: "ELEVATED", meetup_location: "Tampines MRT",
+      meetup_time: "18:00 SGT", trust_flags: ["REPEAT_NO_SHOW_VICTIM", "PANGSEH_ANXIETY"],
+      actions: ["ACTIVATE_CAROUMEET_VERIFIED_MEETUP", "SEND_LOCATION_PIN_BOTH_PARTIES", "ENABLE_PAYMENT_ESCROW", "TRIGGER_SELLER_CONFIRMATION_REMINDER_T_MINUS_30MIN"],
     },
   },
 };
