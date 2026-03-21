@@ -229,6 +229,15 @@ const DEMO_TRANSCRIPTS: Record<Scenario, string[]> = {
     "Buyer: Aiya, okay lah $1,200 I take. I rush down Tampines MRT now. Cash ready. But ah — please don't last minute MIA. Last two sellers pangseh me already, damn sian.",
     "Seller: Confirm lah bro, I not that kind one. See you 6pm. I wear red shirt, easy spot.",
   ],
+  vietnamese_cx: [
+    "Khách: Alo, em ơi cho anh hỏi đơn hàng anh đặt tuần trước sao chưa giao vậy?",
+    "Agent: Dạ anh cho em xin mã đơn hàng ạ, em kiểm tra liền.",
+    "Khách: Trời ơi, anh đặt hàng từ đời nào rồi mà giờ còn chưa ship. Cháy máy luôn rồi nè!",
+    "Agent: Dạ em thấy đơn đang kẹt ở kho Bình Dương, do hết hàng tạm thời ạ.",
+    "Khách: Vô tri thiệt! Anh đợi lâu quá trời luôn. Bên em có thể giao nhanh hơn không? Anh cần gấp lắm, khách anh đòi hàng muốn điên rồi.",
+    "Agent: Dạ để em xử lý ưu tiên cho anh, chuyển sang giao hỏa tốc nha anh. Anh yên tâm.",
+    "Khách: Okay cảm ơn em. Mà lần sau ship chậm là anh review một sao đó nha, đỉnh luôn á!",
+  ],
 };
 
 const DEMO_EMOTIONS: Record<Scenario, EmotionScores> = {
