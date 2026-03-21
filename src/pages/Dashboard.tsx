@@ -319,6 +319,11 @@ const DEMO_INTENT: Record<Scenario, IntentLayers> = {
     cultural: "'Walao eh' and 'siao lah' express dramatic disbelief at pricing — classic Singlish haggling theatre, not genuine hostility. 'Pangseh' (Hokkien: to stand someone up) reveals real emotional pain from prior no-show sellers. 'Damn sian' signals deep fatigue with marketplace trust issues. Seller's 'I not that kind one' is a culturally significant trust pledge.",
     trueIntent: "DEAL IMMINENT. Buyer's rapid concession from $1,000 to $1,200 confirms high purchase intent despite theatrical protests. The real CX risk isn't price — it's trust. Two prior no-shows have created abandonment anxiety. Recommend: activate Carousell CarouMeet verified meetup, send both parties a confirmed location pin, and auto-escrow the payment to eliminate cancellation risk on both sides.",
   },
+  vietnamese_cx: {
+    literal: "Customer calling to complain about delayed order from last week. Requesting expedited shipping. Threatening one-star review.",
+    cultural: "'Cháy máy' (phone burning up) = overwhelmed with messages from own customers — indicates B2B reseller. 'Vô tri' (clueless/heartless) expresses exasperation at perceived indifference. 'Đỉnh luôn á' is Gen Z Vietnamese sarcasm meaning 'peak/amazing' used ironically. 'Trời ơi' (oh heavens) is standard Vietnamese exclamation. Customer maintains 'anh/em' hierarchy throughout, showing cultural respect despite frustration.",
+    trueIntent: "RESELLER AT RISK. Customer is a downstream reseller whose own buyers are pressuring them — cascading frustration. The one-star review threat is a negotiation lever, not genuine churn intent. Priority: switch to hỏa tốc (express) shipping from Bình Dương warehouse. Proactively offer loyalty discount to defuse review threat and retain high-volume B2B buyer.",
+  },
 };
 
 const DEMO_PAYLOADS: Record<Scenario, EnterprisePayload> = {
