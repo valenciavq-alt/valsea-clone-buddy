@@ -265,6 +265,7 @@ const DEMO_SECURITY: Record<Scenario, SecurityMetrics> = {
   enterprise_ops: { syntheticProb: 0.01, behavioralRisk: 0.05, livenessStatus: "verified" },
   fraud_security: { syntheticProb: 0.78, behavioralRisk: 0.92, livenessStatus: "failed" },
   carousell_cx: { syntheticProb: 0.04, behavioralRisk: 0.22, livenessStatus: "verified" },
+  vietnamese_cx: { syntheticProb: 0.02, behavioralRisk: 0.12, livenessStatus: "verified" },
 };
 
 const DEMO_INTENT: Record<Scenario, IntentLayers> = {
