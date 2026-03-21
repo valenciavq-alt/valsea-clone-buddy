@@ -251,6 +251,7 @@ const DEMO_EMOTIONS: Record<Scenario, EmotionScores> = {
   enterprise_ops: { frustration: 0.25, stress: 0.45, politeness: 0.7, hesitation: 0.1, urgency: 0.6 },
   fraud_security: { frustration: 0.1, stress: 0.9, politeness: 0.15, hesitation: 0.05, urgency: 0.95 },
   carousell_cx: { frustration: 0.68, stress: 0.42, politeness: 0.38, hesitation: 0.12, urgency: 0.72 },
+  vietnamese_cx: { frustration: 0.75, stress: 0.58, politeness: 0.52, hesitation: 0.08, urgency: 0.82 },
 };
 
 const DEMO_SECURITY: Record<Scenario, SecurityMetrics> = {
