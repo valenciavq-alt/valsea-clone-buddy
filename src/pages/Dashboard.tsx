@@ -150,6 +150,12 @@ const SCENARIOS: Record<Scenario, ScenarioConfig> = {
     target: "Carousell Platform",
     scenario: "Marketplace Trust & Safety",
   },
+  vietnamese_cx: {
+    label: "Vietnamese CX",
+    source: "Vietnam",
+    target: "CX Platform",
+    scenario: "Vietnamese Slang Intelligence",
+  },
 };
 
 const DEMO_TRANSCRIPTS: Record<Scenario, string[]> = {
