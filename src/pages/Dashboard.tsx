@@ -415,6 +415,18 @@ const DEMO_PAYLOADS: Record<Scenario, EnterprisePayload> = {
       actions: ["ACTIVATE_CAROUMEET_VERIFIED_MEETUP", "SEND_LOCATION_PIN_BOTH_PARTIES", "ENABLE_PAYMENT_ESCROW", "TRIGGER_SELLER_CONFIRMATION_REMINDER_T_MINUS_30MIN"],
     },
   },
+  vietnamese_cx: {
+    type: "vietnamese_ecommerce_cx_api",
+    data: {
+      order_id: "VN-ORD-20260315-4829", warehouse: "BINH_DUONG",
+      status: "STUCK_IN_WAREHOUSE", reason: "TEMP_OUT_OF_STOCK",
+      customer_type: "B2B_RESELLER", order_volume_30d: 47,
+      frustration_score: 0.75, churn_risk: 0.38,
+      slang_detected: ["cháy_máy", "vô_tri", "đỉnh_luôn", "trời_ơi"],
+      cultural_flags: ["RESELLER_CASCADE_PRESSURE", "REVIEW_THREAT_AS_LEVER", "ANH_EM_HIERARCHY_MAINTAINED"],
+      actions: ["SWITCH_TO_EXPRESS_SHIPPING", "ISSUE_LOYALTY_DISCOUNT_CODE_10PCT", "FLAG_WAREHOUSE_RESTOCK_PRIORITY", "SEND_PROACTIVE_TRACKING_UPDATE"],
+    },
+  },
 };
 
 // ─── Prosody Bar ─────────────────────────────────────────────────────────────
