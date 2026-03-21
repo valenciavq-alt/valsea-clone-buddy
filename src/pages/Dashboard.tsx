@@ -80,7 +80,7 @@ interface EnterprisePayload {
   data: Record<string, any>;
 }
 
-type Scenario = "logistics" | "fintech" | "cx_escalation" | "healthcare" | "legal" | "commerce" | "conversational_ai" | "enterprise_ops" | "fraud_security" | "carousell_cx";
+type Scenario = "logistics" | "fintech" | "cx_escalation" | "healthcare" | "legal" | "commerce" | "conversational_ai" | "enterprise_ops" | "fraud_security" | "carousell_cx" | "vietnamese_cx";
 
 interface ScenarioConfig {
   label: string;
@@ -149,6 +149,12 @@ const SCENARIOS: Record<Scenario, ScenarioConfig> = {
     source: "Singapore",
     target: "Carousell Platform",
     scenario: "Marketplace Trust & Safety",
+  },
+  vietnamese_cx: {
+    label: "Vietnamese CX",
+    source: "Vietnam",
+    target: "CX Platform",
+    scenario: "Vietnamese Slang Intelligence",
   },
 };
 
@@ -223,6 +229,15 @@ const DEMO_TRANSCRIPTS: Record<Scenario, string[]> = {
     "Buyer: Aiya, okay lah $1,200 I take. I rush down Tampines MRT now. Cash ready. But ah — please don't last minute MIA. Last two sellers pangseh me already, damn sian.",
     "Seller: Confirm lah bro, I not that kind one. See you 6pm. I wear red shirt, easy spot.",
   ],
+  vietnamese_cx: [
+    "Khách: Alo, em ơi cho anh hỏi đơn hàng anh đặt tuần trước sao chưa giao vậy?",
+    "Agent: Dạ anh cho em xin mã đơn hàng ạ, em kiểm tra liền.",
+    "Khách: Trời ơi, anh đặt hàng từ đời nào rồi mà giờ còn chưa ship. Cháy máy luôn rồi nè!",
+    "Agent: Dạ em thấy đơn đang kẹt ở kho Bình Dương, do hết hàng tạm thời ạ.",
+    "Khách: Vô tri thiệt! Anh đợi lâu quá trời luôn. Bên em có thể giao nhanh hơn không? Anh cần gấp lắm, khách anh đòi hàng muốn điên rồi.",
+    "Agent: Dạ để em xử lý ưu tiên cho anh, chuyển sang giao hỏa tốc nha anh. Anh yên tâm.",
+    "Khách: Okay cảm ơn em. Mà lần sau ship chậm là anh review một sao đó nha, đỉnh luôn á!",
+  ],
 };
 
 const DEMO_EMOTIONS: Record<Scenario, EmotionScores> = {
@@ -236,6 +251,7 @@ const DEMO_EMOTIONS: Record<Scenario, EmotionScores> = {
   enterprise_ops: { frustration: 0.25, stress: 0.45, politeness: 0.7, hesitation: 0.1, urgency: 0.6 },
   fraud_security: { frustration: 0.1, stress: 0.9, politeness: 0.15, hesitation: 0.05, urgency: 0.95 },
   carousell_cx: { frustration: 0.68, stress: 0.42, politeness: 0.38, hesitation: 0.12, urgency: 0.72 },
+  vietnamese_cx: { frustration: 0.75, stress: 0.58, politeness: 0.52, hesitation: 0.08, urgency: 0.82 },
 };
 
 const DEMO_SECURITY: Record<Scenario, SecurityMetrics> = {
@@ -249,6 +265,7 @@ const DEMO_SECURITY: Record<Scenario, SecurityMetrics> = {
   enterprise_ops: { syntheticProb: 0.01, behavioralRisk: 0.05, livenessStatus: "verified" },
   fraud_security: { syntheticProb: 0.78, behavioralRisk: 0.92, livenessStatus: "failed" },
   carousell_cx: { syntheticProb: 0.04, behavioralRisk: 0.22, livenessStatus: "verified" },
+  vietnamese_cx: { syntheticProb: 0.02, behavioralRisk: 0.12, livenessStatus: "verified" },
 };
 
 const DEMO_INTENT: Record<Scenario, IntentLayers> = {
@@ -301,6 +318,11 @@ const DEMO_INTENT: Record<Scenario, IntentLayers> = {
     literal: "Buyer negotiating iPhone 15 Pro Max price down from $1,400 to $1,200, arranging same-day cash meetup at Tampines MRT.",
     cultural: "'Walao eh' and 'siao lah' express dramatic disbelief at pricing — classic Singlish haggling theatre, not genuine hostility. 'Pangseh' (Hokkien: to stand someone up) reveals real emotional pain from prior no-show sellers. 'Damn sian' signals deep fatigue with marketplace trust issues. Seller's 'I not that kind one' is a culturally significant trust pledge.",
     trueIntent: "DEAL IMMINENT. Buyer's rapid concession from $1,000 to $1,200 confirms high purchase intent despite theatrical protests. The real CX risk isn't price — it's trust. Two prior no-shows have created abandonment anxiety. Recommend: activate Carousell CarouMeet verified meetup, send both parties a confirmed location pin, and auto-escrow the payment to eliminate cancellation risk on both sides.",
+  },
+  vietnamese_cx: {
+    literal: "Customer calling to complain about delayed order from last week. Requesting expedited shipping. Threatening one-star review.",
+    cultural: "'Cháy máy' (phone burning up) = overwhelmed with messages from own customers — indicates B2B reseller. 'Vô tri' (clueless/heartless) expresses exasperation at perceived indifference. 'Đỉnh luôn á' is Gen Z Vietnamese sarcasm meaning 'peak/amazing' used ironically. 'Trời ơi' (oh heavens) is standard Vietnamese exclamation. Customer maintains 'anh/em' hierarchy throughout, showing cultural respect despite frustration.",
+    trueIntent: "RESELLER AT RISK. Customer is a downstream reseller whose own buyers are pressuring them — cascading frustration. The one-star review threat is a negotiation lever, not genuine churn intent. Priority: switch to hỏa tốc (express) shipping from Bình Dương warehouse. Proactively offer loyalty discount to defuse review threat and retain high-volume B2B buyer.",
   },
 };
 
@@ -391,6 +413,18 @@ const DEMO_PAYLOADS: Record<Scenario, EnterprisePayload> = {
       trust_risk: "ELEVATED", meetup_location: "Tampines MRT",
       meetup_time: "18:00 SGT", trust_flags: ["REPEAT_NO_SHOW_VICTIM", "PANGSEH_ANXIETY"],
       actions: ["ACTIVATE_CAROUMEET_VERIFIED_MEETUP", "SEND_LOCATION_PIN_BOTH_PARTIES", "ENABLE_PAYMENT_ESCROW", "TRIGGER_SELLER_CONFIRMATION_REMINDER_T_MINUS_30MIN"],
+    },
+  },
+  vietnamese_cx: {
+    type: "vietnamese_ecommerce_cx_api",
+    data: {
+      order_id: "VN-ORD-20260315-4829", warehouse: "BINH_DUONG",
+      status: "STUCK_IN_WAREHOUSE", reason: "TEMP_OUT_OF_STOCK",
+      customer_type: "B2B_RESELLER", order_volume_30d: 47,
+      frustration_score: 0.75, churn_risk: 0.38,
+      slang_detected: ["cháy_máy", "vô_tri", "đỉnh_luôn", "trời_ơi"],
+      cultural_flags: ["RESELLER_CASCADE_PRESSURE", "REVIEW_THREAT_AS_LEVER", "ANH_EM_HIERARCHY_MAINTAINED"],
+      actions: ["SWITCH_TO_EXPRESS_SHIPPING", "ISSUE_LOYALTY_DISCOUNT_CODE_10PCT", "FLAG_WAREHOUSE_RESTOCK_PRIORITY", "SEND_PROACTIVE_TRACKING_UPDATE"],
     },
   },
 };
