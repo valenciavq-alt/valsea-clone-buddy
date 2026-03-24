@@ -250,6 +250,24 @@ const DEMO_TRANSCRIPTS: Record<Scenario, string[]> = {
     "Agent: Dạ để em xử lý ưu tiên cho anh, chuyển sang giao hỏa tốc nha anh. Anh yên tâm.",
     "Khách: Okay cảm ơn em. Mà lần sau ship chậm là anh review một sao đó nha, đỉnh luôn á!",
   ],
+  vietnamese_en: [
+    "Caller: Hello, I calling about my delivery, it suppose to come yesterday but until now nothing ah.",
+    "Agent: I'm sorry to hear that. Can you share your order number?",
+    "Caller: Yes yes, it is VN-seven-eight-nine-zero. I already wait three day already. My customer keep calling me, I very stress now.",
+    "Agent: Let me check the tracking status for you right away.",
+    "Caller: You know, back home we say 'chờ dài cổ' — wait until the neck grow long. That is me right now! Please help me solve this, I cannot lose this client.",
+    "Agent: I found the issue — your package was held at customs. I'm escalating it now.",
+    "Caller: Thank you so much. But next time please inform before delay, okay? In Vietnam we say 'có lửa mới có khói' — where got smoke, there is fire. I know something wrong from beginning.",
+  ],
+  indian_en: [
+    "Caller: Hello ji, I am calling regarding my SaaS subscription renewal. Actually the billing is showing wrong amount only.",
+    "Agent: Sure, let me pull up your account details.",
+    "Caller: See, what happened is — last month you people charged double. I raised ticket also, but koi response nahi aaya. Bahut pareshani ho rahi hai.",
+    "Agent: I apologize for the inconvenience. Let me check your billing history.",
+    "Caller: Arey yaar, I am telling you na — ₹49,999 was the agreed price but you charged ₹99,998. Kya mazaak hai? My finance team is asking me only what is happening.",
+    "Agent: I can see the duplicate charge. I'll process the reversal immediately.",
+    "Caller: Theek hai, please do it fast. And boss, send me confirmation on email also — mujhe apne CFO ko dikhana hai. Agar aaj nahi hua toh hum switch kar lenge, sach bol raha hoon.",
+  ],
 };
 
 const DEMO_EMOTIONS: Record<Scenario, EmotionScores> = {
