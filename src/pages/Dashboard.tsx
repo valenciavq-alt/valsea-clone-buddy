@@ -80,7 +80,7 @@ interface EnterprisePayload {
   data: Record<string, any>;
 }
 
-type Scenario = "logistics" | "fintech" | "cx_escalation" | "healthcare" | "legal" | "commerce" | "conversational_ai" | "enterprise_ops" | "fraud_security" | "carousell_cx" | "vietnamese_cx";
+type Scenario = "logistics" | "fintech" | "cx_escalation" | "healthcare" | "legal" | "commerce" | "conversational_ai" | "enterprise_ops" | "fraud_security" | "carousell_cx" | "vietnamese_cx" | "vietnamese_en" | "indian_en";
 
 interface ScenarioConfig {
   label: string;
@@ -155,6 +155,18 @@ const SCENARIOS: Record<Scenario, ScenarioConfig> = {
     source: "Vietnam",
     target: "CX Platform",
     scenario: "Vietnamese Slang Intelligence",
+  },
+  vietnamese_en: {
+    label: "Viet-English",
+    source: "Ho Chi Minh City",
+    target: "CX Platform",
+    scenario: "Vietnamese-Accented English",
+  },
+  indian_en: {
+    label: "Indian English",
+    source: "Bangalore / Chennai",
+    target: "Enterprise CX",
+    scenario: "South Indian English Dialect",
   },
 };
 
