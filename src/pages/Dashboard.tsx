@@ -156,6 +156,18 @@ const SCENARIOS: Record<Scenario, ScenarioConfig> = {
     target: "CX Platform",
     scenario: "Vietnamese Slang Intelligence",
   },
+  vietnamese_en: {
+    label: "Viet-English",
+    source: "Ho Chi Minh City",
+    target: "CX Platform",
+    scenario: "Vietnamese-Accented English",
+  },
+  indian_en: {
+    label: "Indian English",
+    source: "Bangalore / Chennai",
+    target: "Enterprise CX",
+    scenario: "South Indian English Dialect",
+  },
 };
 
 const DEMO_TRANSCRIPTS: Record<Scenario, string[]> = {
