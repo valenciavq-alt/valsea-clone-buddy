@@ -983,54 +983,6 @@ export default function Dashboard() {
             >
               <PanelLeftOpen className="w-4 h-4 text-[var(--muted-light)]" />
             </button>
-            <div className="relative" ref={scenarioDropdownRef}>
-              <button
-                onClick={() => setScenarioDropdownOpen(!scenarioDropdownOpen)}
-                className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg bg-[var(--bar-track)] border border-[var(--border-subtle)] hover:border-[var(--accent)]/30 transition-all"
-              >
-                <span className="text-[var(--foreground)]">{SCENARIOS[activeScenario].label}</span>
-                <ChevronDown className={`w-3.5 h-3.5 text-[var(--muted-light)] transition-transform duration-200 ${scenarioDropdownOpen ? "rotate-180" : ""}`} />
-              </button>
-              <AnimatePresence>
-                {scenarioDropdownOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -4, scale: 0.97 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -4, scale: 0.97 }}
-                    transition={{ duration: 0.15 }}
-                    className="absolute right-0 top-full mt-1.5 w-56 rounded-xl bg-[var(--surface)] border border-[var(--card-border)] shadow-xl backdrop-blur-xl z-[60] overflow-hidden"
-                  >
-                    <div className="px-3 py-2 border-b border-[var(--border-subtle)]">
-                      <span className="text-[10px] font-mono tracking-[0.15em] uppercase text-[var(--muted)]">Select Vertical</span>
-                    </div>
-                    <div className="py-1 max-h-[320px] overflow-y-auto">
-                      {(Object.keys(SCENARIOS) as Scenario[]).map((key) => (
-                        <button
-                          key={key}
-                          onClick={() => {
-                            setActiveScenario(key);
-                            setScenarioDropdownOpen(false);
-                          }}
-                          className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs transition-colors ${
-                            activeScenario === key
-                              ? "bg-[var(--accent-glow)] text-[var(--accent-light)] font-semibold"
-                              : "text-[var(--muted-light)] hover:bg-[var(--bar-track)] hover:text-[var(--foreground)]"
-                          }`}
-                        >
-                          {activeScenario === key ? (
-                            <Check className="w-3.5 h-3.5 text-[var(--accent)]" />
-                          ) : (
-                            <span className="w-3.5 h-3.5" />
-                          )}
-                          <span>{SCENARIOS[key].label}</span>
-                          <span className="ml-auto text-[10px] font-mono text-[var(--muted)]">{SCENARIOS[key].source}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
 
             <button
               onClick={toggleTheme}
@@ -1038,24 +990,6 @@ export default function Dashboard() {
               title={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
             >
               {theme === "light" ? <Moon className="w-4 h-4 text-[var(--muted-light)]" /> : <Sun className="w-4 h-4 text-[var(--warning)]" />}
-            </button>
-
-            <button
-              onClick={isRunning ? resetDemo : runDemo}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold text-white transition-all"
-              style={{
-                background: isRunning ? "var(--danger)" : "var(--brand-gradient)",
-              }}
-            >
-              {isRunning ? (
-                <>
-                  <Square className="w-3 h-3" /> <span className="hidden sm:inline">STOP</span>
-                </>
-              ) : (
-                <>
-                  <Play className="w-3 h-3" /> <span className="hidden sm:inline">RUN DEMO</span>
-                </>
-              )}
             </button>
           </div>
         </div>
@@ -1140,8 +1074,83 @@ export default function Dashboard() {
         )}
       </AnimatePresence>
 
+      {/* ── Vertical Selector + Run Demo Bar ──────────────────────────── */}
+      <div className="max-w-[1400px] mx-auto px-3 sm:px-6 pt-4 sm:pt-5 pb-2">
+        <div className="flex flex-col gap-3">
+          {/* Vertical pills */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide" ref={scenarioDropdownRef}>
+            <span className="text-[10px] font-mono tracking-[0.15em] uppercase text-[var(--muted)] whitespace-nowrap mr-1">Vertical</span>
+            {(Object.keys(SCENARIOS) as Scenario[]).map((key) => (
+              <button
+                key={key}
+                onClick={() => setActiveScenario(key)}
+                className={`relative whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 border ${
+                  activeScenario === key
+                    ? "text-white border-transparent shadow-lg shadow-[var(--accent)]/20"
+                    : "text-[var(--muted-light)] border-[var(--border-subtle)] hover:border-[var(--accent)]/40 hover:text-[var(--foreground)] hover:bg-[var(--bar-track)]"
+                }`}
+                style={activeScenario === key ? { background: "var(--brand-gradient)" } : {}}
+              >
+                {activeScenario === key && (
+                  <motion.span
+                    layoutId="activeVertical"
+                    className="absolute inset-0 rounded-full"
+                    style={{ background: "var(--brand-gradient)" }}
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
+                  />
+                )}
+                <span className="relative z-10">{SCENARIOS[key].label}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Scenario info + Run Demo CTA */}
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="flex items-center gap-2 text-xs text-[var(--muted)]">
+                <Radio className="w-3 h-3 text-[var(--accent-light)]" />
+                <span className="font-medium text-[var(--foreground)]">{config.scenario}</span>
+                <span className="text-[var(--muted-light)]">·</span>
+                <span>{config.source} → {config.target}</span>
+              </div>
+              {demoPhase !== "idle" && (
+                <span className="flex items-center gap-1.5 text-[10px] font-mono">
+                  <span className={`w-1.5 h-1.5 rounded-full ${demoPhase === "streaming" ? "bg-[var(--warning)] pulse-dot" : "bg-[var(--success)]"}`} />
+                  <span className={demoPhase === "streaming" ? "text-[var(--warning)]" : "text-[var(--success)]"}>
+                    {demoPhase === "streaming" ? "ANALYZING..." : "COMPLETE"}
+                  </span>
+                </span>
+              )}
+            </div>
+
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={isRunning ? resetDemo : runDemo}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all shadow-lg shrink-0"
+              style={{
+                background: isRunning ? "var(--danger)" : "var(--brand-gradient)",
+                boxShadow: isRunning
+                  ? "0 4px 20px -4px rgba(239,68,68,0.4)"
+                  : "0 4px 20px -4px var(--accent)",
+              }}
+            >
+              {isRunning ? (
+                <>
+                  <Square className="w-4 h-4" /> STOP
+                </>
+              ) : (
+                <>
+                  <Play className="w-4 h-4" /> RUN DEMO
+                </>
+              )}
+            </motion.button>
+          </div>
+        </div>
+      </div>
+
       {/* ── Dashboard Grid ─────────────────────────────────────────────── */}
-      <div className="max-w-[1400px] mx-auto px-3 sm:px-6 py-4 sm:py-6">
+      <div className="max-w-[1400px] mx-auto px-3 sm:px-6 pb-4 sm:pb-6">
         {/* Row 1: Event Context | Prosody | Security */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 sm:gap-4 mb-3 sm:mb-4">
           {/* Event Context - hidden on mobile, use sidebar instead */}
