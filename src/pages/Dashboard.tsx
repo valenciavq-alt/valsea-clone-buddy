@@ -250,6 +250,24 @@ const DEMO_TRANSCRIPTS: Record<Scenario, string[]> = {
     "Agent: Dạ để em xử lý ưu tiên cho anh, chuyển sang giao hỏa tốc nha anh. Anh yên tâm.",
     "Khách: Okay cảm ơn em. Mà lần sau ship chậm là anh review một sao đó nha, đỉnh luôn á!",
   ],
+  vietnamese_en: [
+    "Caller: Hello, I calling about my delivery, it suppose to come yesterday but until now nothing ah.",
+    "Agent: I'm sorry to hear that. Can you share your order number?",
+    "Caller: Yes yes, it is VN-seven-eight-nine-zero. I already wait three day already. My customer keep calling me, I very stress now.",
+    "Agent: Let me check the tracking status for you right away.",
+    "Caller: You know, back home we say 'chờ dài cổ' — wait until the neck grow long. That is me right now! Please help me solve this, I cannot lose this client.",
+    "Agent: I found the issue — your package was held at customs. I'm escalating it now.",
+    "Caller: Thank you so much. But next time please inform before delay, okay? In Vietnam we say 'có lửa mới có khói' — where got smoke, there is fire. I know something wrong from beginning.",
+  ],
+  indian_en: [
+    "Caller: Hello ji, I am calling regarding my SaaS subscription renewal. Actually the billing is showing wrong amount only.",
+    "Agent: Sure, let me pull up your account details.",
+    "Caller: See, what happened is — last month you people charged double. I raised ticket also, but koi response nahi aaya. Bahut pareshani ho rahi hai.",
+    "Agent: I apologize for the inconvenience. Let me check your billing history.",
+    "Caller: Arey yaar, I am telling you na — ₹49,999 was the agreed price but you charged ₹99,998. Kya mazaak hai? My finance team is asking me only what is happening.",
+    "Agent: I can see the duplicate charge. I'll process the reversal immediately.",
+    "Caller: Theek hai, please do it fast. And boss, send me confirmation on email also — mujhe apne CFO ko dikhana hai. Agar aaj nahi hua toh hum switch kar lenge, sach bol raha hoon.",
+  ],
 };
 
 const DEMO_EMOTIONS: Record<Scenario, EmotionScores> = {
@@ -264,6 +282,8 @@ const DEMO_EMOTIONS: Record<Scenario, EmotionScores> = {
   fraud_security: { frustration: 0.1, stress: 0.9, politeness: 0.15, hesitation: 0.05, urgency: 0.95 },
   carousell_cx: { frustration: 0.68, stress: 0.42, politeness: 0.38, hesitation: 0.12, urgency: 0.72 },
   vietnamese_cx: { frustration: 0.75, stress: 0.58, politeness: 0.52, hesitation: 0.08, urgency: 0.82 },
+  vietnamese_en: { frustration: 0.62, stress: 0.7, politeness: 0.58, hesitation: 0.15, urgency: 0.78 },
+  indian_en: { frustration: 0.72, stress: 0.65, politeness: 0.48, hesitation: 0.1, urgency: 0.85 },
 };
 
 const DEMO_SECURITY: Record<Scenario, SecurityMetrics> = {
@@ -278,6 +298,8 @@ const DEMO_SECURITY: Record<Scenario, SecurityMetrics> = {
   fraud_security: { syntheticProb: 0.78, behavioralRisk: 0.92, livenessStatus: "failed" },
   carousell_cx: { syntheticProb: 0.04, behavioralRisk: 0.22, livenessStatus: "verified" },
   vietnamese_cx: { syntheticProb: 0.02, behavioralRisk: 0.12, livenessStatus: "verified" },
+  vietnamese_en: { syntheticProb: 0.03, behavioralRisk: 0.09, livenessStatus: "verified" },
+  indian_en: { syntheticProb: 0.02, behavioralRisk: 0.11, livenessStatus: "verified" },
 };
 
 const DEMO_INTENT: Record<Scenario, IntentLayers> = {
@@ -335,6 +357,16 @@ const DEMO_INTENT: Record<Scenario, IntentLayers> = {
     literal: "Customer calling to complain about delayed order from last week. Requesting expedited shipping. Threatening one-star review.",
     cultural: "'Cháy máy' (phone burning up) = overwhelmed with messages from own customers — indicates B2B reseller. 'Vô tri' (clueless/heartless) expresses exasperation at perceived indifference. 'Đỉnh luôn á' is Gen Z Vietnamese sarcasm meaning 'peak/amazing' used ironically. 'Trời ơi' (oh heavens) is standard Vietnamese exclamation. Customer maintains 'anh/em' hierarchy throughout, showing cultural respect despite frustration.",
     trueIntent: "RESELLER AT RISK. Customer is a downstream reseller whose own buyers are pressuring them — cascading frustration. The one-star review threat is a negotiation lever, not genuine churn intent. Priority: switch to hỏa tốc (express) shipping from Bình Dương warehouse. Proactively offer loyalty discount to defuse review threat and retain high-volume B2B buyer.",
+  },
+  vietnamese_en: {
+    literal: "Vietnamese-accented English speaker reporting customs-held delivery and requesting urgent resolution for downstream client.",
+    cultural: "'Chờ dài cổ' (wait until neck grows long) is a Vietnamese proverb for interminable waiting. 'Có lửa mới có khói' (where there's fire, there's smoke) shows caller suspected problems early. Code-switching into Vietnamese proverbs under stress reveals cultural framing — the caller uses wisdom sayings to legitimize complaints rather than raising voice.",
+    trueIntent: "CUSTOMS ESCALATION. Package held at customs — not a logistics delay. Caller is a Vietnamese diaspora SME owner with downstream client pressure. Accent-aware ASR critical here: standard models misparse Vietnamese-accented English vowels and tonal carry-over. VALSEA correctly identifies intent despite non-native phonology.",
+  },
+  indian_en: {
+    literal: "Indian enterprise customer reporting duplicate SaaS billing charge of ₹99,998 instead of agreed ₹49,999. Requesting immediate reversal with written confirmation.",
+    cultural: "'Ji' is a Hindi honorific suffix showing respect. 'Koi response nahi aaya' (nobody responded) — Hindi code-switch reveals rising frustration. 'Arey yaar' is casual Hindi exasperation among peers. 'Kya mazaak hai' (what a joke) signals disbelief. 'Mujhe apne CFO ko dikhana hai' (I need to show my CFO) reveals organizational pressure. 'Sach bol raha hoon' (I'm telling the truth) is a culturally significant trust assertion — the caller is signaling this is their final warning before churn.",
+    trueIntent: "CHURN RISK — ENTERPRISE ACCOUNT. Duplicate charge is a billing system error, not fraud. But the caller's Hindi/Marathi code-switching pattern shows escalating frustration: started polite ('ji'), moved to peer-level ('yaar'), ended with ultimatum ('switch kar lenge'). The CFO mention indicates organizational decision-making pressure. Immediate reversal + written confirmation required within 2 hours to prevent enterprise account loss.",
   },
 };
 
@@ -437,6 +469,30 @@ const DEMO_PAYLOADS: Record<Scenario, EnterprisePayload> = {
       slang_detected: ["cháy_máy", "vô_tri", "đỉnh_luôn", "trời_ơi"],
       cultural_flags: ["RESELLER_CASCADE_PRESSURE", "REVIEW_THREAT_AS_LEVER", "ANH_EM_HIERARCHY_MAINTAINED"],
       actions: ["SWITCH_TO_EXPRESS_SHIPPING", "ISSUE_LOYALTY_DISCOUNT_CODE_10PCT", "FLAG_WAREHOUSE_RESTOCK_PRIORITY", "SEND_PROACTIVE_TRACKING_UPDATE"],
+    },
+  },
+  vietnamese_en: {
+    type: "accent_aware_cx_api",
+    data: {
+      case_id: "VN-EN-20260318-1204", hold_type: "CUSTOMS_CLEARANCE",
+      accent_profile: "vietnamese_english", asr_confidence: 0.89,
+      proverbs_detected: ["chờ_dài_cổ", "có_lửa_mới_có_khói"],
+      customer_type: "SME_OWNER", downstream_client_pressure: true,
+      language_switches: 3, frustration_trajectory: "ESCALATING",
+      actions: ["ESCALATE_CUSTOMS_RELEASE", "ASSIGN_VIETNAMESE_SPEAKING_AGENT", "SEND_PROACTIVE_DELAY_NOTIFICATION", "FLAG_FOR_ACCENT_MODEL_TRAINING"],
+    },
+  },
+  indian_en: {
+    type: "enterprise_billing_cx_api",
+    data: {
+      account_id: "IN-ENT-BLR-40291", subscription_tier: "ENTERPRISE",
+      billing_error: "DUPLICATE_CHARGE", correct_amount: "INR 49999",
+      charged_amount: "INR 99998", currency: "INR",
+      accent_profile: "south_indian_english", dialect_markers: ["bangalore_kannada_english", "hindi_urdu_code_switch"],
+      languages_detected: ["english", "hindi", "marathi_traces"],
+      cultural_flags: ["JI_HONORIFIC_TO_YAAR_ESCALATION", "CFO_ORGANIZATIONAL_PRESSURE", "FINAL_WARNING_PATTERN"],
+      churn_risk: 0.82, account_value: "HIGH",
+      actions: ["PROCESS_IMMEDIATE_REVERSAL", "SEND_CFO_CONFIRMATION_EMAIL", "ASSIGN_SENIOR_ACCOUNT_MANAGER", "FLAG_BILLING_SYSTEM_BUG"],
     },
   },
 };
