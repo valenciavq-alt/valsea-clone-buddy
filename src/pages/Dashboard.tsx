@@ -358,6 +358,16 @@ const DEMO_INTENT: Record<Scenario, IntentLayers> = {
     cultural: "'Cháy máy' (phone burning up) = overwhelmed with messages from own customers — indicates B2B reseller. 'Vô tri' (clueless/heartless) expresses exasperation at perceived indifference. 'Đỉnh luôn á' is Gen Z Vietnamese sarcasm meaning 'peak/amazing' used ironically. 'Trời ơi' (oh heavens) is standard Vietnamese exclamation. Customer maintains 'anh/em' hierarchy throughout, showing cultural respect despite frustration.",
     trueIntent: "RESELLER AT RISK. Customer is a downstream reseller whose own buyers are pressuring them — cascading frustration. The one-star review threat is a negotiation lever, not genuine churn intent. Priority: switch to hỏa tốc (express) shipping from Bình Dương warehouse. Proactively offer loyalty discount to defuse review threat and retain high-volume B2B buyer.",
   },
+  vietnamese_en: {
+    literal: "Vietnamese-accented English speaker reporting customs-held delivery and requesting urgent resolution for downstream client.",
+    cultural: "'Chờ dài cổ' (wait until neck grows long) is a Vietnamese proverb for interminable waiting. 'Có lửa mới có khói' (where there's fire, there's smoke) shows caller suspected problems early. Code-switching into Vietnamese proverbs under stress reveals cultural framing — the caller uses wisdom sayings to legitimize complaints rather than raising voice.",
+    trueIntent: "CUSTOMS ESCALATION. Package held at customs — not a logistics delay. Caller is a Vietnamese diaspora SME owner with downstream client pressure. Accent-aware ASR critical here: standard models misparse Vietnamese-accented English vowels and tonal carry-over. VALSEA correctly identifies intent despite non-native phonology.",
+  },
+  indian_en: {
+    literal: "Indian enterprise customer reporting duplicate SaaS billing charge of ₹99,998 instead of agreed ₹49,999. Requesting immediate reversal with written confirmation.",
+    cultural: "'Ji' is a Hindi honorific suffix showing respect. 'Koi response nahi aaya' (nobody responded) — Hindi code-switch reveals rising frustration. 'Arey yaar' is casual Hindi exasperation among peers. 'Kya mazaak hai' (what a joke) signals disbelief. 'Mujhe apne CFO ko dikhana hai' (I need to show my CFO) reveals organizational pressure. 'Sach bol raha hoon' (I'm telling the truth) is a culturally significant trust assertion — the caller is signaling this is their final warning before churn.",
+    trueIntent: "CHURN RISK — ENTERPRISE ACCOUNT. Duplicate charge is a billing system error, not fraud. But the caller's Hindi/Marathi code-switching pattern shows escalating frustration: started polite ('ji'), moved to peer-level ('yaar'), ended with ultimatum ('switch kar lenge'). The CFO mention indicates organizational decision-making pressure. Immediate reversal + written confirmation required within 2 hours to prevent enterprise account loss.",
+  },
 };
 
 const DEMO_PAYLOADS: Record<Scenario, EnterprisePayload> = {
