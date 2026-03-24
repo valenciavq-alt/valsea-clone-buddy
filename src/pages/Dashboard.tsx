@@ -471,6 +471,30 @@ const DEMO_PAYLOADS: Record<Scenario, EnterprisePayload> = {
       actions: ["SWITCH_TO_EXPRESS_SHIPPING", "ISSUE_LOYALTY_DISCOUNT_CODE_10PCT", "FLAG_WAREHOUSE_RESTOCK_PRIORITY", "SEND_PROACTIVE_TRACKING_UPDATE"],
     },
   },
+  vietnamese_en: {
+    type: "accent_aware_cx_api",
+    data: {
+      case_id: "VN-EN-20260318-1204", hold_type: "CUSTOMS_CLEARANCE",
+      accent_profile: "vietnamese_english", asr_confidence: 0.89,
+      proverbs_detected: ["chờ_dài_cổ", "có_lửa_mới_có_khói"],
+      customer_type: "SME_OWNER", downstream_client_pressure: true,
+      language_switches: 3, frustration_trajectory: "ESCALATING",
+      actions: ["ESCALATE_CUSTOMS_RELEASE", "ASSIGN_VIETNAMESE_SPEAKING_AGENT", "SEND_PROACTIVE_DELAY_NOTIFICATION", "FLAG_FOR_ACCENT_MODEL_TRAINING"],
+    },
+  },
+  indian_en: {
+    type: "enterprise_billing_cx_api",
+    data: {
+      account_id: "IN-ENT-BLR-40291", subscription_tier: "ENTERPRISE",
+      billing_error: "DUPLICATE_CHARGE", correct_amount: "INR 49999",
+      charged_amount: "INR 99998", currency: "INR",
+      accent_profile: "south_indian_english", dialect_markers: ["bangalore_kannada_english", "hindi_urdu_code_switch"],
+      languages_detected: ["english", "hindi", "marathi_traces"],
+      cultural_flags: ["JI_HONORIFIC_TO_YAAR_ESCALATION", "CFO_ORGANIZATIONAL_PRESSURE", "FINAL_WARNING_PATTERN"],
+      churn_risk: 0.82, account_value: "HIGH",
+      actions: ["PROCESS_IMMEDIATE_REVERSAL", "SEND_CFO_CONFIRMATION_EMAIL", "ASSIGN_SENIOR_ACCOUNT_MANAGER", "FLAG_BILLING_SYSTEM_BUG"],
+    },
+  },
 };
 
 // ─── Prosody Bar ─────────────────────────────────────────────────────────────
