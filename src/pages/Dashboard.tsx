@@ -80,7 +80,7 @@ interface EnterprisePayload {
   data: Record<string, any>;
 }
 
-type Scenario = "logistics" | "fintech" | "cx_escalation" | "healthcare" | "legal" | "commerce" | "conversational_ai" | "enterprise_ops" | "fraud_security" | "carousell_cx" | "vietnamese_cx" | "vietnamese_en" | "indian_en";
+type Scenario = "logistics" | "fintech" | "cx_escalation" | "healthcare" | "legal" | "commerce" | "conversational_ai" | "enterprise_ops" | "fraud_security" | "carousell_cx" | "vietnamese_cx" | "vietnamese_en" | "indian_en" | "coke_vn_complaint" | "coke_vn_supplier";
 
 interface ScenarioConfig {
   label: string;
@@ -167,6 +167,18 @@ const SCENARIOS: Record<Scenario, ScenarioConfig> = {
     source: "Bangalore / Chennai",
     target: "Enterprise CX",
     scenario: "South Indian English Dialect",
+  },
+  coke_vn_complaint: {
+    label: "Coca-Cola VN — Complaint",
+    source: "Hà Nội, Vietnam",
+    target: "Coca-Cola Consumer Hotline",
+    scenario: "Consumer Complaint (Vietnamese)",
+  },
+  coke_vn_supplier: {
+    label: "Coca-Cola VN — B2B Order",
+    source: "Đà Nẵng, Vietnam",
+    target: "Coca-Cola Distributor Portal",
+    scenario: "Supplier Bulk Order (Vietnamese)",
   },
 };
 
