@@ -303,30 +303,15 @@ const DEMO_INTENT: Record<Scenario, IntentLayers> = {
     cultural: "'Kan cheong spider' is Singlish for extreme anxiety/impatience. 'Leh' softens complaint but frustration is high.",
     trueIntent: "Immediate refund processing required. Customer loyalty at critical risk — potential social media escalation if not resolved this session.",
   },
-  healthcare: {
-    literal: "Family member reporting elderly patient with chest pain and breathing difficulty.",
-    cultural: "'Lola' is Filipino for grandmother. 'Parang tinutusok' means stabbing pain in Tagalog. Caller code-switches between English and Filipino under stress.",
-    trueIntent: "PRIORITY TRIAGE: Suspected cardiac event in elderly female. Aspirin administered. Dispatch emergency response immediately — time-critical intervention required.",
-  },
   legal: {
     literal: "Whistleblower reporting potential insider trading evidence from recorded meeting.",
     cultural: "'Pak' is respectful Indonesian address. 'Baik' confirms understanding. Caller mixing Bahasa and English indicates formal but anxious reporting. Whistleblower protection concern is culturally significant.",
     trueIntent: "Flag for OJK regulatory review. Preserve meeting recording as evidence. Activate whistleblower protection protocol — caller at risk of retaliation.",
   },
-  commerce: {
-    literal: "Customer searching for viral Korean skincare bundle with shipping inquiry.",
-    cultural: "'Sawasdee kha' is polite Thai greeting. Code-switching to Singlish ('lah', 'ah') suggests Southeast Asian diaspora buyer. Price sensitivity and free shipping are key decision factors.",
-    trueIntent: "High purchase intent — customer ready to buy 2x bundles if free shipping confirmed. Upsell opportunity: recommend complementary products. Capture for remarketing.",
-  },
   conversational_ai: {
     literal: "User requesting smart home voice assistant calibration for non-standard accent.",
     cultural: "'Walao eh' expresses comedic frustration at ASR failure. 'One' as sentence-final particle is Singlish. Request for Cantonese support indicates multi-generational household.",
     trueIntent: "Calibrate voice model for Singlish-accented English. Add Cantonese command set for secondary user. Core problem: standard ASR fails on regional accents — VALSEA value proposition.",
-  },
-  enterprise_ops: {
-    literal: "Executive team reviewing Q1 APAC performance and actioning operational decisions.",
-    cultural: "'Lah' in executive context normalizes casual tone in formal setting. 'Buay tahan' about burn rate conveys strong concern about Indonesia expansion sustainability.",
-    trueIntent: "Auto-generate board deck with margin analysis. Action items: hiring freeze memo to HR (deadline Friday), Indonesia expansion cost review. Tag finance team for burn rate assessment.",
   },
   fraud_security: {
     literal: "Caller claiming to be bank security, demanding immediate fund transfer and OTP.",
@@ -337,21 +322,6 @@ const DEMO_INTENT: Record<Scenario, IntentLayers> = {
     literal: "Buyer negotiating iPhone 15 Pro Max price down from $1,400 to $1,200, arranging same-day cash meetup at Tampines MRT.",
     cultural: "'Walao eh' and 'siao lah' express dramatic disbelief at pricing — classic Singlish haggling theatre, not genuine hostility. 'Pangseh' (Hokkien: to stand someone up) reveals real emotional pain from prior no-show sellers. 'Damn sian' signals deep fatigue with marketplace trust issues. Seller's 'I not that kind one' is a culturally significant trust pledge.",
     trueIntent: "DEAL IMMINENT. Buyer's rapid concession from $1,000 to $1,200 confirms high purchase intent despite theatrical protests. The real CX risk isn't price — it's trust. Two prior no-shows have created abandonment anxiety. Recommend: activate Carousell CarouMeet verified meetup, send both parties a confirmed location pin, and auto-escrow the payment to eliminate cancellation risk on both sides.",
-  },
-  vietnamese_cx: {
-    literal: "Customer calling to complain about delayed order from last week. Requesting expedited shipping. Threatening one-star review.",
-    cultural: "'Cháy máy' (phone burning up) = overwhelmed with messages from own customers — indicates B2B reseller. 'Vô tri' (clueless/heartless) expresses exasperation at perceived indifference. 'Đỉnh luôn á' is Gen Z Vietnamese sarcasm meaning 'peak/amazing' used ironically. 'Trời ơi' (oh heavens) is standard Vietnamese exclamation. Customer maintains 'anh/em' hierarchy throughout, showing cultural respect despite frustration.",
-    trueIntent: "RESELLER AT RISK. Customer is a downstream reseller whose own buyers are pressuring them — cascading frustration. The one-star review threat is a negotiation lever, not genuine churn intent. Priority: switch to hỏa tốc (express) shipping from Bình Dương warehouse. Proactively offer loyalty discount to defuse review threat and retain high-volume B2B buyer.",
-  },
-  vietnamese_en: {
-    literal: "Vietnamese-accented English speaker reporting customs-held delivery and requesting urgent resolution for downstream client.",
-    cultural: "'Chờ dài cổ' (wait until neck grows long) is a Vietnamese proverb for interminable waiting. 'Có lửa mới có khói' (where there's fire, there's smoke) shows caller suspected problems early. Code-switching into Vietnamese proverbs under stress reveals cultural framing — the caller uses wisdom sayings to legitimize complaints rather than raising voice.",
-    trueIntent: "CUSTOMS ESCALATION. Package held at customs — not a logistics delay. Caller is a Vietnamese diaspora SME owner with downstream client pressure. Accent-aware ASR critical here: standard models misparse Vietnamese-accented English vowels and tonal carry-over. VALSEA correctly identifies intent despite non-native phonology.",
-  },
-  indian_en: {
-    literal: "Indian enterprise customer reporting duplicate SaaS billing charge of ₹99,998 instead of agreed ₹49,999. Requesting immediate reversal with written confirmation.",
-    cultural: "'Ji' is a Hindi honorific suffix showing respect. 'Koi response nahi aaya' (nobody responded) — Hindi code-switch reveals rising frustration. 'Arey yaar' is casual Hindi exasperation among peers. 'Kya mazaak hai' (what a joke) signals disbelief. 'Mujhe apne CFO ko dikhana hai' (I need to show my CFO) reveals organizational pressure. 'Sach bol raha hoon' (I'm telling the truth) is a culturally significant trust assertion — the caller is signaling this is their final warning before churn.",
-    trueIntent: "CHURN RISK — ENTERPRISE ACCOUNT. Duplicate charge is a billing system error, not fraud. But the caller's Hindi/Marathi code-switching pattern shows escalating frustration: started polite ('ji'), moved to peer-level ('yaar'), ended with ultimatum ('switch kar lenge'). The CFO mention indicates organizational decision-making pressure. Immediate reversal + written confirmation required within 2 hours to prevent enterprise account loss.",
   },
   coke_vn_complaint: {
     literal: "Vietnamese consumer filing a meta-complaint about a prior Coca-Cola hotline call where the agent dismissed a product defect (swollen Coke Zero can) and hung up. Threatening a TikTok review.",
