@@ -239,6 +239,24 @@ const DEMO_TRANSCRIPTS: Record<Scenario, string[]> = {
     "Agent: Dạ em chốt đơn PO-CCVN-DN-20260128-0917, giao ngày 28/01/2026, mã vận đơn tracking là CCVN-TRK-7742039. Em gửi xác nhận qua Zalo cho anh liền nha.",
     "Đại lý: Đỉnh luôn á em. Nhớ gửi tracking để anh theo dõi, có gì delay là call anh liền nghen.",
   ],
+  multilingual_cjk: [
+    "Caller (HK): Hello, 早晨 (jóusàhn)! I'm joining from Hong Kong, 我哋想 confirm个 launch date for 东京 release.",
+    "Tokyo: お疲れ様です。Tokyo-side, we are ready, but 在庫 (zaiko) inventory is tight — 来月 maybe better lah?",
+    "Caller (HK): 唔得啊, 客户 already 收到 announcement. We must launch 下个月一号. Can or not?",
+    "Seoul: 잠시만요 (jamsimanyo), wait — Seoul logistics, 우리는 (uri-neun) we can ship from Busan port 25일까지. 大丈夫です (daijōbu desu).",
+    "Tokyo: ありがとう Park-san. 那么 Mandarin SKU 包装 we share with Seoul, 韓国語 label add 一起 print.",
+    "Caller (HK): Perfect, 咁就 confirm. Send 邮件 in English so 全部人 (chyùhnbouhyàn) can read 啦.",
+    "Seoul: 알겠습니다 (algetseumnida). One file, English summary, attach 中文/日本語/한국어 spec sheets.",
+  ],
+  multilingual_vn: [
+    "Khách (HCMC): Alo em ơi, chị gọi từ Sài Gòn nè. Chị need to confirm cái order ship qua Singapore tuần sau.",
+    "Agent (SG): Hi chị, no problem. Can you share the PO number? 我可以同步去 warehouse system 啦.",
+    "Khách: PO là VN-SG-20260322-0041. Mặt hàng là cà phê G7, 50 thùng. Ship via Cát Lái port, okay không em?",
+    "Agent: 五十 cartons, noted. Cát Lái to Tuas — ETA around 6 days lah. Anything urgent ah chị?",
+    "Khách: Ừ, hơi gấp. Khách Singapore của chị muốn nhận trước 30 tháng 3, không thì họ cancel luôn á. Trời ơi căng lắm.",
+    "Agent: Don't worry chị, I'll flag as priority. 我会 push customs team 加快 clearance. We'll send tracking qua Zalo.",
+    "Khách: Cảm ơn em nhiều nha. Em handle multilingual giỏi quá, đỉnh luôn — that's why chị stay with your platform.",
+  ],
 };
 
 const DEMO_EMOTIONS: Record<Scenario, EmotionScores> = {
