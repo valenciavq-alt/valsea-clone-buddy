@@ -80,7 +80,18 @@ interface EnterprisePayload {
   data: Record<string, any>;
 }
 
-type Scenario = "logistics" | "fintech" | "cx_escalation" | "healthcare" | "legal" | "commerce" | "conversational_ai" | "enterprise_ops" | "fraud_security" | "carousell_cx" | "vietnamese_cx" | "vietnamese_en" | "indian_en" | "coke_vn_complaint" | "coke_vn_supplier";
+type Scenario =
+  | "logistics"
+  | "fintech"
+  | "cx_escalation"
+  | "legal"
+  | "conversational_ai"
+  | "fraud_security"
+  | "carousell_cx"
+  | "coke_vn_complaint"
+  | "coke_vn_supplier"
+  | "multilingual_cjk"
+  | "multilingual_vn";
 
 interface ScenarioConfig {
   label: string;
@@ -108,35 +119,17 @@ const SCENARIOS: Record<Scenario, ScenarioConfig> = {
     target: "CX Platform",
     scenario: "Customer Escalation",
   },
-  healthcare: {
-    label: "Healthcare",
-    source: "Philippines",
-    target: "Clinical System",
-    scenario: "Multilingual Triage",
-  },
   legal: {
     label: "Legal",
     source: "Indonesia",
     target: "Compliance Hub",
     scenario: "Regulatory Evidence",
   },
-  commerce: {
-    label: "Commerce",
-    source: "Thailand",
-    target: "Marketplace",
-    scenario: "Voice Product Discovery",
-  },
   conversational_ai: {
     label: "Conv. AI",
     source: "Multi-region",
     target: "LLM Pipeline",
     scenario: "Speech Structuring Layer",
-  },
-  enterprise_ops: {
-    label: "Enterprise",
-    source: "Regional HQ",
-    target: "Workflow Engine",
-    scenario: "Meeting Intelligence",
   },
   fraud_security: {
     label: "Security",
@@ -150,24 +143,6 @@ const SCENARIOS: Record<Scenario, ScenarioConfig> = {
     target: "Carousell Platform",
     scenario: "Marketplace Trust & Safety",
   },
-  vietnamese_cx: {
-    label: "Vietnamese CX",
-    source: "Vietnam",
-    target: "CX Platform",
-    scenario: "Vietnamese Slang Intelligence",
-  },
-  vietnamese_en: {
-    label: "Viet-English",
-    source: "Ho Chi Minh City",
-    target: "CX Platform",
-    scenario: "Vietnamese-Accented English",
-  },
-  indian_en: {
-    label: "Indian English",
-    source: "Bangalore / Chennai",
-    target: "Enterprise CX",
-    scenario: "South Indian English Dialect",
-  },
   coke_vn_complaint: {
     label: "Coca-Cola VN — Complaint",
     source: "Hà Nội, Vietnam",
@@ -179,6 +154,18 @@ const SCENARIOS: Record<Scenario, ScenarioConfig> = {
     source: "Đà Nẵng, Vietnam",
     target: "Coca-Cola Distributor Portal",
     scenario: "Supplier Bulk Order (Vietnamese)",
+  },
+  multilingual_cjk: {
+    label: "Multilingual — CJK + EN",
+    source: "Hong Kong ⇄ Tokyo ⇄ Seoul",
+    target: "Global Conference Bridge",
+    scenario: "Cantonese · English · Mandarin · Japanese · Korean",
+  },
+  multilingual_vn: {
+    label: "Multilingual — Vietnamese",
+    source: "Ho Chi Minh City ⇄ Singapore",
+    target: "Cross-Border CX Platform",
+    scenario: "Vietnamese · English · Mandarin code-switching",
   },
 };
 
@@ -203,13 +190,6 @@ const DEMO_TRANSCRIPTS: Record<Scenario, string[]> = {
     "Customer: Please lah, I just want my refund. Kan cheong spider here waiting.",
     "Agent: I understand the urgency. I'll process this as priority.",
   ],
-  healthcare: [
-    "Caller: Doc, my lola, she having chest pain since last night. Very worry ah.",
-    "Agent: I understand. Can you describe the pain location and severity?",
-    "Caller: She say here, the left side. Parang tinutusok daw. She cannot breathe properly also.",
-    "Agent: Is she conscious and responsive right now?",
-    "Caller: Yes, but she very pale. We give her aspirin already. Ambulance how long ah?",
-  ],
   legal: [
     "Caller: Pak, saya mau report. The recording from last week meeting, ada evidence of insider trading.",
     "Agent: Can you provide the date, time, and participants of the meeting?",
@@ -217,26 +197,12 @@ const DEMO_TRANSCRIPTS: Record<Scenario, string[]> = {
     "Agent: This will be flagged for OJK regulatory review. Please preserve all related communications.",
     "Caller: Baik. But I need protection lah. Whistleblower protection must be guaranteed.",
   ],
-  commerce: [
-    "Caller: Sawasdee kha, I looking for the viral skincare set. The one TikTok show, with snail mucin one.",
-    "Agent: We have several snail mucin sets. Do you have a preferred brand?",
-    "Caller: The Korean one lah, COSRX I think. But I want the bundle with toner also.",
-    "Agent: I found the COSRX Advanced Snail Bundle. Shall I add to your cart?",
-    "Caller: How much ah? If got free shipping to Bangkok I take two set.",
-  ],
   conversational_ai: [
     "Caller: 你好, I need help setting up my smart home. The Alexa cannot understand my accent lah.",
     "Agent: I understand. Which devices are you trying to connect?",
     "Caller: The aircon and the lights. I say 'turn on aircon' but it hear 'turn on bacon'. Walao eh.",
     "Agent: Let me calibrate the voice model for your accent profile.",
     "Caller: Can also add Cantonese commands ah? My mother only speak Cantonese one.",
-  ],
-  enterprise_ops: [
-    "Caller: Team, let's recap the Q1 targets. APAC revenue up 12% but margins squeezed lah.",
-    "Agent: Should I flag the margin compression for the board deck?",
-    "Caller: Yes, and highlight the Indonesia expansion costs. That one buay tahan the burn rate.",
-    "Agent: Noted. I'll structure the action items from this briefing.",
-    "Caller: Also need to action the hiring freeze memo. HR to confirm headcount by Friday.",
   ],
   fraud_security: [
     "Caller: Hello, this is the bank security department. Your account has been compromised.",
@@ -252,33 +218,6 @@ const DEMO_TRANSCRIPTS: Record<Scenario, string[]> = {
     "Seller: Eh bro, this one got AppleCare+ until December, original box, cable everything. You go Apple store see how much. Serious buyer then come, $1,300 last price can already.",
     "Buyer: Aiya, okay lah $1,200 I take. I rush down Tampines MRT now. Cash ready. But ah — please don't last minute MIA. Last two sellers pangseh me already, damn sian.",
     "Seller: Confirm lah bro, I not that kind one. See you 6pm. I wear red shirt, easy spot.",
-  ],
-  vietnamese_cx: [
-    "Khách: Alo, em ơi cho anh hỏi đơn hàng anh đặt tuần trước sao chưa giao vậy?",
-    "Agent: Dạ anh cho em xin mã đơn hàng ạ, em kiểm tra liền.",
-    "Khách: Trời ơi, anh đặt hàng từ đời nào rồi mà giờ còn chưa ship. Cháy máy luôn rồi nè!",
-    "Agent: Dạ em thấy đơn đang kẹt ở kho Bình Dương, do hết hàng tạm thời ạ.",
-    "Khách: Vô tri thiệt! Anh đợi lâu quá trời luôn. Bên em có thể giao nhanh hơn không? Anh cần gấp lắm, khách anh đòi hàng muốn điên rồi.",
-    "Agent: Dạ để em xử lý ưu tiên cho anh, chuyển sang giao hỏa tốc nha anh. Anh yên tâm.",
-    "Khách: Okay cảm ơn em. Mà lần sau ship chậm là anh review một sao đó nha, đỉnh luôn á!",
-  ],
-  vietnamese_en: [
-    "Caller: Hello, I calling about my delivery, it suppose to come yesterday but until now nothing ah.",
-    "Agent: I'm sorry to hear that. Can you share your order number?",
-    "Caller: Yes yes, it is VN-seven-eight-nine-zero. I already wait three day already. My customer keep calling me, I very stress now.",
-    "Agent: Let me check the tracking status for you right away.",
-    "Caller: You know, back home we say 'chờ dài cổ' — wait until the neck grow long. That is me right now! Please help me solve this, I cannot lose this client.",
-    "Agent: I found the issue — your package was held at customs. I'm escalating it now.",
-    "Caller: Thank you so much. But next time please inform before delay, okay? In Vietnam we say 'có lửa mới có khói' — where got smoke, there is fire. I know something wrong from beginning.",
-  ],
-  indian_en: [
-    "Caller: Hello ji, I am calling regarding my SaaS subscription renewal. Actually the billing is showing wrong amount only.",
-    "Agent: Sure, let me pull up your account details.",
-    "Caller: See, what happened is — last month you people charged double. I raised ticket also, but koi response nahi aaya. Bahut pareshani ho rahi hai.",
-    "Agent: I apologize for the inconvenience. Let me check your billing history.",
-    "Caller: Arey yaar, I am telling you na — ₹49,999 was the agreed price but you charged ₹99,998. Kya mazaak hai? My finance team is asking me only what is happening.",
-    "Agent: I can see the duplicate charge. I'll process the reversal immediately.",
-    "Caller: Theek hai, please do it fast. And boss, send me confirmation on email also — mujhe apne CFO ko dikhana hai. Agar aaj nahi hua toh hum switch kar lenge, sach bol raha hoon.",
   ],
   coke_vn_complaint: [
     "Khách: Alo, Coca-Cola Việt Nam phải không? Tôi muốn khiếu nại về cuộc gọi vừa rồi nha.",
@@ -300,42 +239,52 @@ const DEMO_TRANSCRIPTS: Record<Scenario, string[]> = {
     "Agent: Dạ em chốt đơn PO-CCVN-DN-20260128-0917, giao ngày 28/01/2026, mã vận đơn tracking là CCVN-TRK-7742039. Em gửi xác nhận qua Zalo cho anh liền nha.",
     "Đại lý: Đỉnh luôn á em. Nhớ gửi tracking để anh theo dõi, có gì delay là call anh liền nghen.",
   ],
+  multilingual_cjk: [
+    "Caller (HK): Hello, 早晨 (jóusàhn)! I'm joining from Hong Kong, 我哋想 confirm个 launch date for 东京 release.",
+    "Tokyo: お疲れ様です。Tokyo-side, we are ready, but 在庫 (zaiko) inventory is tight — 来月 maybe better lah?",
+    "Caller (HK): 唔得啊, 客户 already 收到 announcement. We must launch 下个月一号. Can or not?",
+    "Seoul: 잠시만요 (jamsimanyo), wait — Seoul logistics, 우리는 (uri-neun) we can ship from Busan port 25일까지. 大丈夫です (daijōbu desu).",
+    "Tokyo: ありがとう Park-san. 那么 Mandarin SKU 包装 we share with Seoul, 韓国語 label add 一起 print.",
+    "Caller (HK): Perfect, 咁就 confirm. Send 邮件 in English so 全部人 (chyùhnbouhyàn) can read 啦.",
+    "Seoul: 알겠습니다 (algetseumnida). One file, English summary, attach 中文/日本語/한국어 spec sheets.",
+  ],
+  multilingual_vn: [
+    "Khách (HCMC): Alo em ơi, chị gọi từ Sài Gòn nè. Chị need to confirm cái order ship qua Singapore tuần sau.",
+    "Agent (SG): Hi chị, no problem. Can you share the PO number? 我可以同步去 warehouse system 啦.",
+    "Khách: PO là VN-SG-20260322-0041. Mặt hàng là cà phê G7, 50 thùng. Ship via Cát Lái port, okay không em?",
+    "Agent: 五十 cartons, noted. Cát Lái to Tuas — ETA around 6 days lah. Anything urgent ah chị?",
+    "Khách: Ừ, hơi gấp. Khách Singapore của chị muốn nhận trước 30 tháng 3, không thì họ cancel luôn á. Trời ơi căng lắm.",
+    "Agent: Don't worry chị, I'll flag as priority. 我会 push customs team 加快 clearance. We'll send tracking qua Zalo.",
+    "Khách: Cảm ơn em nhiều nha. Em handle multilingual giỏi quá, đỉnh luôn — that's why chị stay with your platform.",
+  ],
 };
 
 const DEMO_EMOTIONS: Record<Scenario, EmotionScores> = {
   logistics: { frustration: 0.72, stress: 0.55, politeness: 0.45, hesitation: 0.2, urgency: 0.68 },
   fintech: { frustration: 0.35, stress: 0.78, politeness: 0.6, hesitation: 0.1, urgency: 0.88 },
   cx_escalation: { frustration: 0.85, stress: 0.7, politeness: 0.3, hesitation: 0.15, urgency: 0.8 },
-  healthcare: { frustration: 0.15, stress: 0.92, politeness: 0.75, hesitation: 0.45, urgency: 0.95 },
   legal: { frustration: 0.2, stress: 0.65, politeness: 0.55, hesitation: 0.3, urgency: 0.5 },
-  commerce: { frustration: 0.05, stress: 0.1, politeness: 0.9, hesitation: 0.35, urgency: 0.25 },
   conversational_ai: { frustration: 0.6, stress: 0.3, politeness: 0.65, hesitation: 0.2, urgency: 0.4 },
-  enterprise_ops: { frustration: 0.25, stress: 0.45, politeness: 0.7, hesitation: 0.1, urgency: 0.6 },
   fraud_security: { frustration: 0.1, stress: 0.9, politeness: 0.15, hesitation: 0.05, urgency: 0.95 },
   carousell_cx: { frustration: 0.68, stress: 0.42, politeness: 0.38, hesitation: 0.12, urgency: 0.72 },
-  vietnamese_cx: { frustration: 0.75, stress: 0.58, politeness: 0.52, hesitation: 0.08, urgency: 0.82 },
-  vietnamese_en: { frustration: 0.62, stress: 0.7, politeness: 0.58, hesitation: 0.15, urgency: 0.78 },
-  indian_en: { frustration: 0.72, stress: 0.65, politeness: 0.48, hesitation: 0.1, urgency: 0.85 },
   coke_vn_complaint: { frustration: 0.82, stress: 0.6, politeness: 0.4, hesitation: 0.08, urgency: 0.78 },
   coke_vn_supplier: { frustration: 0.18, stress: 0.32, politeness: 0.78, hesitation: 0.1, urgency: 0.7 },
+  multilingual_cjk: { frustration: 0.28, stress: 0.55, politeness: 0.82, hesitation: 0.22, urgency: 0.7 },
+  multilingual_vn: { frustration: 0.42, stress: 0.6, politeness: 0.75, hesitation: 0.18, urgency: 0.78 },
 };
 
 const DEMO_SECURITY: Record<Scenario, SecurityMetrics> = {
   logistics: { syntheticProb: 0.03, behavioralRisk: 0.08, livenessStatus: "verified" },
   fintech: { syntheticProb: 0.02, behavioralRisk: 0.15, livenessStatus: "verified" },
   cx_escalation: { syntheticProb: 0.05, behavioralRisk: 0.12, livenessStatus: "verified" },
-  healthcare: { syntheticProb: 0.01, behavioralRisk: 0.04, livenessStatus: "verified" },
   legal: { syntheticProb: 0.04, behavioralRisk: 0.1, livenessStatus: "verified" },
-  commerce: { syntheticProb: 0.02, behavioralRisk: 0.03, livenessStatus: "verified" },
   conversational_ai: { syntheticProb: 0.06, behavioralRisk: 0.07, livenessStatus: "verified" },
-  enterprise_ops: { syntheticProb: 0.01, behavioralRisk: 0.05, livenessStatus: "verified" },
   fraud_security: { syntheticProb: 0.78, behavioralRisk: 0.92, livenessStatus: "failed" },
   carousell_cx: { syntheticProb: 0.04, behavioralRisk: 0.22, livenessStatus: "verified" },
-  vietnamese_cx: { syntheticProb: 0.02, behavioralRisk: 0.12, livenessStatus: "verified" },
-  vietnamese_en: { syntheticProb: 0.03, behavioralRisk: 0.09, livenessStatus: "verified" },
-  indian_en: { syntheticProb: 0.02, behavioralRisk: 0.11, livenessStatus: "verified" },
   coke_vn_complaint: { syntheticProb: 0.02, behavioralRisk: 0.18, livenessStatus: "verified" },
   coke_vn_supplier: { syntheticProb: 0.01, behavioralRisk: 0.04, livenessStatus: "verified" },
+  multilingual_cjk: { syntheticProb: 0.02, behavioralRisk: 0.06, livenessStatus: "verified" },
+  multilingual_vn: { syntheticProb: 0.02, behavioralRisk: 0.08, livenessStatus: "verified" },
 };
 
 const DEMO_INTENT: Record<Scenario, IntentLayers> = {
@@ -354,30 +303,15 @@ const DEMO_INTENT: Record<Scenario, IntentLayers> = {
     cultural: "'Kan cheong spider' is Singlish for extreme anxiety/impatience. 'Leh' softens complaint but frustration is high.",
     trueIntent: "Immediate refund processing required. Customer loyalty at critical risk — potential social media escalation if not resolved this session.",
   },
-  healthcare: {
-    literal: "Family member reporting elderly patient with chest pain and breathing difficulty.",
-    cultural: "'Lola' is Filipino for grandmother. 'Parang tinutusok' means stabbing pain in Tagalog. Caller code-switches between English and Filipino under stress.",
-    trueIntent: "PRIORITY TRIAGE: Suspected cardiac event in elderly female. Aspirin administered. Dispatch emergency response immediately — time-critical intervention required.",
-  },
   legal: {
     literal: "Whistleblower reporting potential insider trading evidence from recorded meeting.",
     cultural: "'Pak' is respectful Indonesian address. 'Baik' confirms understanding. Caller mixing Bahasa and English indicates formal but anxious reporting. Whistleblower protection concern is culturally significant.",
     trueIntent: "Flag for OJK regulatory review. Preserve meeting recording as evidence. Activate whistleblower protection protocol — caller at risk of retaliation.",
   },
-  commerce: {
-    literal: "Customer searching for viral Korean skincare bundle with shipping inquiry.",
-    cultural: "'Sawasdee kha' is polite Thai greeting. Code-switching to Singlish ('lah', 'ah') suggests Southeast Asian diaspora buyer. Price sensitivity and free shipping are key decision factors.",
-    trueIntent: "High purchase intent — customer ready to buy 2x bundles if free shipping confirmed. Upsell opportunity: recommend complementary products. Capture for remarketing.",
-  },
   conversational_ai: {
     literal: "User requesting smart home voice assistant calibration for non-standard accent.",
     cultural: "'Walao eh' expresses comedic frustration at ASR failure. 'One' as sentence-final particle is Singlish. Request for Cantonese support indicates multi-generational household.",
     trueIntent: "Calibrate voice model for Singlish-accented English. Add Cantonese command set for secondary user. Core problem: standard ASR fails on regional accents — VALSEA value proposition.",
-  },
-  enterprise_ops: {
-    literal: "Executive team reviewing Q1 APAC performance and actioning operational decisions.",
-    cultural: "'Lah' in executive context normalizes casual tone in formal setting. 'Buay tahan' about burn rate conveys strong concern about Indonesia expansion sustainability.",
-    trueIntent: "Auto-generate board deck with margin analysis. Action items: hiring freeze memo to HR (deadline Friday), Indonesia expansion cost review. Tag finance team for burn rate assessment.",
   },
   fraud_security: {
     literal: "Caller claiming to be bank security, demanding immediate fund transfer and OTP.",
@@ -389,21 +323,6 @@ const DEMO_INTENT: Record<Scenario, IntentLayers> = {
     cultural: "'Walao eh' and 'siao lah' express dramatic disbelief at pricing — classic Singlish haggling theatre, not genuine hostility. 'Pangseh' (Hokkien: to stand someone up) reveals real emotional pain from prior no-show sellers. 'Damn sian' signals deep fatigue with marketplace trust issues. Seller's 'I not that kind one' is a culturally significant trust pledge.",
     trueIntent: "DEAL IMMINENT. Buyer's rapid concession from $1,000 to $1,200 confirms high purchase intent despite theatrical protests. The real CX risk isn't price — it's trust. Two prior no-shows have created abandonment anxiety. Recommend: activate Carousell CarouMeet verified meetup, send both parties a confirmed location pin, and auto-escrow the payment to eliminate cancellation risk on both sides.",
   },
-  vietnamese_cx: {
-    literal: "Customer calling to complain about delayed order from last week. Requesting expedited shipping. Threatening one-star review.",
-    cultural: "'Cháy máy' (phone burning up) = overwhelmed with messages from own customers — indicates B2B reseller. 'Vô tri' (clueless/heartless) expresses exasperation at perceived indifference. 'Đỉnh luôn á' is Gen Z Vietnamese sarcasm meaning 'peak/amazing' used ironically. 'Trời ơi' (oh heavens) is standard Vietnamese exclamation. Customer maintains 'anh/em' hierarchy throughout, showing cultural respect despite frustration.",
-    trueIntent: "RESELLER AT RISK. Customer is a downstream reseller whose own buyers are pressuring them — cascading frustration. The one-star review threat is a negotiation lever, not genuine churn intent. Priority: switch to hỏa tốc (express) shipping from Bình Dương warehouse. Proactively offer loyalty discount to defuse review threat and retain high-volume B2B buyer.",
-  },
-  vietnamese_en: {
-    literal: "Vietnamese-accented English speaker reporting customs-held delivery and requesting urgent resolution for downstream client.",
-    cultural: "'Chờ dài cổ' (wait until neck grows long) is a Vietnamese proverb for interminable waiting. 'Có lửa mới có khói' (where there's fire, there's smoke) shows caller suspected problems early. Code-switching into Vietnamese proverbs under stress reveals cultural framing — the caller uses wisdom sayings to legitimize complaints rather than raising voice.",
-    trueIntent: "CUSTOMS ESCALATION. Package held at customs — not a logistics delay. Caller is a Vietnamese diaspora SME owner with downstream client pressure. Accent-aware ASR critical here: standard models misparse Vietnamese-accented English vowels and tonal carry-over. VALSEA correctly identifies intent despite non-native phonology.",
-  },
-  indian_en: {
-    literal: "Indian enterprise customer reporting duplicate SaaS billing charge of ₹99,998 instead of agreed ₹49,999. Requesting immediate reversal with written confirmation.",
-    cultural: "'Ji' is a Hindi honorific suffix showing respect. 'Koi response nahi aaya' (nobody responded) — Hindi code-switch reveals rising frustration. 'Arey yaar' is casual Hindi exasperation among peers. 'Kya mazaak hai' (what a joke) signals disbelief. 'Mujhe apne CFO ko dikhana hai' (I need to show my CFO) reveals organizational pressure. 'Sach bol raha hoon' (I'm telling the truth) is a culturally significant trust assertion — the caller is signaling this is their final warning before churn.",
-    trueIntent: "CHURN RISK — ENTERPRISE ACCOUNT. Duplicate charge is a billing system error, not fraud. But the caller's Hindi/Marathi code-switching pattern shows escalating frustration: started polite ('ji'), moved to peer-level ('yaar'), ended with ultimatum ('switch kar lenge'). The CFO mention indicates organizational decision-making pressure. Immediate reversal + written confirmation required within 2 hours to prevent enterprise account loss.",
-  },
   coke_vn_complaint: {
     literal: "Vietnamese consumer filing a meta-complaint about a prior Coca-Cola hotline call where the agent dismissed a product defect (swollen Coke Zero can) and hung up. Threatening a TikTok review.",
     cultural: "'Cộc lốc' (curt/abrupt) describes rude agent tone. 'Trời ơi' and 'vô tri' (clueless) frame moral outrage rather than literal product anger. The caller cites lot code L23-CCVN-0842 and a child-safety angle — a classic Vietnamese pressure pattern that escalates a service failure into a brand-trust narrative. 'Anh nói thiệt' (I'm telling the truth) plus TikTok livestream mention is a soft ultimatum, not idle threat — Vietnamese consumers routinely weaponize social platforms for B2C resolution leverage.",
@@ -413,6 +332,16 @@ const DEMO_INTENT: Record<Scenario, IntentLayers> = {
     literal: "Đà Nẵng distributor (Tâm Phát) placing a Tết bulk order: 100 cartons of Coca-Cola Original 330ml (SKU CCVN-ORG-330-24), delivery to 245 Nguyễn Văn Linh, Thanh Khê on 28 Jan 2026. PO PO-CCVN-DN-20260128-0917, tracking CCVN-TRK-7742039.",
     cultural: "Polite B2B register — 'anh/em' hierarchy maintained throughout. 'Cháy hàng' (run out of stock / burning hot demand) signals Tết-season urgency without aggression. 'Đỉnh luôn á' is positive Gen Z affirmation, not sarcasm in this context. Request for Zalo confirmation reflects standard Vietnamese B2B practice where Zalo is the de facto operational channel.",
     trueIntent: "HIGH-VALUE TẾT ORDER. Tâm Phát is a recurring Đà Nẵng distributor with downstream F&B accounts (quán ăn). Delivery slippage past 28 Jan 2026 directly costs the distributor sell-through in the most lucrative Vietnamese sales window. VALSEA auto-confirms PO, locks tracking code, and pushes Zalo confirmation — no human re-entry needed.",
+  },
+  multilingual_cjk: {
+    literal: "Three-way regional sync (HK · Tokyo · Seoul) confirming a coordinated product launch on the 1st of next month, with Seoul shipping from Busan by the 25th and tri-lingual packaging spec sheets distributed in English.",
+    cultural: "Five-language live code-switching: Cantonese (唔得啊, 咁就), English connectors, Mandarin (客户, 收到), Japanese (お疲れ様, 在庫, 大丈夫), Korean (잠시만요, 우리는, 알겠습니다). Each speaker anchors in their native register but switches into Mandarin/English as the shared bridge. Politeness markers (お疲れ様です, 알겠습니다) preserve hierarchy across borders. Hesitation around 在庫 reveals the real risk — Tokyo inventory, not timeline.",
+    trueIntent: "LAUNCH UNBLOCKED. The surface conversation is about timing, but the actual blocker is Tokyo's inventory tightness, solved by Seoul agreeing to ship from Busan. VALSEA must transcribe all five languages without dropping speakers, identify Tokyo as the constraint owner, and produce a single English meeting summary with attached CN/JP/KR spec deltas — replacing what would otherwise require three interpreters and a follow-up email thread.",
+  },
+  multilingual_vn: {
+    literal: "HCMC SME owner placing a cross-border B2B order: 50 cartons of G7 coffee, PO VN-SG-20260322-0041, shipping via Cát Lái port to Tuas (Singapore), required delivery before 30 March or downstream Singapore client will cancel.",
+    cultural: "Three-language fluid code-switching: Vietnamese (alo, đỉnh luôn, trời ơi căng lắm), English connectors (no problem, ETA, priority), and Mandarin operational phrases (我可以同步, 五十, 我会 push). The 'chị/em' hierarchy is preserved throughout — caller leads, agent defers. 'Trời ơi căng lắm' (oh heavens it's so tight) reveals the actual stress is downstream-client cancellation risk, not the shipping logistics itself.",
+    trueIntent: "CROSS-BORDER PRIORITY DISPATCH. Real intent isn't just booking a shipment — it's protecting the caller's Singapore client relationship. VALSEA handles all three languages in a single pass, flags 30 March as a hard deadline tied to churn risk, and triggers priority customs clearance + Zalo tracking — the channel Vietnamese SMEs actually use for operations.",
   },
 };
 
@@ -441,14 +370,6 @@ const DEMO_PAYLOADS: Record<Scenario, EnterprisePayload> = {
       escalation_level: 3, churn_probability: 0.89, action: "IMMEDIATE_REFUND",
     },
   },
-  healthcare: {
-    type: "hl7_fhir_triage",
-    data: {
-      patient_age: "elderly", symptoms: ["chest_pain_left", "dyspnea", "pallor"],
-      triage_level: "EMERGENCY", aspirin_administered: true,
-      language: "en-tl", action: "DISPATCH_EMERGENCY_RESPONSE", eta_target: "8min",
-    },
-  },
   legal: {
     type: "ojk_regulatory_filing",
     data: {
@@ -457,31 +378,12 @@ const DEMO_PAYLOADS: Record<Scenario, EnterprisePayload> = {
       whistleblower_protection: true, action: "FILE_REGULATORY_REPORT",
     },
   },
-  commerce: {
-    type: "shopify_commerce_api",
-    data: {
-      product: "COSRX Advanced Snail Bundle", sku: "COSRX-SNL-BDL-01",
-      quantity: 2, shipping_zone: "TH-BKK", free_shipping_eligible: true,
-      buyer_intent_score: 0.92, action: "ADD_TO_CART_AND_UPSELL",
-    },
-  },
   conversational_ai: {
     type: "voice_model_calibration",
     data: {
       primary_accent: "singlish_en", secondary_language: "yue_cantonese",
       device_ecosystem: "alexa", calibration_type: "ACCENT_PROFILE",
       asr_error_rate_before: 0.34, action: "DEPLOY_CUSTOM_VOICE_MODEL",
-    },
-  },
-  enterprise_ops: {
-    type: "enterprise_workflow_engine",
-    data: {
-      meeting_type: "Q1_REVIEW", region: "APAC", revenue_delta: "+12%",
-      margin_alert: true, action_items: [
-        { owner: "Finance", task: "Indonesia burn rate review", deadline: "2026-03-14" },
-        { owner: "HR", task: "Confirm headcount freeze", deadline: "2026-03-14" },
-      ],
-      action: "GENERATE_BOARD_DECK",
     },
   },
   fraud_security: {
@@ -503,42 +405,6 @@ const DEMO_PAYLOADS: Record<Scenario, EnterprisePayload> = {
       trust_risk: "ELEVATED", meetup_location: "Tampines MRT",
       meetup_time: "18:00 SGT", trust_flags: ["REPEAT_NO_SHOW_VICTIM", "PANGSEH_ANXIETY"],
       actions: ["ACTIVATE_CAROUMEET_VERIFIED_MEETUP", "SEND_LOCATION_PIN_BOTH_PARTIES", "ENABLE_PAYMENT_ESCROW", "TRIGGER_SELLER_CONFIRMATION_REMINDER_T_MINUS_30MIN"],
-    },
-  },
-  vietnamese_cx: {
-    type: "vietnamese_ecommerce_cx_api",
-    data: {
-      order_id: "VN-ORD-20260315-4829", warehouse: "BINH_DUONG",
-      status: "STUCK_IN_WAREHOUSE", reason: "TEMP_OUT_OF_STOCK",
-      customer_type: "B2B_RESELLER", order_volume_30d: 47,
-      frustration_score: 0.75, churn_risk: 0.38,
-      slang_detected: ["cháy_máy", "vô_tri", "đỉnh_luôn", "trời_ơi"],
-      cultural_flags: ["RESELLER_CASCADE_PRESSURE", "REVIEW_THREAT_AS_LEVER", "ANH_EM_HIERARCHY_MAINTAINED"],
-      actions: ["SWITCH_TO_EXPRESS_SHIPPING", "ISSUE_LOYALTY_DISCOUNT_CODE_10PCT", "FLAG_WAREHOUSE_RESTOCK_PRIORITY", "SEND_PROACTIVE_TRACKING_UPDATE"],
-    },
-  },
-  vietnamese_en: {
-    type: "accent_aware_cx_api",
-    data: {
-      case_id: "VN-EN-20260318-1204", hold_type: "CUSTOMS_CLEARANCE",
-      accent_profile: "vietnamese_english", asr_confidence: 0.89,
-      proverbs_detected: ["chờ_dài_cổ", "có_lửa_mới_có_khói"],
-      customer_type: "SME_OWNER", downstream_client_pressure: true,
-      language_switches: 3, frustration_trajectory: "ESCALATING",
-      actions: ["ESCALATE_CUSTOMS_RELEASE", "ASSIGN_VIETNAMESE_SPEAKING_AGENT", "SEND_PROACTIVE_DELAY_NOTIFICATION", "FLAG_FOR_ACCENT_MODEL_TRAINING"],
-    },
-  },
-  indian_en: {
-    type: "enterprise_billing_cx_api",
-    data: {
-      account_id: "IN-ENT-BLR-40291", subscription_tier: "ENTERPRISE",
-      billing_error: "DUPLICATE_CHARGE", correct_amount: "INR 49999",
-      charged_amount: "INR 99998", currency: "INR",
-      accent_profile: "south_indian_english", dialect_markers: ["bangalore_kannada_english", "hindi_urdu_code_switch"],
-      languages_detected: ["english", "hindi", "marathi_traces"],
-      cultural_flags: ["JI_HONORIFIC_TO_YAAR_ESCALATION", "CFO_ORGANIZATIONAL_PRESSURE", "FINAL_WARNING_PATTERN"],
-      churn_risk: 0.82, account_value: "HIGH",
-      actions: ["PROCESS_IMMEDIATE_REVERSAL", "SEND_CFO_CONFIRMATION_EMAIL", "ASSIGN_SENIOR_ACCOUNT_MANAGER", "FLAG_BILLING_SYSTEM_BUG"],
     },
   },
   coke_vn_complaint: {
@@ -595,14 +461,62 @@ const DEMO_PAYLOADS: Record<Scenario, EnterprisePayload> = {
       ],
     },
   },
+  multilingual_cjk: {
+    type: "global_collaboration_workflow_api",
+    data: {
+      meeting_id: "GLB-HK-TKO-SEL-20260319-0014",
+      participants: [
+        { region: "Hong Kong", primary_language: "yue_cantonese", secondary: ["english", "zh_mandarin"] },
+        { region: "Tokyo", primary_language: "ja_japanese", secondary: ["english"] },
+        { region: "Seoul", primary_language: "ko_korean", secondary: ["english"] },
+      ],
+      languages_detected: ["yue_cantonese", "en_english", "zh_mandarin", "ja_japanese", "ko_korean"],
+      code_switches_per_minute: 6.4,
+      asr_confidence_per_language: { yue: 0.91, en: 0.96, zh: 0.93, ja: 0.94, ko: 0.92 },
+      decisions: [
+        { topic: "Launch date", outcome: "Confirmed: next month, day 1" },
+        { topic: "Inventory blocker", outcome: "Seoul ships from Busan by day 25" },
+        { topic: "Packaging", outcome: "Tri-lingual CN/JP/KR spec, English summary" },
+      ],
+      output_artifact: "ENGLISH_MEETING_SUMMARY + CN_JP_KR_SPEC_SHEETS",
+      actions: [
+        "GENERATE_UNIFIED_ENGLISH_SUMMARY",
+        "AUTO_ATTACH_TRILINGUAL_SPEC_SHEETS",
+        "NOTIFY_BUSAN_PORT_OPERATIONS",
+        "FLAG_TOKYO_INVENTORY_RISK_FOR_OPS",
+      ],
+    },
+  },
+  multilingual_vn: {
+    type: "cross_border_vn_b2b_order_api",
+    data: {
+      purchase_order: "VN-SG-20260322-0041",
+      origin: { country: "Vietnam", city: "Ho Chi Minh City", port: "Cát Lái" },
+      destination: { country: "Singapore", port: "Tuas" },
+      product: "G7 Instant Coffee 3-in-1",
+      sku: "VN-G7-3IN1-50CTN",
+      quantity_cartons: 50,
+      delivery_deadline: "2026-03-30",
+      churn_risk_if_late: 0.81,
+      languages_detected: ["vi_vietnamese", "en_english", "zh_mandarin"],
+      code_switches: 7,
+      cultural_flags: ["CHI_EM_HIERARCHY_MAINTAINED", "DOWNSTREAM_CLIENT_CANCELLATION_RISK"],
+      confirmation_channel: "ZALO",
+      actions: [
+        "BOOK_CAT_LAI_TO_TUAS_SHIPMENT",
+        "ESCALATE_CUSTOMS_PRIORITY_CLEARANCE",
+        "DISPATCH_TRACKING_VIA_ZALO",
+        "MONITOR_DEADLINE_T_MINUS_72H",
+      ],
+    },
+  },
 };
 
 // ─── Prosody Bar ─────────────────────────────────────────────────────────────
 
 function getSeverity(scenario: Scenario): { label: string; color: string; bg: string } {
   if (scenario === "fraud_security") return { label: "CRITICAL", color: "var(--danger)", bg: "rgba(239,68,68,0.1)" };
-  if (scenario === "healthcare") return { label: "CRITICAL", color: "var(--danger)", bg: "rgba(239,68,68,0.1)" };
-  if (scenario === "cx_escalation" || scenario === "fintech" || scenario === "legal") return { label: "HIGH", color: "var(--warning)", bg: "rgba(245,158,11,0.1)" };
+  if (scenario === "cx_escalation" || scenario === "fintech" || scenario === "legal" || scenario === "coke_vn_complaint") return { label: "HIGH", color: "var(--warning)", bg: "rgba(245,158,11,0.1)" };
   return { label: "MEDIUM", color: "var(--success)", bg: "rgba(34,197,94,0.1)" };
 }
 
