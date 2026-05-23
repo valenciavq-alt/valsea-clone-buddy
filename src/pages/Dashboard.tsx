@@ -119,35 +119,17 @@ const SCENARIOS: Record<Scenario, ScenarioConfig> = {
     target: "CX Platform",
     scenario: "Customer Escalation",
   },
-  healthcare: {
-    label: "Healthcare",
-    source: "Philippines",
-    target: "Clinical System",
-    scenario: "Multilingual Triage",
-  },
   legal: {
     label: "Legal",
     source: "Indonesia",
     target: "Compliance Hub",
     scenario: "Regulatory Evidence",
   },
-  commerce: {
-    label: "Commerce",
-    source: "Thailand",
-    target: "Marketplace",
-    scenario: "Voice Product Discovery",
-  },
   conversational_ai: {
     label: "Conv. AI",
     source: "Multi-region",
     target: "LLM Pipeline",
     scenario: "Speech Structuring Layer",
-  },
-  enterprise_ops: {
-    label: "Enterprise",
-    source: "Regional HQ",
-    target: "Workflow Engine",
-    scenario: "Meeting Intelligence",
   },
   fraud_security: {
     label: "Security",
@@ -161,24 +143,6 @@ const SCENARIOS: Record<Scenario, ScenarioConfig> = {
     target: "Carousell Platform",
     scenario: "Marketplace Trust & Safety",
   },
-  vietnamese_cx: {
-    label: "Vietnamese CX",
-    source: "Vietnam",
-    target: "CX Platform",
-    scenario: "Vietnamese Slang Intelligence",
-  },
-  vietnamese_en: {
-    label: "Viet-English",
-    source: "Ho Chi Minh City",
-    target: "CX Platform",
-    scenario: "Vietnamese-Accented English",
-  },
-  indian_en: {
-    label: "Indian English",
-    source: "Bangalore / Chennai",
-    target: "Enterprise CX",
-    scenario: "South Indian English Dialect",
-  },
   coke_vn_complaint: {
     label: "Coca-Cola VN — Complaint",
     source: "Hà Nội, Vietnam",
@@ -190,6 +154,18 @@ const SCENARIOS: Record<Scenario, ScenarioConfig> = {
     source: "Đà Nẵng, Vietnam",
     target: "Coca-Cola Distributor Portal",
     scenario: "Supplier Bulk Order (Vietnamese)",
+  },
+  multilingual_cjk: {
+    label: "Multilingual — CJK + EN",
+    source: "Hong Kong ⇄ Tokyo ⇄ Seoul",
+    target: "Global Conference Bridge",
+    scenario: "Cantonese · English · Mandarin · Japanese · Korean",
+  },
+  multilingual_vn: {
+    label: "Multilingual — Vietnamese",
+    source: "Ho Chi Minh City ⇄ Singapore",
+    target: "Cross-Border CX Platform",
+    scenario: "Vietnamese · English · Mandarin code-switching",
   },
 };
 
