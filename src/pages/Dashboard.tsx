@@ -407,42 +407,6 @@ const DEMO_PAYLOADS: Record<Scenario, EnterprisePayload> = {
       actions: ["ACTIVATE_CAROUMEET_VERIFIED_MEETUP", "SEND_LOCATION_PIN_BOTH_PARTIES", "ENABLE_PAYMENT_ESCROW", "TRIGGER_SELLER_CONFIRMATION_REMINDER_T_MINUS_30MIN"],
     },
   },
-  vietnamese_cx: {
-    type: "vietnamese_ecommerce_cx_api",
-    data: {
-      order_id: "VN-ORD-20260315-4829", warehouse: "BINH_DUONG",
-      status: "STUCK_IN_WAREHOUSE", reason: "TEMP_OUT_OF_STOCK",
-      customer_type: "B2B_RESELLER", order_volume_30d: 47,
-      frustration_score: 0.75, churn_risk: 0.38,
-      slang_detected: ["cháy_máy", "vô_tri", "đỉnh_luôn", "trời_ơi"],
-      cultural_flags: ["RESELLER_CASCADE_PRESSURE", "REVIEW_THREAT_AS_LEVER", "ANH_EM_HIERARCHY_MAINTAINED"],
-      actions: ["SWITCH_TO_EXPRESS_SHIPPING", "ISSUE_LOYALTY_DISCOUNT_CODE_10PCT", "FLAG_WAREHOUSE_RESTOCK_PRIORITY", "SEND_PROACTIVE_TRACKING_UPDATE"],
-    },
-  },
-  vietnamese_en: {
-    type: "accent_aware_cx_api",
-    data: {
-      case_id: "VN-EN-20260318-1204", hold_type: "CUSTOMS_CLEARANCE",
-      accent_profile: "vietnamese_english", asr_confidence: 0.89,
-      proverbs_detected: ["chờ_dài_cổ", "có_lửa_mới_có_khói"],
-      customer_type: "SME_OWNER", downstream_client_pressure: true,
-      language_switches: 3, frustration_trajectory: "ESCALATING",
-      actions: ["ESCALATE_CUSTOMS_RELEASE", "ASSIGN_VIETNAMESE_SPEAKING_AGENT", "SEND_PROACTIVE_DELAY_NOTIFICATION", "FLAG_FOR_ACCENT_MODEL_TRAINING"],
-    },
-  },
-  indian_en: {
-    type: "enterprise_billing_cx_api",
-    data: {
-      account_id: "IN-ENT-BLR-40291", subscription_tier: "ENTERPRISE",
-      billing_error: "DUPLICATE_CHARGE", correct_amount: "INR 49999",
-      charged_amount: "INR 99998", currency: "INR",
-      accent_profile: "south_indian_english", dialect_markers: ["bangalore_kannada_english", "hindi_urdu_code_switch"],
-      languages_detected: ["english", "hindi", "marathi_traces"],
-      cultural_flags: ["JI_HONORIFIC_TO_YAAR_ESCALATION", "CFO_ORGANIZATIONAL_PRESSURE", "FINAL_WARNING_PATTERN"],
-      churn_risk: 0.82, account_value: "HIGH",
-      actions: ["PROCESS_IMMEDIATE_REVERSAL", "SEND_CFO_CONFIRMATION_EMAIL", "ASSIGN_SENIOR_ACCOUNT_MANAGER", "FLAG_BILLING_SYSTEM_BUG"],
-    },
-  },
   coke_vn_complaint: {
     type: "coca_cola_vn_consumer_care_api",
     data: {
