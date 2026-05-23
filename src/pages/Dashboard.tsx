@@ -190,13 +190,6 @@ const DEMO_TRANSCRIPTS: Record<Scenario, string[]> = {
     "Customer: Please lah, I just want my refund. Kan cheong spider here waiting.",
     "Agent: I understand the urgency. I'll process this as priority.",
   ],
-  healthcare: [
-    "Caller: Doc, my lola, she having chest pain since last night. Very worry ah.",
-    "Agent: I understand. Can you describe the pain location and severity?",
-    "Caller: She say here, the left side. Parang tinutusok daw. She cannot breathe properly also.",
-    "Agent: Is she conscious and responsive right now?",
-    "Caller: Yes, but she very pale. We give her aspirin already. Ambulance how long ah?",
-  ],
   legal: [
     "Caller: Pak, saya mau report. The recording from last week meeting, ada evidence of insider trading.",
     "Agent: Can you provide the date, time, and participants of the meeting?",
@@ -204,26 +197,12 @@ const DEMO_TRANSCRIPTS: Record<Scenario, string[]> = {
     "Agent: This will be flagged for OJK regulatory review. Please preserve all related communications.",
     "Caller: Baik. But I need protection lah. Whistleblower protection must be guaranteed.",
   ],
-  commerce: [
-    "Caller: Sawasdee kha, I looking for the viral skincare set. The one TikTok show, with snail mucin one.",
-    "Agent: We have several snail mucin sets. Do you have a preferred brand?",
-    "Caller: The Korean one lah, COSRX I think. But I want the bundle with toner also.",
-    "Agent: I found the COSRX Advanced Snail Bundle. Shall I add to your cart?",
-    "Caller: How much ah? If got free shipping to Bangkok I take two set.",
-  ],
   conversational_ai: [
     "Caller: 你好, I need help setting up my smart home. The Alexa cannot understand my accent lah.",
     "Agent: I understand. Which devices are you trying to connect?",
     "Caller: The aircon and the lights. I say 'turn on aircon' but it hear 'turn on bacon'. Walao eh.",
     "Agent: Let me calibrate the voice model for your accent profile.",
     "Caller: Can also add Cantonese commands ah? My mother only speak Cantonese one.",
-  ],
-  enterprise_ops: [
-    "Caller: Team, let's recap the Q1 targets. APAC revenue up 12% but margins squeezed lah.",
-    "Agent: Should I flag the margin compression for the board deck?",
-    "Caller: Yes, and highlight the Indonesia expansion costs. That one buay tahan the burn rate.",
-    "Agent: Noted. I'll structure the action items from this briefing.",
-    "Caller: Also need to action the hiring freeze memo. HR to confirm headcount by Friday.",
   ],
   fraud_security: [
     "Caller: Hello, this is the bank security department. Your account has been compromised.",
