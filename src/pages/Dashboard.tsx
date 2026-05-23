@@ -80,7 +80,18 @@ interface EnterprisePayload {
   data: Record<string, any>;
 }
 
-type Scenario = "logistics" | "fintech" | "cx_escalation" | "healthcare" | "legal" | "commerce" | "conversational_ai" | "enterprise_ops" | "fraud_security" | "carousell_cx" | "vietnamese_cx" | "vietnamese_en" | "indian_en" | "coke_vn_complaint" | "coke_vn_supplier";
+type Scenario =
+  | "logistics"
+  | "fintech"
+  | "cx_escalation"
+  | "legal"
+  | "conversational_ai"
+  | "fraud_security"
+  | "carousell_cx"
+  | "coke_vn_complaint"
+  | "coke_vn_supplier"
+  | "multilingual_cjk"
+  | "multilingual_vn";
 
 interface ScenarioConfig {
   label: string;
