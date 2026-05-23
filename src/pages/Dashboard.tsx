@@ -333,6 +333,16 @@ const DEMO_INTENT: Record<Scenario, IntentLayers> = {
     cultural: "Polite B2B register — 'anh/em' hierarchy maintained throughout. 'Cháy hàng' (run out of stock / burning hot demand) signals Tết-season urgency without aggression. 'Đỉnh luôn á' is positive Gen Z affirmation, not sarcasm in this context. Request for Zalo confirmation reflects standard Vietnamese B2B practice where Zalo is the de facto operational channel.",
     trueIntent: "HIGH-VALUE TẾT ORDER. Tâm Phát is a recurring Đà Nẵng distributor with downstream F&B accounts (quán ăn). Delivery slippage past 28 Jan 2026 directly costs the distributor sell-through in the most lucrative Vietnamese sales window. VALSEA auto-confirms PO, locks tracking code, and pushes Zalo confirmation — no human re-entry needed.",
   },
+  multilingual_cjk: {
+    literal: "Three-way regional sync (HK · Tokyo · Seoul) confirming a coordinated product launch on the 1st of next month, with Seoul shipping from Busan by the 25th and tri-lingual packaging spec sheets distributed in English.",
+    cultural: "Five-language live code-switching: Cantonese (唔得啊, 咁就), English connectors, Mandarin (客户, 收到), Japanese (お疲れ様, 在庫, 大丈夫), Korean (잠시만요, 우리는, 알겠습니다). Each speaker anchors in their native register but switches into Mandarin/English as the shared bridge. Politeness markers (お疲れ様です, 알겠습니다) preserve hierarchy across borders. Hesitation around 在庫 reveals the real risk — Tokyo inventory, not timeline.",
+    trueIntent: "LAUNCH UNBLOCKED. The surface conversation is about timing, but the actual blocker is Tokyo's inventory tightness, solved by Seoul agreeing to ship from Busan. VALSEA must transcribe all five languages without dropping speakers, identify Tokyo as the constraint owner, and produce a single English meeting summary with attached CN/JP/KR spec deltas — replacing what would otherwise require three interpreters and a follow-up email thread.",
+  },
+  multilingual_vn: {
+    literal: "HCMC SME owner placing a cross-border B2B order: 50 cartons of G7 coffee, PO VN-SG-20260322-0041, shipping via Cát Lái port to Tuas (Singapore), required delivery before 30 March or downstream Singapore client will cancel.",
+    cultural: "Three-language fluid code-switching: Vietnamese (alo, đỉnh luôn, trời ơi căng lắm), English connectors (no problem, ETA, priority), and Mandarin operational phrases (我可以同步, 五十, 我会 push). The 'chị/em' hierarchy is preserved throughout — caller leads, agent defers. 'Trời ơi căng lắm' (oh heavens it's so tight) reveals the actual stress is downstream-client cancellation risk, not the shipping logistics itself.",
+    trueIntent: "CROSS-BORDER PRIORITY DISPATCH. Real intent isn't just booking a shipment — it's protecting the caller's Singapore client relationship. VALSEA handles all three languages in a single pass, flags 30 March as a hard deadline tied to churn risk, and triggers priority customs clearance + Zalo tracking — the channel Vietnamese SMEs actually use for operations.",
+  },
 };
 
 const DEMO_PAYLOADS: Record<Scenario, EnterprisePayload> = {
