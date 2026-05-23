@@ -461,6 +461,55 @@ const DEMO_PAYLOADS: Record<Scenario, EnterprisePayload> = {
       ],
     },
   },
+  multilingual_cjk: {
+    type: "global_collaboration_workflow_api",
+    data: {
+      meeting_id: "GLB-HK-TKO-SEL-20260319-0014",
+      participants: [
+        { region: "Hong Kong", primary_language: "yue_cantonese", secondary: ["english", "zh_mandarin"] },
+        { region: "Tokyo", primary_language: "ja_japanese", secondary: ["english"] },
+        { region: "Seoul", primary_language: "ko_korean", secondary: ["english"] },
+      ],
+      languages_detected: ["yue_cantonese", "en_english", "zh_mandarin", "ja_japanese", "ko_korean"],
+      code_switches_per_minute: 6.4,
+      asr_confidence_per_language: { yue: 0.91, en: 0.96, zh: 0.93, ja: 0.94, ko: 0.92 },
+      decisions: [
+        { topic: "Launch date", outcome: "Confirmed: next month, day 1" },
+        { topic: "Inventory blocker", outcome: "Seoul ships from Busan by day 25" },
+        { topic: "Packaging", outcome: "Tri-lingual CN/JP/KR spec, English summary" },
+      ],
+      output_artifact: "ENGLISH_MEETING_SUMMARY + CN_JP_KR_SPEC_SHEETS",
+      actions: [
+        "GENERATE_UNIFIED_ENGLISH_SUMMARY",
+        "AUTO_ATTACH_TRILINGUAL_SPEC_SHEETS",
+        "NOTIFY_BUSAN_PORT_OPERATIONS",
+        "FLAG_TOKYO_INVENTORY_RISK_FOR_OPS",
+      ],
+    },
+  },
+  multilingual_vn: {
+    type: "cross_border_vn_b2b_order_api",
+    data: {
+      purchase_order: "VN-SG-20260322-0041",
+      origin: { country: "Vietnam", city: "Ho Chi Minh City", port: "Cát Lái" },
+      destination: { country: "Singapore", port: "Tuas" },
+      product: "G7 Instant Coffee 3-in-1",
+      sku: "VN-G7-3IN1-50CTN",
+      quantity_cartons: 50,
+      delivery_deadline: "2026-03-30",
+      churn_risk_if_late: 0.81,
+      languages_detected: ["vi_vietnamese", "en_english", "zh_mandarin"],
+      code_switches: 7,
+      cultural_flags: ["CHI_EM_HIERARCHY_MAINTAINED", "DOWNSTREAM_CLIENT_CANCELLATION_RISK"],
+      confirmation_channel: "ZALO",
+      actions: [
+        "BOOK_CAT_LAI_TO_TUAS_SHIPMENT",
+        "ESCALATE_CUSTOMS_PRIORITY_CLEARANCE",
+        "DISPATCH_TRACKING_VIA_ZALO",
+        "MONITOR_DEADLINE_T_MINUS_72H",
+      ],
+    },
+  },
 };
 
 // ─── Prosody Bar ─────────────────────────────────────────────────────────────
