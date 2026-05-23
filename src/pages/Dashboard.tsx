@@ -80,7 +80,7 @@ interface EnterprisePayload {
   data: Record<string, any>;
 }
 
-type Scenario = "logistics" | "fintech" | "cx_escalation" | "healthcare" | "legal" | "commerce" | "conversational_ai" | "enterprise_ops" | "fraud_security" | "carousell_cx" | "vietnamese_cx" | "vietnamese_en" | "indian_en";
+type Scenario = "logistics" | "fintech" | "cx_escalation" | "healthcare" | "legal" | "commerce" | "conversational_ai" | "enterprise_ops" | "fraud_security" | "carousell_cx" | "vietnamese_cx" | "vietnamese_en" | "indian_en" | "coke_vn_complaint" | "coke_vn_supplier";
 
 interface ScenarioConfig {
   label: string;
@@ -167,6 +167,18 @@ const SCENARIOS: Record<Scenario, ScenarioConfig> = {
     source: "Bangalore / Chennai",
     target: "Enterprise CX",
     scenario: "South Indian English Dialect",
+  },
+  coke_vn_complaint: {
+    label: "Coca-Cola VN — Complaint",
+    source: "Hà Nội, Vietnam",
+    target: "Coca-Cola Consumer Hotline",
+    scenario: "Consumer Complaint (Vietnamese)",
+  },
+  coke_vn_supplier: {
+    label: "Coca-Cola VN — B2B Order",
+    source: "Đà Nẵng, Vietnam",
+    target: "Coca-Cola Distributor Portal",
+    scenario: "Supplier Bulk Order (Vietnamese)",
   },
 };
 
@@ -268,6 +280,26 @@ const DEMO_TRANSCRIPTS: Record<Scenario, string[]> = {
     "Agent: I can see the duplicate charge. I'll process the reversal immediately.",
     "Caller: Theek hai, please do it fast. And boss, send me confirmation on email also — mujhe apne CFO ko dikhana hai. Agar aaj nahi hua toh hum switch kar lenge, sach bol raha hoon.",
   ],
+  coke_vn_complaint: [
+    "Khách: Alo, Coca-Cola Việt Nam phải không? Tôi muốn khiếu nại về cuộc gọi vừa rồi nha.",
+    "Agent: Dạ em xin nghe, anh cứ trình bày ạ.",
+    "Khách: Trời ơi em ơi, tổng đài viên hồi nãy nói chuyện cộc lốc với anh quá trời. Anh gọi báo lon Coke Zero bị phồng, mà bạn đó nói 'anh tự đem ra siêu thị đổi đi' rồi cúp máy luôn á!",
+    "Agent: Dạ em thành thật xin lỗi anh về thái độ của bạn agent đó. Anh cho em xin số điện thoại để em pull lại record cuộc gọi nha.",
+    "Khách: 0908-xxx-432. Anh mua nguyên thùng 24 lon ở Bách Hoá Xanh Cầu Giấy, mã lô in dưới đáy là L23-CCVN-0842. Uống vô là sốc luôn, ga xì như bom, may là chưa cho con nít uống.",
+    "Agent: Dạ em ghi nhận. Em sẽ chuyển case này lên Quality Assurance và escalate thái độ agent lên team lead trong hôm nay.",
+    "Khách: Anh nói thiệt, Coca-Cola là thương hiệu lớn mà CSKH kiểu này là vô tri lắm nha. Anh đang livestream review trên TikTok, mấy chục ngàn follower coi đó. Bên em xử lý đàng hoàng thì anh gỡ, không thôi là viral đó nha em.",
+  ],
+  coke_vn_supplier: [
+    "Đại lý: Alo em ơi, anh Tâm bên đại lý Tâm Phát Đà Nẵng nè. Anh cần đặt thêm hàng gấp cho dịp Tết.",
+    "Agent: Dạ em chào anh Tâm, anh cần đặt mặt hàng nào ạ?",
+    "Đại lý: Cho anh 100 thùng Coca-Cola Original lon 330ml, SKU là CCVN-ORG-330-24. Mỗi thùng 24 lon nha em, tổng là 2400 lon đó.",
+    "Agent: Dạ em ghi nhận 100 carton SKU CCVN-ORG-330-24. Anh muốn giao về kho nào ạ?",
+    "Đại lý: Giao về số 245 Nguyễn Văn Linh, phường Vĩnh Trung, quận Thanh Khê, Đà Nẵng. Kho anh mở cửa từ 7 giờ sáng tới 6 giờ chiều.",
+    "Agent: Dạ. Anh cần ngày giao là khi nào ạ?",
+    "Đại lý: Giao giùm anh đúng ngày 28 tháng 1 năm 2026, trước Tết một tuần đó. Trễ một ngày là anh cháy hàng luôn nha em, mấy quán ăn đặt ầm ầm rồi.",
+    "Agent: Dạ em chốt đơn PO-CCVN-DN-20260128-0917, giao ngày 28/01/2026, mã vận đơn tracking là CCVN-TRK-7742039. Em gửi xác nhận qua Zalo cho anh liền nha.",
+    "Đại lý: Đỉnh luôn á em. Nhớ gửi tracking để anh theo dõi, có gì delay là call anh liền nghen.",
+  ],
 };
 
 const DEMO_EMOTIONS: Record<Scenario, EmotionScores> = {
@@ -284,6 +316,8 @@ const DEMO_EMOTIONS: Record<Scenario, EmotionScores> = {
   vietnamese_cx: { frustration: 0.75, stress: 0.58, politeness: 0.52, hesitation: 0.08, urgency: 0.82 },
   vietnamese_en: { frustration: 0.62, stress: 0.7, politeness: 0.58, hesitation: 0.15, urgency: 0.78 },
   indian_en: { frustration: 0.72, stress: 0.65, politeness: 0.48, hesitation: 0.1, urgency: 0.85 },
+  coke_vn_complaint: { frustration: 0.82, stress: 0.6, politeness: 0.4, hesitation: 0.08, urgency: 0.78 },
+  coke_vn_supplier: { frustration: 0.18, stress: 0.32, politeness: 0.78, hesitation: 0.1, urgency: 0.7 },
 };
 
 const DEMO_SECURITY: Record<Scenario, SecurityMetrics> = {
@@ -300,6 +334,8 @@ const DEMO_SECURITY: Record<Scenario, SecurityMetrics> = {
   vietnamese_cx: { syntheticProb: 0.02, behavioralRisk: 0.12, livenessStatus: "verified" },
   vietnamese_en: { syntheticProb: 0.03, behavioralRisk: 0.09, livenessStatus: "verified" },
   indian_en: { syntheticProb: 0.02, behavioralRisk: 0.11, livenessStatus: "verified" },
+  coke_vn_complaint: { syntheticProb: 0.02, behavioralRisk: 0.18, livenessStatus: "verified" },
+  coke_vn_supplier: { syntheticProb: 0.01, behavioralRisk: 0.04, livenessStatus: "verified" },
 };
 
 const DEMO_INTENT: Record<Scenario, IntentLayers> = {
@@ -367,6 +403,16 @@ const DEMO_INTENT: Record<Scenario, IntentLayers> = {
     literal: "Indian enterprise customer reporting duplicate SaaS billing charge of ₹99,998 instead of agreed ₹49,999. Requesting immediate reversal with written confirmation.",
     cultural: "'Ji' is a Hindi honorific suffix showing respect. 'Koi response nahi aaya' (nobody responded) — Hindi code-switch reveals rising frustration. 'Arey yaar' is casual Hindi exasperation among peers. 'Kya mazaak hai' (what a joke) signals disbelief. 'Mujhe apne CFO ko dikhana hai' (I need to show my CFO) reveals organizational pressure. 'Sach bol raha hoon' (I'm telling the truth) is a culturally significant trust assertion — the caller is signaling this is their final warning before churn.",
     trueIntent: "CHURN RISK — ENTERPRISE ACCOUNT. Duplicate charge is a billing system error, not fraud. But the caller's Hindi/Marathi code-switching pattern shows escalating frustration: started polite ('ji'), moved to peer-level ('yaar'), ended with ultimatum ('switch kar lenge'). The CFO mention indicates organizational decision-making pressure. Immediate reversal + written confirmation required within 2 hours to prevent enterprise account loss.",
+  },
+  coke_vn_complaint: {
+    literal: "Vietnamese consumer filing a meta-complaint about a prior Coca-Cola hotline call where the agent dismissed a product defect (swollen Coke Zero can) and hung up. Threatening a TikTok review.",
+    cultural: "'Cộc lốc' (curt/abrupt) describes rude agent tone. 'Trời ơi' and 'vô tri' (clueless) frame moral outrage rather than literal product anger. The caller cites lot code L23-CCVN-0842 and a child-safety angle — a classic Vietnamese pressure pattern that escalates a service failure into a brand-trust narrative. 'Anh nói thiệt' (I'm telling the truth) plus TikTok livestream mention is a soft ultimatum, not idle threat — Vietnamese consumers routinely weaponize social platforms for B2C resolution leverage.",
+    trueIntent: "DUAL ESCALATION: (1) Product QA — swollen can on lot L23-CCVN-0842 may indicate fermentation/contamination in a specific batch from Bách Hoá Xanh Cầu Giấy supply chain. (2) Agent conduct — recent call from 0908-xxx-432 must be pulled for QA review. Social risk is real: caller has active TikTok audience. Resolution must combine genuine apology + lot recall investigation + a tangible gesture (case replacement + voucher) within 24h to prevent viral escalation.",
+  },
+  coke_vn_supplier: {
+    literal: "Đà Nẵng distributor (Tâm Phát) placing a Tết bulk order: 100 cartons of Coca-Cola Original 330ml (SKU CCVN-ORG-330-24), delivery to 245 Nguyễn Văn Linh, Thanh Khê on 28 Jan 2026. PO PO-CCVN-DN-20260128-0917, tracking CCVN-TRK-7742039.",
+    cultural: "Polite B2B register — 'anh/em' hierarchy maintained throughout. 'Cháy hàng' (run out of stock / burning hot demand) signals Tết-season urgency without aggression. 'Đỉnh luôn á' is positive Gen Z affirmation, not sarcasm in this context. Request for Zalo confirmation reflects standard Vietnamese B2B practice where Zalo is the de facto operational channel.",
+    trueIntent: "HIGH-VALUE TẾT ORDER. Tâm Phát is a recurring Đà Nẵng distributor with downstream F&B accounts (quán ăn). Delivery slippage past 28 Jan 2026 directly costs the distributor sell-through in the most lucrative Vietnamese sales window. VALSEA auto-confirms PO, locks tracking code, and pushes Zalo confirmation — no human re-entry needed.",
   },
 };
 
@@ -493,6 +539,60 @@ const DEMO_PAYLOADS: Record<Scenario, EnterprisePayload> = {
       cultural_flags: ["JI_HONORIFIC_TO_YAAR_ESCALATION", "CFO_ORGANIZATIONAL_PRESSURE", "FINAL_WARNING_PATTERN"],
       churn_risk: 0.82, account_value: "HIGH",
       actions: ["PROCESS_IMMEDIATE_REVERSAL", "SEND_CFO_CONFIRMATION_EMAIL", "ASSIGN_SENIOR_ACCOUNT_MANAGER", "FLAG_BILLING_SYSTEM_BUG"],
+    },
+  },
+  coke_vn_complaint: {
+    type: "coca_cola_vn_consumer_care_api",
+    data: {
+      case_id: "CCVN-CC-20260318-5521",
+      complaint_type: "AGENT_CONDUCT + PRODUCT_DEFECT",
+      product: "Coca-Cola Zero Sugar 330ml Can",
+      sku: "CCVN-ZRO-330-24",
+      lot_code: "L23-CCVN-0842",
+      defect: "SWOLLEN_CAN_OVERPRESSURE",
+      retail_channel: "Bách Hoá Xanh — Cầu Giấy, Hà Nội",
+      caller_phone: "+84-908-xxx-432",
+      prior_call_id: "CCVN-CALL-20260318-3309",
+      agent_violation: "RUDE_TONE + UNILATERAL_HANGUP",
+      social_risk: { platform: "TikTok", audience_size: "30K+", livestream_active: true },
+      churn_risk: 0.71, brand_risk: "HIGH",
+      slang_detected: ["cộc_lốc", "vô_tri", "trời_ơi"],
+      actions: [
+        "PULL_PRIOR_CALL_RECORDING_FOR_QA",
+        "ESCALATE_AGENT_TO_TEAM_LEAD",
+        "TRIGGER_LOT_L23-CCVN-0842_QA_INVESTIGATION",
+        "DISPATCH_REPLACEMENT_CASE + 200K_VND_VOUCHER",
+        "SEND_VIETNAMESE_APOLOGY_SCRIPT_VIA_ZALO",
+        "MONITOR_TIKTOK_FOR_VIRAL_ESCALATION",
+      ],
+    },
+  },
+  coke_vn_supplier: {
+    type: "coca_cola_vn_distributor_order_api",
+    data: {
+      purchase_order: "PO-CCVN-DN-20260128-0917",
+      distributor: { name: "Đại lý Tâm Phát", contact: "Anh Tâm", region: "Đà Nẵng" },
+      sku: "CCVN-ORG-330-24",
+      product: "Coca-Cola Original Taste 330ml Can",
+      quantity_cartons: 100,
+      units_per_carton: 24,
+      total_units: 2400,
+      delivery_address: "245 Nguyễn Văn Linh, Phường Vĩnh Trung, Quận Thanh Khê, Đà Nẵng",
+      delivery_date: "2026-01-28",
+      delivery_window: "07:00–18:00 ICT",
+      tracking_code: "CCVN-TRK-7742039",
+      season: "TET_2026",
+      confirmation_channel: "ZALO",
+      payment_terms: "NET_30",
+      sla_priority: "PRE_TET_CRITICAL",
+      downstream_risk: "F&B_OUTLETS_STOCKOUT_IF_DELAYED",
+      actions: [
+        "CONFIRM_PO_IN_SAP",
+        "RESERVE_STOCK_FROM_DA_NANG_DC",
+        "DISPATCH_TRACKING_VIA_ZALO",
+        "FLAG_PRE_TET_DELIVERY_PRIORITY",
+        "SCHEDULE_T_MINUS_24H_REMINDER_CALL",
+      ],
     },
   },
 };
