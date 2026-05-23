@@ -370,14 +370,6 @@ const DEMO_PAYLOADS: Record<Scenario, EnterprisePayload> = {
       escalation_level: 3, churn_probability: 0.89, action: "IMMEDIATE_REFUND",
     },
   },
-  healthcare: {
-    type: "hl7_fhir_triage",
-    data: {
-      patient_age: "elderly", symptoms: ["chest_pain_left", "dyspnea", "pallor"],
-      triage_level: "EMERGENCY", aspirin_administered: true,
-      language: "en-tl", action: "DISPATCH_EMERGENCY_RESPONSE", eta_target: "8min",
-    },
-  },
   legal: {
     type: "ojk_regulatory_filing",
     data: {
@@ -386,31 +378,12 @@ const DEMO_PAYLOADS: Record<Scenario, EnterprisePayload> = {
       whistleblower_protection: true, action: "FILE_REGULATORY_REPORT",
     },
   },
-  commerce: {
-    type: "shopify_commerce_api",
-    data: {
-      product: "COSRX Advanced Snail Bundle", sku: "COSRX-SNL-BDL-01",
-      quantity: 2, shipping_zone: "TH-BKK", free_shipping_eligible: true,
-      buyer_intent_score: 0.92, action: "ADD_TO_CART_AND_UPSELL",
-    },
-  },
   conversational_ai: {
     type: "voice_model_calibration",
     data: {
       primary_accent: "singlish_en", secondary_language: "yue_cantonese",
       device_ecosystem: "alexa", calibration_type: "ACCENT_PROFILE",
       asr_error_rate_before: 0.34, action: "DEPLOY_CUSTOM_VOICE_MODEL",
-    },
-  },
-  enterprise_ops: {
-    type: "enterprise_workflow_engine",
-    data: {
-      meeting_type: "Q1_REVIEW", region: "APAC", revenue_delta: "+12%",
-      margin_alert: true, action_items: [
-        { owner: "Finance", task: "Indonesia burn rate review", deadline: "2026-03-14" },
-        { owner: "HR", task: "Confirm headcount freeze", deadline: "2026-03-14" },
-      ],
-      action: "GENERATE_BOARD_DECK",
     },
   },
   fraud_security: {
